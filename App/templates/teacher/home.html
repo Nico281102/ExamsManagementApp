@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css">
+    <title>Home Page Professore</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        .card {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Benvenuto {{professore.name }} {{professore.surname}}</h2>
+
+        <!-- Informazioni del Professore -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Informazioni Personali</h5>
+                <p class="card-text"><strong>Nome:</strong> {{ professore.name }}</p>
+                <p class="card-text"><strong>Cognome:</strong> {{ professore.surname }}</p>
+                <p class="card-text"><strong>Email:</strong> {{ professore.email }}</p>
+            </div>
+        </div>
+
+        <!-- Collegamenti a funzionalità specifiche -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Funzionalità</h5>
+                <ul>
+                    <li><a href="{{ url_for('teacher.creaEsami') }}">Crea Esame</a></li>
+                    <li><a href="{{ url_for('teacher.visualizzaEsami') }}">Visualizza Esami</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap e script JS necessari -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Esami dello studente</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Esami dello studente</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Corso</th>
+                    <th scope="col">Voto</th>
+                    <th scope="col">CFU</th>
+                    <th scope="col">Anno</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for esame in esami %}
+                    <tr>
+                        <td>{{ esame.name }}</td>
+                        <td>{{ esame.cfu }}</td>
+                        <td>{{ esame.anno }}</td>
+                        <td>{{ esame.voto }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
