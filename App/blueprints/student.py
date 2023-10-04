@@ -75,3 +75,16 @@ def pianoDiStudi():
     return render_template('student/pianoDiStudi.html', esami=current_user.esami)
 
 
+@student.route('/bachecaEsiti')
+@login_required
+@checkStudente
+def esiti():
+    pass
+
+@student.route('/formalizza')
+@login_required
+@checkStudente
+def formalizza():
+    pass
+
+
