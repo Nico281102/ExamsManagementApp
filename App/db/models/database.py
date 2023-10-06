@@ -27,6 +27,7 @@ formalizzazioneEsami = db.Table(
     db.Column('passato', db.Boolean, nullable=False, default=False),
     db.Column('studente', db.Integer, db.ForeignKey('studenti.matricola'), primary_key=True),
     db.Column('esame', db.String(32), db.ForeignKey('esami.cod'), primary_key=True),
+    db.Column('formalizzato', db.Boolean , default=False),
     db.Column('created_at', TIMESTAMP, server_default=func.now()),
     db.Column('updated_at', TIMESTAMP, server_default=func.now(), onupdate=func.now())
 )

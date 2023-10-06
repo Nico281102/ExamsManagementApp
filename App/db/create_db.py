@@ -1,8 +1,10 @@
 from flask_sqlalchemy.session import Session
 from sqlalchemy import text
 
+from App.utils.utilies import set_voto, set_voto_2
 from main import app
-from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamento
+from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamento, \
+    formalizzazioneEsami
 
 query = Session(db)
 
@@ -125,6 +127,7 @@ def create_appelli():
     add(Appelli(data='2024-01-19', luogo='Aula1', codAppello='12', prova='IAP'))
 
 
+
 def create_superamento():
     add(Superamento(provaPrincipale='PO1', provaSecondaria='PO2'))
     add(Superamento(provaPrincipale='BD1', provaSecondaria='BD2'))
@@ -148,6 +151,36 @@ def create_piano_studi():
         for esame in esami:
             studente.esami.append(esame)
     db.session.commit()
+
+def create_formalizzato():
+    #attenzione!!! prima di aggiungere il voto ad una esame bisognerebbe calcolarlo in base alle prove relative a tale esame!!
+    list_studenti = db.session.query(Studenti).filter().all()
+    studente = list_studenti[0]
+    set_voto(studente.matricola, 18, '01QWERTY')
+    set_voto(studente.matricola, 29, '02QWERTY')
+    set_voto(studente.matricola, 26, '03QWERTY')
+    studente = list_studenti[1]
+    set_voto(studente.matricola, 18, '01QWERTY')
+    set_voto(studente.matricola, 29, '02QWERTY')
+    set_voto(studente.matricola, 26, '03QWERTY')
+
+    set_voto(892075, 18, '04QWERTY')
+    set_voto(892075, 25, '05QWERTY')
+
+def create_formalizzato_2():
+    list_studenti = db.session.query(Studenti).filter().all()
+    studente = list_studenti[0]
+    set_voto_2(studente.matricola, 18, '01QWERTY')
+    set_voto_2(studente.matricola, 29, '02QWERTY')
+    set_voto_2(studente.matricola, 26, '03QWERTY')
+    studente = list_studenti[1]
+    set_voto_2(studente.matricola, 18, '01QWERTY')
+    set_voto_2(studente.matricola, 29, '02QWERTY')
+    set_voto_2(studente.matricola, 26, '03QWERTY')
+
+    set_voto_2(892075, 18, '04QWERTY')
+    set_voto_2(892075, 25, '05QWERTY')
+
 
 
 def init_db():
