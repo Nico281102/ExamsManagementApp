@@ -61,3 +61,10 @@ def visualizzaProve():
     return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame)
 
 
+@teacher.route('/visualizzaCorsi/visualizzaProve/creaAppello', methods=['POST', 'GET'])
+@login_required
+@checkDocente
+def creaAppello():
+
+
+    return render_template('teacher/creaProve.html', user=current_user)

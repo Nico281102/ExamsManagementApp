@@ -28,7 +28,7 @@ def appelliDisponibili():
     return render_template('student/appelliDisponibili.html', appelli_disponibili=appelli_disp)
 
 
-@student.route('/prenota', methods=['POST', 'GET'])
+@student.route('/appelliDisponibili/prenota', methods=['POST', 'GET'])
 @login_required
 @checkStudente
 def prenotaAppello():
@@ -41,7 +41,16 @@ def prenotaAppello():
     return redirect(url_for('student.appelliDisponibili'))
 
 
-@student.route('/eliminaPrenotazione', methods=['POST', 'GET'])
+@student.route('/prenotazioni')
+@login_required
+@checkStudente
+def prenotazioni():
+    print("sono in prenotazioni")
+    prenotazioni = current_user.appelli
+    print(prenotazioni)
+    return render_template('student/prenotazioni.html', prenotazioni=prenotazioni)
+
+@student.route('/prenotazioni/eliminaPrenotazione', methods=['POST', 'GET'])
 @login_required
 @checkStudente
 def eliminaPrenotazioneAppello():
@@ -56,14 +65,7 @@ def eliminaPrenotazioneAppello():
     return redirect(url_for('student.prenotazioni'))
 
 
-@student.route('/prenotazioni')
-@login_required
-@checkStudente
-def prenotazioni():
-    print("sono in prenotazioni")
-    prenotazioni = current_user.appelli
-    print(prenotazioni)
-    return render_template('student/prenotazioni.html', prenotazioni=prenotazioni)
+
 
 
 @student.route('/pianoDiStudi')
@@ -87,7 +89,7 @@ def esiti():
     return render_template('student/esiti.html', esami=esami_non_form)
 
 
-@student.route('/formalizza', methods=['POST'])
+@student.route('/bachecaEsiti/formalizza', methods=['POST'])
 @login_required
 @checkStudente
 def formalizza():
@@ -105,7 +107,7 @@ def formalizza():
         )
     return redirect(url_for('student.esiti'))
 
-@student.route('/rifiuta', methods=['POST'])
+@student.route('/bachecaEsiti/rifiuta', methods=['POST'])
 @login_required
 @checkStudente
 def rifiuta():
