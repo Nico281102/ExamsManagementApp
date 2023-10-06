@@ -15,17 +15,17 @@ def teacherPage():
     return render_template('teacher/home.html', professore=current_user)
 
 
-@teacher.route('/lista_esami')
+@teacher.route('/visualizzaCorsi')
 @login_required
 @checkDocente
-def visualizzaEsami():
+def visualizzaCorsi():
     #visualizza l'elenco dei corsi tenuti dal professore e le relative prove
     print("sono in visualizzaEsami")
     print(current_user.esami)
     return render_template('teacher/corsi.html', user=current_user, esami=current_user.esami)
 
 
-@teacher.route('/creaProve', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/creaProve', methods=['POST', 'GET'])
 @login_required
 @checkDocente
 def creaProve():
@@ -39,7 +39,7 @@ def creaProve():
 
     return render_template('teacher/creaProve.html', user=current_user)
 
-@teacher.route('/creaProve', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/eliminaProve', methods=['POST', 'GET'])
 @login_required
 @checkDocente
 def eliminaProve():
@@ -49,7 +49,7 @@ def eliminaProve():
 
 
 
-@teacher.route('/visualizzaProve', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/visualizzaProve', methods=['POST', 'GET'])
 @login_required
 @checkDocente
 def visualizzaProve():
@@ -59,7 +59,5 @@ def visualizzaProve():
     prove = esame.prove
     print(prove)
     return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame)
-
-
 
 
