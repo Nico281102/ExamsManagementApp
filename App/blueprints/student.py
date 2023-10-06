@@ -4,8 +4,8 @@ from flask import Blueprint, render_template, request, url_for, redirect, json
 from flask_login import login_required, current_user
 
 from App.checkFunctions import checkStudente
-from App.db.models.database import Appelli, db
-from App.utils.utilies import appelli_disponibili
+from App.db.models.database import Appelli, db, formalizzazioneEsami
+from App.utils.utilies import appelli_disponibili, get_esami_nonFormalizzati
 
 student = Blueprint('student', __name__, url_prefix='/student', template_folder='templates')
 
@@ -72,6 +72,8 @@ def prenotazioni():
 def pianoDiStudi():
     print("sono in EsamiFormalizzati")
     print(current_user.esami)
+    #for each element in piano di studi, se formalizzato aggiungi il voto
+
     return render_template('student/pianoDiStudi.html', esami=current_user.esami)
 
 
@@ -79,12 +81,44 @@ def pianoDiStudi():
 @login_required
 @checkStudente
 def esiti():
-    pass
+    #renderizza la pagina di gestione della formalizzazione
+    esami_non_form = get_esami_nonFormalizzati(current_user.matricola)
+    print(esami_non_form)
+    return render_template('student/esiti.html', esami=esami_non_form)
 
-@student.route('/formalizza')
+
+@student.route('/formalizza', methods=['POST'])
 @login_required
 @checkStudente
 def formalizza():
-    pass
+    #effettua la formalizzazione vera e propria, conclude con un redirect a esiti.
+    esame_cod = request.form['esame']
+    # Begin a transaction
+    with db.engine.begin() as connection:
+        # Execute the update statement
+        connection.execute(
+            formalizzazioneEsami
+            .update()
+            .where(
+                (formalizzazioneEsami.c.studente == current_user.matricola) & (formalizzazioneEsami.c.esame == esame_cod))
+            .values({'formalizzato': True})
+        )
+    return redirect(url_for('student.esiti'))
 
-
+@student.route('/rifiuta', methods=['POST'])
+@login_required
+@checkStudente
+def rifiuta():
+    #effettua la formalizzazione vera e propria, conclude con un redirect a esiti.
+    esame_cod = request.form['esame']
+    # Begin a transaction
+    with db.engine.begin() as connection:
+        # Execute the update statement
+        connection.execute(
+            formalizzazioneEsami
+            .update()
+            .where(
+                (formalizzazioneEsami.c.studente == current_user.matricola) & (formalizzazioneEsami.c.esame == esame_cod))
+            .values({'voto': None, 'formalizzato': False})
+        )
+    return redirect(url_for('student.esiti'))
