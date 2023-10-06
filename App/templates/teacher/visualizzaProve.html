@@ -20,6 +20,7 @@
                 <th>Tipologia</th>
                 <th>Data di Scadenza</th>
                 <th>Peso</th>
+                <th>Crea Appello</th>
             </tr>
         </thead>
         <tbody>
@@ -29,6 +30,11 @@
                     <td>{{ prova.tipologia }}</td>
                     <td>{{ prova.dataScadenza }}</td>
                     <td> {{prova.peso}}</td>
+                    <td>
+                        <form method="POST" action="{{url_for('teacher.creaAppello')}}">
+                            <input type="hidden" name="prova" value="{{ prova.cod }}">
+                            <button type="submit" class="btn btn-primary">Crea Appello</button>
+                        </form>
                 </tr>
             {% endfor %}
         </tbody>
