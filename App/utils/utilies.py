@@ -156,5 +156,15 @@ def get_esami_nonFormalizzati(studente_matricola):
 
     return res
 
+def get_appelli_docente(teacher):
+    appelli = Appelli.query.all()
+    appelli_docente = []
+    for appello in appelli:
+        if appello.prove:
+            prove = appello.prove
+            if prove.docenti == teacher:
+                appelli_docente.append(appello)
+
+    return appelli_docente
 
 
