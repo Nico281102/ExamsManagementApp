@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crea Appello</title>
+    <!-- Collegamento con Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+
+    <div class="container mt-5">
+        <h2 class="mb-4">Crea Appello</h2>
+
+        <form id="appelloForm" method="POST" action="{{ url_for('teacher.creaAppello') }}">
+            <div class="form-group">
+                <label for="data">Data:</label>
+                <input type="date" class="form-control" id="data" name="data" required>
+            </div>
+
+            <div class="form-group">
+                <label for="luogo">Luogo:</label>
+                <input type="text" class="form-control" id="luogo" name="luogo" required>
+            </div>
+
+
+            <div class="form-group">
+                <label for="prova">Prova Relativa:</label>
+                <select class="form-control" id="prova" name="prova" required>
+                    {% for prova in prove %}
+                        <option value="{{ prova }}">{{ prova }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-success" href="{{ url_for('teacher.creaAppello') }}">Crea Appello</button>
+        </form>
+    </div>
+
+    <!-- Collegamento con Bootstrap JS e Popper.js (richiesti per alcune funzionalità di Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+
+</body>
+</html>
