@@ -11,35 +11,39 @@
 <body>
 
 <div class="container mt-5">
-    <h1>Crea Prova</h1>
+    <h1>Crea Prove</h1>
 
-    <form method="post" action="/submit_test">
-        <div class="form-group">
-            <label for="codice">Codice della Prova:</label>
-            <input type="text" class="form-control" id="codice" name="codice" required>
+    <form method="post" action="/submit_tests" onsubmit="return validaPeso()">
+        <div id="prova-container">
+            <!-- Prima prova -->
+            <div class="form-group">
+                <label for="codice1">Codice della Prova:</label>
+                <input type="text" class="form-control" id="codice1" name="codice[]" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tipologia1">Tipologia:</label>
+                <input type="text" class="form-control" id="tipologia1" name="tipologia[]" required>
+            </div>
+
+            <div class="form-group">
+                <label for="data_scadenza1">Data di Scadenza:</label>
+                <input type="date" class="form-control" id="data_scadenza1" name="data_scadenza[]" required>
+            </div>
+
+            <div class="form-group">
+                <label for="richiede_superamento1">Richiede Superamento:</label>
+                <input type="text" class="form-control" id="richiede_superamento1" name="richiede_superamento[]" required>
+            </div>
+
+            <div class="form-group">
+                <label for="peso1">Peso:</label>
+                <input type="number" class="form-control" id="peso1" name="peso[]" required>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="tipologia">Tipologia:</label>
-            <input type="text" class="form-control" id="tipologia" name="tipologia" required>
-        </div>
-
-        <div class="form-group">
-            <label for="data_scadenza">Data di Scadenza:</label>
-            <input type="date" class="form-control" id="data_scadenza" name="data_scadenza" required>
-        </div>
-
-        <div class="form-group">
-            <label for="richiede_superamento">Data di Scadenza:</label>
-            <input type="text" class="form-control" id="richiede_superamento" name="richiede_superamento" required>
-        </div>
-
-        <div class="form-group">
-            <label for="peso">Peso:</label>
-            <input type="number" class="form-control" id="peso" name="peso" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Crea Prova</button>
+        <button type="button" class="btn btn-success" onclick="aggiungiProva()">Aggiungi Prova</button>
+        <button type="submit" class="btn btn-primary">Crea</button>
     </form>
 </div>
 
@@ -47,6 +51,59 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function aggiungiProva() {
+        var container = document.getElementById('prova-container');
+        var numProve = container.childElementCount / 5 + 1; // Ogni prova ha 5 campi
+
+        var nuovaProva = document.createElement('div');
+        nuovaProva.innerHTML = `
+            <div class="form-group">
+                <label for="codice${numProve}">Codice della Prova:</label>
+                <input type="text" class="form-control" id="codice${numProve}" name="codice[]" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tipologia${numProve}">Tipologia:</label>
+                <input type="text" class="form-control" id="tipologia${numProve}" name="tipologia[]" required>
+            </div>
+
+            <div class="form-group">
+                <label for="data_scadenza${numProve}">Data di Scadenza:</label>
+                <input type="date" class="form-control" id="data_scadenza${numProve}" name="data_scadenza[]" required>
+            </div>
+
+            <div class="form-group">
+                <label for="richiede_superamento${numProve}">Richiede Superamento:</label>
+                <input type="text" class="form-control" id="richiede_superamento${numProve}" name="richiede_superamento[]" required>
+            </div>
+
+            <div class="form-group">
+                <label for="peso${numProve}">Peso:</label>
+                <input type="number" class="form-control" id="peso${numProve}" name="peso[]" required>
+            </div>
+        `;
+
+        container.appendChild(nuovaProva);
+    }
+
+    function validaPeso() {
+        var pesi = document.getElementsByName('peso[]');
+        var totalePeso = 0;
+
+        for (var i = 0; i < pesi.length; i++) {
+            totalePeso += parseFloat(pesi[i].value);
+        }
+
+        if (totalePeso !== 1) {
+            alert('Il peso totale delle prove deve essere esattamente 1.');
+            return false; // Blocca l'invio del modulo
+        }
+
+        return true; // Consente l'invio del modulo
+    }
+</script>
 
 </body>
 </html>
