@@ -107,24 +107,24 @@ def create_exam_and_test(dict_docenti):
 
 def create_appelli():
 
-    add(Appelli(data='2024-01-01', luogo='Aula1', codAppello='1', prova='PO1'))
-    add(Appelli(data='2024-01-01', luogo='Aula2', codAppello='2', prova='PO2'))
+    add(Appelli(data='2024-01-01', luogo='Aula1', prova='PO1'))
+    add(Appelli(data='2024-01-01', luogo='Aula2', prova='PO2'))
 
-    add(Appelli(data='2024-01-05', luogo='Aula1', codAppello='3', prova='BD1'))
-    add(Appelli(data='2024-01-05', luogo='Aula2', codAppello='4', prova='BD2'))
+    add(Appelli(data='2024-01-05', luogo='Aula1', prova='BD1'))
+    add(Appelli(data='2024-01-05', luogo='Aula2', prova='BD2'))
 
-    add(Appelli(data='2024-01-10', luogo='Aula1', codAppello='5', prova='SO1'))
-    add(Appelli(data='2024-01-10', luogo='Aula2', codAppello='6', prova='SO2'))
+    add(Appelli(data='2024-01-10', luogo='Aula1', prova='SO1'))
+    add(Appelli(data='2024-01-10', luogo='Aula2', prova='SO2'))
 
-    add(Appelli(data='2024-01-15', luogo='Aula1', codAppello='7', prova='PL1'))
-    add(Appelli(data='2024-01-15', luogo='Aula2', codAppello='8', prova='PL2'))
+    add(Appelli(data='2024-01-15', luogo='Aula1', prova='PL1'))
+    add(Appelli(data='2024-01-15', luogo='Aula2', prova='PL2'))
 
-    add(Appelli(data='2024-01-20', luogo='Aula1', codAppello='9', prova='ASD1'))
-    add(Appelli(data='2024-01-20', luogo='Aula2', codAppello='10', prova='ASD2'))
+    add(Appelli(data='2024-01-20', luogo='Aula1', prova='ASD1'))
+    add(Appelli(data='2024-01-20', luogo='Aula2', prova='ASD2'))
 
-    add(Appelli(data='2024-01-25', luogo='Aula1', codAppello='11', prova='RC1'))
+    add(Appelli(data='2024-01-25', luogo='Aula1', prova='RC1'))
 
-    add(Appelli(data='2024-01-19', luogo='Aula1', codAppello='12', prova='IAP'))
+    add(Appelli(data='2024-01-19', luogo='Aula1', prova='IAP'))
 
 
 
