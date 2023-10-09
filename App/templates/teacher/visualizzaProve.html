@@ -31,7 +31,7 @@
                     <td>{{ prova.dataScadenza }}</td>
                     <td> {{prova.peso}}</td>
                     <td>
-                        <form method="POST" action="{{url_for('teacher.creaAppello')}}">
+                        <form method="POST" action="{{url_for('teacher.definisciAppello')}}">
                             <input type="hidden" name="prova" value="{{ prova.cod }}">
                             <button type="submit" class="btn btn-primary">Crea Appello</button>
                         </form>
