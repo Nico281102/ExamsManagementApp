@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import current_user, login_required
 
 from App.checkFunctions import checkDocente
-from App.db.models.database import Esami
+from App.db.models.database import Esami, Prove, db, Appelli
+from App.utils.utilies import get_appelli_docente
 
 teacher = Blueprint('teacher', __name__, url_prefix='/teacher', template_folder='templates')
 
@@ -61,10 +62,48 @@ def visualizzaProve():
     return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame)
 
 
-@teacher.route('/visualizzaCorsi/visualizzaProve/creaAppello', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello', methods=['POST', 'GET'])
+@login_required
+@checkDocente
+def definisciAppello():
+    #crea un appello per una prova
+    prova = request.form['prova']
+    return render_template('teacher/definisciAppello.html', user=current_user, prove = current_user.prove)
+
+
+
+@teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello/creaAppello', methods=['POST', 'GET'])
 @login_required
 @checkDocente
 def creaAppello():
+    print("sono in creaAppello")
+    #crea un appello per una prova
+    prova = request.form['prova']
+    prova_id = Prove.query.get(prova)
+    luogo = request.form['luogo']
+    data = request.form['data']
+    new_appello = Appelli(data=data, luogo=luogo, prova=prova_id)
+    db.session.add(new_appello)
+    db.session.commit()
+    return redirect(url_for('teacher.teacherPage'))
 
 
-    return render_template('teacher/creaProve.html', user=current_user)
+
+#to do da implementare ancora def visualizzaAppelli.
+@teacher.route('/visualizzaAppelli')
+@login_required
+@checkDocente
+def visualizzaAppelli():
+    return render_template('teacher/visualizzaAppelli.html', appelli=get_appelli_docente(current_user), user=current_user)
+
+@teacher.route('/visualizzaAppelli/studentiIscritti')
+@login_required
+@checkDocente
+def visualizzaStudentiIscritti():
+    pass
+
+@teacher.route('/visualizzaAppelli/eliminaAppello')
+@login_required
+@checkDocente
+def eliminaAppello():
+    pass
