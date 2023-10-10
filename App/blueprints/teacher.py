@@ -102,8 +102,12 @@ def visualizzaAppelli():
 def visualizzaStudentiIscritti():
     pass
 
-@teacher.route('/visualizzaAppelli/eliminaAppello')
+@teacher.route('/visualizzaAppelli/eliminaAppello', methods=['POST'])
 @login_required
 @checkDocente
 def eliminaAppello():
-    pass
+    codAppello = request.form['appello_id']
+    appello_to_delete = Appelli.query.get(codAppello)
+    db.session.delete(appello_to_delete)
+    db.session.commit()
+    return redirect(url_for('teacher.visualizzaAppelli'))
