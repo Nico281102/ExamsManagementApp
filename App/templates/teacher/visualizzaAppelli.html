@@ -33,12 +33,12 @@
                     <td>{{ appello.prove.cod }}</td>
                     <td>
                             <form method="POST" action="{{url_for('teacher.visualizzaStudentiIscritti')}}">
-                                <input type="hidden" name="appello" value="{{ appello.codAppello }}">
+                                <input type="hidden" name="codAppello" value="{{ appello.codAppello }}">
                                 <button type="submit" class="btn btn-primary">Visualizza studenti iscritti</button>
                             </form>
                     <td>
                         <form method="POST" action="{{url_for('teacher.eliminaAppello')}}">
-                            <input type="hidden" name="appello_id" value="{{ appello.codAppello }}">
+                            <input type="hidden" name="codAppello" value="{{ appello.codAppello }}">
                             <button type="submit" class="btn btn-danger">Elimina</button>
                         </form>
                     </td>

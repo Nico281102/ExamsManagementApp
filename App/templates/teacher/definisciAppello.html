@@ -28,7 +28,7 @@
                 <label for="prova">Prova Relativa:</label>
                 <select class="form-control" id="prova" name="prova" required>
                     {% for prova in prove %}
-                        <option value="{{ prova }}">{{ prova }}</option>
+                        <option value="{{ prova.cod }}">{{ prova.cod }}</option>
                     {% endfor %}
                 </select>
             </div>

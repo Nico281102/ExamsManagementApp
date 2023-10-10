@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from App.checkFunctions import checkDocente
 from App.db.models.database import Esami, Prove, db, Appelli
-from App.utils.utilies import get_appelli_docente
+from App.utils.utilies import get_appelli_docente, set_voto_prova
 
 teacher = Blueprint('teacher', __name__, url_prefix='/teacher', template_folder='templates')
 
@@ -78,13 +78,16 @@ def definisciAppello():
 def creaAppello():
     print("sono in creaAppello")
     #crea un appello per una prova
-    prova = request.form['prova']
-    prova_id = Prove.query.get(prova)
+    prova_id = request.form['prova']
     luogo = request.form['luogo']
     data = request.form['data']
+    print("prima di creare l'appello")
+    print(Appelli.query.all())
     new_appello = Appelli(data=data, luogo=luogo, prova=prova_id)
     db.session.add(new_appello)
     db.session.commit()
+    print("dopo aver creato l'appello")
+    print(Appelli.query.all())
     return redirect(url_for('teacher.teacherPage'))
 
 
@@ -94,19 +97,39 @@ def creaAppello():
 @login_required
 @checkDocente
 def visualizzaAppelli():
+    print("sono in visualizzaAppelli")
+    print(get_appelli_docente(current_user))
     return render_template('teacher/visualizzaAppelli.html', appelli=get_appelli_docente(current_user), user=current_user)
 
-@teacher.route('/visualizzaAppelli/studentiIscritti')
+@teacher.route('/visualizzaAppelli/studentiIscritti', methods=['POST'])
 @login_required
 @checkDocente
 def visualizzaStudentiIscritti():
-    pass
+    codAppello = request.form['codAppello']
+    studenti = Appelli.query.get(codAppello).studenti
+    #gli studenti che hanno gia un voto devono comaparire con il voto settato.
+    return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
+
+
+@teacher.route('/visualizzaAppelli/studentiIscritti/setVoto', methods=['POST'])
+@login_required
+@checkDocente
+def setVoto():
+    if request.method == 'POST':
+        voto = request.form['voto']
+        studente_id = request.form['studente_id']
+        codAppello = request.form['codAppello']
+
+        set_voto_prova(studente_id, voto, codAppello)
+
+    return redirect(url_for('teacher.visualizzaStudentiIscritti'))
+
 
 @teacher.route('/visualizzaAppelli/eliminaAppello', methods=['POST'])
 @login_required
 @checkDocente
 def eliminaAppello():
-    codAppello = request.form['appello_id']
+    codAppello = request.form['codAppello']
     appello_to_delete = Appelli.query.get(codAppello)
     db.session.delete(appello_to_delete)
     db.session.commit()
