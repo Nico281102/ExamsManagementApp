@@ -59,7 +59,8 @@ def visualizzaProve():
     esame = Esami.query.get(esame_id)
     prove = esame.prove
     print(prove)
-    return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame)
+    return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame,
+                           lista_prove_abilitate=current_user.prove)
 
 
 @teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello', methods=['POST', 'GET'])

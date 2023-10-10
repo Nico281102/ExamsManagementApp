@@ -23,21 +23,26 @@
                 <th>Crea Appello</th>
             </tr>
         </thead>
-        <tbody>
-            {% for prova in prove %}
-                <tr> <!-- Apertura della riga per ogni prova -->
-                    <td>{{ prova.cod }}</td>
-                    <td>{{ prova.tipologia }}</td>
-                    <td>{{ prova.dataScadenza }}</td>
-                    <td> {{prova.peso}}</td>
-                    <td>
-                        <form method="POST" action="{{url_for('teacher.definisciAppello')}}">
-                            <input type="hidden" name="prova" value="{{ prova.cod }}">
-                            <button type="submit" class="btn btn-primary">Crea Appello</button>
-                        </form>
-                </tr>
-            {% endfor %}
-        </tbody>
+       <tbody>
+    {% for prova in prove %}
+        <tr>
+            <td>{{ prova.cod }}</td>
+            <td>{{ prova.tipologia }}</td>
+            <td>{{ prova.dataScadenza }}</td>
+            <td>{{ prova.peso }}</td>
+            <td>
+                {% if prova in lista_prove_abilitate %}
+                    <form method="POST" action="{{ url_for('teacher.definisciAppello') }}">
+                        <input type="hidden" name="prova" value="{{ prova.cod }}">
+                        <button type="submit" class="btn btn-primary">Crea Appello</button>
+                    </form>
+                {% else %}
+                    <button type="button" class="btn btn-secondary" disabled>Crea Appello</button>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>
     </table>
 
     <!-- Altre informazioni dell'utente, se necessario -->
