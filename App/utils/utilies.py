@@ -20,6 +20,8 @@ def check_credentials(email, password):
 
 def appelli_disponibili(studente):
     appelli = Appelli.query.all()
+    print("tutti gli appelli")
+    print(appelli)
     appelli_disponibili = []
 
     # Ottenere gli esami passati dallo studente
@@ -179,6 +181,8 @@ def get_esami_nonFormalizzati(studente_matricola):
 
 def get_appelli_docente(teacher):
     appelli = Appelli.query.all()
+    print("tutti gli appelli")
+    print(appelli)
     appelli_docente = []
     for appello in appelli:
         if appello.prove:
