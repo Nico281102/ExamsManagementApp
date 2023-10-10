@@ -96,22 +96,43 @@ def set_voto(studente_matricola, voto, esame_cod):
 
 
 
-def set_voto_2(studente_matricola, voto, esame_cod):
-    passato = voto >= 18
-
-    # Build the raw SQL update statement
-    sql_query = text(
-        f'UPDATE public."formalizzazioneEsami" '
-        f'SET voto = {voto}, passato = {passato} '
-        f'WHERE studente = {studente_matricola} AND esame = \'{esame_cod}\''
-    )
-
-    # Execute the update statement
+def set_voto_prova(studente_matricola, voto, prova_cod):
+    voto = int(voto)
+    isValid = False
+    if voto >= 18 and voto <= 30 and voto != None:
+        #controllare anche se la data in cui è stata svoltà la prova è antecedente alla data di scadenza
+        isValid = True
     with db.engine.begin() as connection:
-        connection.execute(sql_query)
+# Execute the update statement
+        connection.execute(
+            iscrizioni
+            .update()
+            .where((iscrizioni.c.studente == studente_matricola) & (iscrizioni.c.appello == prova_cod))
+            .values({'voto': voto, 'isValid': isValid})
+        )
 
-    # Commit the changes to the database
-    db.session.commit()
+        # Fetch the updated row immediately after the update
+        select_query = text(
+            f"SELECT * FROM public.\"iscrizioni\" WHERE studente = {studente_matricola} AND appello = '{prova_cod}'"
+        )
+        updated_row = connection.execute(select_query).fetchone()
+
+        # Check if the row is not None before attempting to convert to a dictionary
+        if updated_row is not None:
+            # Fetch the column names using result.keys()
+            column_names = connection.execute(select_query).keys()
+
+            # Convert the row to a dictionary
+            row_dict = dict(zip(column_names, updated_row))
+            print("Updated Row:", row_dict)
+        else:
+            print("No row found after update.")
+
+        # Commit the changes to the database
+        db.session.commit()
+
+
+
 
 def get_esame(codEsame):
     # Build the SQL query
