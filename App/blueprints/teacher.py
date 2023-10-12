@@ -40,11 +40,11 @@ def creaProve():
 
     return render_template('teacher/creaProve.html', user=current_user)
 
+
 @teacher.route('/visualizzaCorsi/eliminaProve', methods=['POST', 'GET'])
 @login_required
 @checkDocente
 def eliminaProve():
-
 
     return redirect(url_for('teacher.visualizzaEsami'))
 
@@ -100,7 +100,9 @@ def creaAppello():
 def visualizzaAppelli():
     print("sono in visualizzaAppelli")
     print(get_appelli_docente(current_user))
-    return render_template('teacher/visualizzaAppelli.html', appelli=get_appelli_docente(current_user), user=current_user)
+    return render_template('teacher/visualizzaAppelli.html', appelli=get_appelli_docente(current_user),
+                           user=current_user)
+
 
 @teacher.route('/visualizzaAppelli/studentiIscritti', methods=['POST'])
 @login_required
