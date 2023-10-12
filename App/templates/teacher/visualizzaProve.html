@@ -18,7 +18,7 @@
             <tr>
                 <th>Codice Prova</th>
                 <th>Tipologia</th>
-                <th>Data di Scadenza</th>
+                <th>Data di Scadenza e Ora</th>
                 <th>Peso</th>
                 <th>Crea Appello</th>
             </tr>
@@ -27,7 +27,7 @@
     {% for prova in prove %}
         <tr>
             <td>{{ prova.cod }}</td>
-            <td>{{ prova.tipologia }}</td>
+            <td>{{ prova.Tipologia }}</td>
             <td>{{ prova.dataScadenza }}</td>
             <td>{{ prova.peso }}</td>
             <td>
