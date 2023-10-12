@@ -144,7 +144,7 @@ class Prove(db.Model):
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
     dataScadenza = db.Column(TIMESTAMP, nullable=False)
     idoneità = db.Column(db.Boolean, nullable=False)
-    peso = db.Column(db.Integer, nullable=False)
+    peso = db.Column(db.Float, nullable=False)
     isValid = db.Column(db.Boolean, nullable=False)
     Tipologia = db.Column(db.Enum('Orale', 'Scritto', 'Progetto', name='Tipologia'), nullable=False)
     Bonus = db.Column(db.Integer, nullable=False)
