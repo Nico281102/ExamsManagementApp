@@ -26,6 +26,8 @@ def visualizzaCorsi():
     return render_template('teacher/corsi.html', user=current_user, esami=current_user.esami)
 
 
+
+
 @teacher.route('/visualizzaCorsi/creaProve', methods=['POST', 'GET'])
 @login_required
 @checkDocente
@@ -135,3 +137,15 @@ def eliminaAppello():
     db.session.delete(appello_to_delete)
     db.session.commit()
     return redirect(url_for('teacher.visualizzaAppelli'))
+
+
+@teacher.route('/visualizzaProveGestite')
+@login_required
+@checkDocente
+def visualizzaProveGestite():
+    print("sono in visualizzaProveGestite")
+    print(current_user.prove)
+    return render_template('teacher/visualizzaProveGestite.html', user=current_user, prove=current_user.prove,
+                           esami = current_user.esami)
+
+

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esami</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- CSS aggiuntivo per personalizzazioni -->
+    <style>
+        /* Aggiungi eventuali stili personalizzati qui */
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Elenco prove gestite da: {{ user.name }} {{ user.surname }}</h1>
+
+    {% for esame in esami %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>{{ esame.name }}</h2>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Codice Prova</th>
+                            <th>Tipologia</th>
+                            <th>Data di Scadenza e Ora</th>
+                            <th>Peso</th>
+                            <th>Esame</th>
+                            <th>Crea Appello</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prova in esame.prove %}
+                            {% if prova in prove %}
+                                <tr>
+                                    <td>{{ prova.cod }}</td>
+                                    <td>{{ prova.Tipologia }}</td>
+                                    <td>{{ prova.dataScadenza }}</td>
+                                    <td>{{ prova.peso }}</td>
+                                    <td>{{ esame.nome }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                                onclick="creaAppello('{{ esame.nome }}', '{{ prova.cod }}')">Crea Appello
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+
+    <!-- Altre informazioni dell'utente, se necessario -->
+    <p class="mt-3">Benvenuto, {{ user.name }}!</p>
+</div>
+
+<!-- Bootstrap JS e le sue dipendenze -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Funzione per mostrare una notifica o eseguire azioni dopo la creazione di un appello
+    function creaAppello(nomeEsame, codiceProva) {
+        // Puoi aggiungere qui la logica per creare l'appello con il codice della prova
+        // e mostrare una notifica o eseguire altre azioni.
+        alert('Appello creato per la prova con codice ' + codiceProva + ' nell\'esame ' + nomeEsame);
+    }
+</script>
+
+</body>
+</html>
