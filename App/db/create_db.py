@@ -1,8 +1,10 @@
 from flask_sqlalchemy.session import Session
 from sqlalchemy import text
 
+from App.utils.utilies import set_voto, set_voto_2
 from main import app
-from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamento
+from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamento, \
+    formalizzazioneEsami
 
 query = Session(db)
 
@@ -105,24 +107,25 @@ def create_exam_and_test(dict_docenti):
 
 def create_appelli():
 
-    add(Appelli(data='2024-01-01', luogo='Aula1', codAppello='1', prova='PO1'))
-    add(Appelli(data='2024-01-01', luogo='Aula2', codAppello='2', prova='PO2'))
+    add(Appelli(data='2024-01-01', luogo='Aula1', prova='PO1'))
+    add(Appelli(data='2024-01-01', luogo='Aula2', prova='PO2'))
 
-    add(Appelli(data='2024-01-05', luogo='Aula1', codAppello='3', prova='BD1'))
-    add(Appelli(data='2024-01-05', luogo='Aula2', codAppello='4', prova='BD2'))
+    add(Appelli(data='2024-01-05', luogo='Aula1', prova='BD1'))
+    add(Appelli(data='2024-01-05', luogo='Aula2', prova='BD2'))
 
-    add(Appelli(data='2024-01-10', luogo='Aula1', codAppello='5', prova='SO1'))
-    add(Appelli(data='2024-01-10', luogo='Aula2', codAppello='6', prova='SO2'))
+    add(Appelli(data='2024-01-10', luogo='Aula1', prova='SO1'))
+    add(Appelli(data='2024-01-10', luogo='Aula2', prova='SO2'))
 
-    add(Appelli(data='2024-01-15', luogo='Aula1', codAppello='7', prova='PL1'))
-    add(Appelli(data='2024-01-15', luogo='Aula2', codAppello='8', prova='PL2'))
+    add(Appelli(data='2024-01-15', luogo='Aula1', prova='PL1'))
+    add(Appelli(data='2024-01-15', luogo='Aula2', prova='PL2'))
 
-    add(Appelli(data='2024-01-20', luogo='Aula1', codAppello='9', prova='ASD1'))
-    add(Appelli(data='2024-01-20', luogo='Aula2', codAppello='10', prova='ASD2'))
+    add(Appelli(data='2024-01-20', luogo='Aula1', prova='ASD1'))
+    add(Appelli(data='2024-01-20', luogo='Aula2', prova='ASD2'))
 
-    add(Appelli(data='2024-01-25', luogo='Aula1', codAppello='11', prova='RC1'))
+    add(Appelli(data='2024-01-25', luogo='Aula1', prova='RC1'))
 
-    add(Appelli(data='2024-01-19', luogo='Aula1', codAppello='12', prova='IAP'))
+    add(Appelli(data='2024-01-19', luogo='Aula1', prova='IAP'))
+
 
 
 def create_superamento():
@@ -148,6 +151,36 @@ def create_piano_studi():
         for esame in esami:
             studente.esami.append(esame)
     db.session.commit()
+
+def create_formalizzato():
+    #attenzione!!! prima di aggiungere il voto ad una esame bisognerebbe calcolarlo in base alle prove relative a tale esame!!
+    list_studenti = db.session.query(Studenti).filter().all()
+    studente = list_studenti[0]
+    set_voto(studente.matricola, 18, '01QWERTY')
+    set_voto(studente.matricola, 29, '02QWERTY')
+    set_voto(studente.matricola, 26, '03QWERTY')
+    studente = list_studenti[1]
+    set_voto(studente.matricola, 18, '01QWERTY')
+    set_voto(studente.matricola, 29, '02QWERTY')
+    set_voto(studente.matricola, 26, '03QWERTY')
+
+    set_voto(892075, 18, '04QWERTY')
+    set_voto(892075, 25, '05QWERTY')
+
+def create_formalizzato_2():
+    list_studenti = db.session.query(Studenti).filter().all()
+    studente = list_studenti[0]
+    set_voto_2(studente.matricola, 18, '01QWERTY')
+    set_voto_2(studente.matricola, 29, '02QWERTY')
+    set_voto_2(studente.matricola, 26, '03QWERTY')
+    studente = list_studenti[1]
+    set_voto_2(studente.matricola, 18, '01QWERTY')
+    set_voto_2(studente.matricola, 29, '02QWERTY')
+    set_voto_2(studente.matricola, 26, '03QWERTY')
+
+    set_voto_2(892075, 18, '04QWERTY')
+    set_voto_2(892075, 25, '05QWERTY')
+
 
 
 def init_db():

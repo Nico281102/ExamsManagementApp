@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from sqlalchemy import Sequence
 from sqlalchemy.types import TIMESTAMP
 from sqlalchemy.sql import func
 
@@ -27,6 +28,7 @@ formalizzazioneEsami = db.Table(
     db.Column('passato', db.Boolean, nullable=False, default=False),
     db.Column('studente', db.Integer, db.ForeignKey('studenti.matricola'), primary_key=True),
     db.Column('esame', db.String(32), db.ForeignKey('esami.cod'), primary_key=True),
+    db.Column('formalizzato', db.Boolean , default=False),
     db.Column('created_at', TIMESTAMP, server_default=func.now()),
     db.Column('updated_at', TIMESTAMP, server_default=func.now(), onupdate=func.now())
 )
@@ -155,7 +157,7 @@ class Appelli(db.Model):
     __tablename__ = 'appelli'
     data = db.Column(TIMESTAMP, nullable=False)
     luogo = db.Column(db.String(32), nullable=False)
-    codAppello = db.Column(db.String(32), nullable=False, primary_key=True)
+    codAppello = db.Column(db.String(32), Sequence('appelli_cod_seq'), nullable=False, primary_key=True)
     prova = db.Column(db.String(32), db.ForeignKey('prove.cod'))
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

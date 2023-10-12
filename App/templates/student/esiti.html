@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esiti</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+</head>
+<body class="container mt-5">
+
+    <h1 class="text-center mb-4">Esiti</h1>
+
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Esame</th>
+                <th scope="col">Voto</th>
+                <th scope="col">Passato</th>
+                <th scope="col">Formalizza</th>
+                <th scope="col">Rifiuta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for esame in esami %}
+                <tr>
+                    <td>{{ esame[2][0] }}</td>
+                    <td>{{ esame[0] }}</td>
+                    <td>{{ "Sì" if esame[1] else "No" }}</td>
+                    <td>
+                            <form method="POST" action="{{url_for('student.formalizza')}}">
+                                <input type="hidden" name="esame" value="{{ esame[2][1] }}">
+                                <button type="submit" class="btn btn-danger">Formalizza</button>
+                            </form>
+                        </td>
+                                            <td>
+                        <form method="POST" action="{{url_for('student.rifiuta')}}">
+                                <input type="hidden" name="esame" value="{{ esame[2][1] }}">
+                                <button type="submit" class="btn btn-danger">rifiuta</button>
+                            </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-Vkoo8x4CGsF3pHJ2+1iRBCEs5Z2AKxyAuvSL9syFiL4U6pV0H+CBKd5im5MlVbB" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+WyUma1i2D02M7j9i/JXQn5CkMc5NKeZ6I" crossorigin="anonymous"></script>
+</body>
+</html>

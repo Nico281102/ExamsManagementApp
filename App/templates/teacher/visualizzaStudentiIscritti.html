@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elenco Studenti Appello</title>
+    <!-- Link agli stili Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Elenco Studenti Iscritti all'Appello</h2>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>Nome Studente</th>
+                <th>Cognome Studente</th>
+                <th>Voto</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for studente in studenti %}
+                <tr>
+                    <td>{{ studente.name }}</td>
+                    <td>{{ studente.surname }}</td>
+                    <td>{{ studente.voto }}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('teacher.setVoto') }}">
+                            <input type="hidden" name="studente_id" value="{{ studente.matricola }}">
+                            <input type="hidden" name="codAppello" value="{{ codAppello }}">
+                            <div class="form-group">
+                                <input type="number" name="voto" class="form-control" placeholder="Inserisci il voto">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Imposta Voto</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Script di Bootstrap (jQuery e Popper.js sono richiesti per alcune funzionalità) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -44,10 +44,11 @@
 
         <!-- Display links to other pages -->
         <div class="menu-links">
-            <a class="btn btn-secondary" href="{{ url_for('auth.logout') }}">Logout</a>
-            <a class="btn btn-secondary" href="{{ url_for('student.prenotazioni') }}">Reservations</a>
+            <a class="btn btn-secondary" href="{{ url_for('student.appelliDisponibili') }}">Prenota Appello</a>
+            <a class="btn btn-secondary" href="{{ url_for('student.prenotazioni') }}">Prenotazioni</a>
             <a class="btn btn-secondary" href="{{ url_for('student.pianoDiStudi') }}">Piano di studi</a>
-            <a class="btn btn-secondary" href="{{ url_for('student.appelliDisponibili') }}">prenota Appello</a>
+            <a class="btn btn-secondary" href="{{ url_for('student.esiti') }}">Bacheca Esiti</a>
+            <a class="btn btn-secondary" href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
     </div>
 
