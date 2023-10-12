@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from sqlalchemy import Sequence
 from sqlalchemy.types import TIMESTAMP
 from sqlalchemy.sql import func
+from sqlalchemy import select, and_
 
 db = SQLAlchemy()
 
@@ -63,6 +64,29 @@ class Studenti(db.Model, UserMixin):
 
     def generate_email(self):
         return f"{self.matricola}@stud.unive.it"
+
+
+    def getVotoProva(self, appello_cod):
+        # Query to get the voto directly from the iscrizioni table
+        query = select(iscrizioni.c.voto).where((iscrizioni.c.studente == self.matricola) & (iscrizioni.c.appello == appello_cod)
+        )
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+
+        res = result.fetchall()
+        if res:
+            return res[0][0]
+        else:
+            return None
+
+
+
+    def getVotoEsame(self, esame_cod):
+        for esame in self.esami:
+            if esame.cod == esame_cod:
+                #query per ottenere il voto dell'esame dalle prove
+                return 0
+        return None
 
     def __repr__(self):
         return '<Studente %r>' % self.name
