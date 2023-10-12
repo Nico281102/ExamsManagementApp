@@ -50,13 +50,12 @@ def eliminaProve():
 
 
 
-@teacher.route('/visualizzaCorsi/visualizzaProve', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/visualizzaProve/<codEsame>', methods=['POST', 'GET'])
 @login_required
 @checkDocente
-def visualizzaProve():
-
-    esame_id = request.form['esame']
-    esame = Esami.query.get(esame_id)
+def visualizzaProve(codEsame):
+    #visualizza le prove relative ad un corso
+    esame = Esami.query.get(codEsame)
     prove = esame.prove
     print(prove)
     return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame,

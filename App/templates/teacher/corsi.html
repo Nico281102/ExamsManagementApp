@@ -33,10 +33,9 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <form method="POST" action="{{url_for('teacher.visualizzaProve')}}">
-                            <input type="hidden" name="esame" value="{{ esame.cod }}">
+                        <a href="{{ url_for('teacher.visualizzaProve', codEsame=esame.cod) }}">
                             <button type="submit" class="btn btn-primary">Visualizza dettagli prove</button>
-                        </form>
+                        </a>
                     </td>
                     <td>
                         <form method="POST" action="{{url_for('teacher.creaProve')}}">
