@@ -10,7 +10,7 @@
 <body>
 
 <div class="container mt-5">
-    <h2>Elenco Studenti Iscritti all'Appello</h2>
+    <h2>Elenco Studenti Iscritti all'Appello relativo alla prova : </h2>
 
     <table class="table mt-4">
         <thead>
@@ -26,13 +26,13 @@
                 <tr>
                     <td>{{ studente.name }}</td>
                     <td>{{ studente.surname }}</td>
-                    <td>{{ studente.voto }}</td>
+                    <td>{{ studente.getVotoProva( codAppello ) }}</td>
                     <td>
-                        <form method="post" action="{{ url_for('teacher.setVoto') }}">
+                        <form method="post" action="{{ url_for('teacher.setVoto') }}" onsubmit="return validateForm()">
                             <input type="hidden" name="studente_id" value="{{ studente.matricola }}">
                             <input type="hidden" name="codAppello" value="{{ codAppello }}">
                             <div class="form-group">
-                                <input type="number" name="voto" class="form-control" placeholder="Inserisci il voto">
+                                <input type="number" name="voto" id="voto" class="form-control" placeholder="Inserisci il voto" required min="0" max="31">
                             </div>
                             <button type="submit" class="btn btn-primary">Imposta Voto</button>
                         </form>
@@ -47,6 +47,17 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+function validateForm() {
+    var voto = document.getElementById("voto").value;
+    if (voto < 0 || voto > 31) {
+        alert("Il voto deve essere compreso tra 0 e 31.");
+        return false;
+    }
+    return true;
+}
+</script>
 
 </body>
 </html>
