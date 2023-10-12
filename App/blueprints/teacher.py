@@ -146,6 +146,15 @@ def visualizzaProveGestite():
     print("sono in visualizzaProveGestite")
     print(current_user.prove)
     return render_template('teacher/visualizzaProveGestite.html', user=current_user, prove=current_user.prove,
-                           esami = current_user.esami)
+                           esami=current_user.esami)
 
 
+@teacher.route('/visualizzaDocenti/<codEsame>')
+@login_required
+@checkDocente
+def visualizzaDocenti(codEsame):
+    # Ottieni l'elenco dei docenti relativi all'esame con il codice fornito
+    docenti = Esami.query.get(codEsame).docenti
+    print(docenti)
+    # Passa l'elenco dei docenti al template HTML
+    return render_template('teacher/visualizzaDocenti.html', docenti=docenti)
