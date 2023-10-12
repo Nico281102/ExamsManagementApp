@@ -1,7 +1,7 @@
 from flask_sqlalchemy.session import Session
 from sqlalchemy import text
 
-from App.utils.utilies import set_voto, set_voto_2
+from App.utils.utilies import set_voto
 from main import app
 from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamento, \
     formalizzazioneEsami
