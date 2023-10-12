@@ -104,15 +104,14 @@ def visualizzaAppelli():
                            user=current_user)
 
 
-@teacher.route('/visualizzaAppelli/studentiIscritti', methods=['POST'])
+@teacher.route('/visualizzaAppelli/studentiIscritti/<codAppello>', methods=['GET'])
 @login_required
 @checkDocente
-def visualizzaStudentiIscritti():
-    codAppello = request.form['codAppello']
-    studenti = Appelli.query.get(codAppello).studenti
-    #gli studenti che hanno gia un voto devono comaparire con il voto settato.
-    return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
-
+def visualizzaStudentiIscritti(codAppello):
+        studenti = Appelli.query.get(codAppello).studenti
+        #gli studenti che hanno gia un voto devono comaparire con il voto settato.
+        print("sono in visualizzaStudentiIscritti")
+        return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
 
 @teacher.route('/visualizzaAppelli/studentiIscritti/setVoto', methods=['POST'])
 @login_required
@@ -125,7 +124,7 @@ def setVoto():
 
         set_voto_prova(studente_id, voto, codAppello)
 
-    return redirect(url_for('teacher.visualizzaStudentiIscritti'))
+    return redirect(url_for('teacher.visualizzaStudentiIscritti', codAppello=codAppello))
 
 
 @teacher.route('/visualizzaAppelli/eliminaAppello', methods=['POST'])
