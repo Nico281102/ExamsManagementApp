@@ -50,9 +50,59 @@ def create_teacher():
         obj[docente.email] = docente.cod
     return obj
 
+def creat_exam_and_teacher():
+    pietro_ferrara = Docenti(name='Pietro', surname='Ferrara', password='1')
+    alvis_spano = Docenti(name='Alvise', surname='Spano', password='1')
+    stefano_calzavara = Docenti(name='Stefano', surname='Calzavara', password='1')
+    alessandra_raffaeta = Docenti(name='Alessandra', surname='Raffaeta', password='1')
+    claudio_lucchese = Docenti(name='Claudio', surname='Lucchese', password='1')
+    andrea_marin = Docenti(name='Andrea', surname='Marin', password='1')
+    riccardo_focardi = Docenti(name='Riccardo', surname='Focardi', password='1')
+    simonetta_balsamo = Docenti(name='Simonetta', surname='Balsamo', password='1')
+    marcello_pelillo = Docenti(name='Marcello', surname='Pelillo', password='1')
+
+    PO = Esami(name='Programmazione ad Oggetti', cod='01QWERTY', cfu=12, anno=1)
+    add(PO)
+    pietro_ferrara.esami.append(PO)
+    add(pietro_ferrara)
+    BD = Esami(name='Basi di dati', cod='02QWERTY', cfu=12, anno=2)
+    add(BD)
+    stefano_calzavara.esami.append(BD)
+    add(stefano_calzavara)
+    SO = Esami(name='Sistemi operativi', cod='03QWERTY', cfu=12, anno=2)
+    add(SO)
+    simonetta_balsamo.esami.append(SO)
+    add(simonetta_balsamo)
+    PL = Esami(name='Programmazione e Laboratorio', cod='04QWERTY', cfu=12, anno=1)
+    add(PL)
+    andrea_marin.esami.append(PL)
+    add(andrea_marin)
+    ASD = Esami(name='Algoritmi e Strutture Dati', cod='05QWERTY', cfu=12, anno=2)
+    add(ASD)
+    alessandra_raffaeta.esami.append(ASD)
+    add(alessandra_raffaeta)
+    RC = Esami(name='Reti di Calcolatori', cod='06QWERTY', cfu=12, anno=2)
+    add(RC)
+    simonetta_balsamo.esami.append(RC)
+    add(simonetta_balsamo)
+    IAP = Esami(name='Introduzione alla programmazione', cod='07QWERTY', cfu=6, anno=1)
+    add(IAP)
+    claudio_lucchese.esami.append(IAP)
+    add(claudio_lucchese)
+
+    add(riccardo_focardi)
+    add(alvis_spano)
+    add(marcello_pelillo)
 
 
-def create_exam_and_test(dict_docenti):
+    obj = {}
+    for docente in Docenti.query.all():
+        obj[docente.email] = docente.cod
+    return obj
+
+
+
+def create_test(dict_docenti):
     ferrara_cod = dict_docenti['pietro.ferrara@unive.it']
     calzavara_cod = dict_docenti['stefano.calzavara@unive.it']
     focardi_cod = dict_docenti['riccardo.focardi@unive.it']
@@ -62,14 +112,6 @@ def create_exam_and_test(dict_docenti):
     balsamo_cod = dict_docenti['simonetta.balsamo@unive.it']
     pelillo_cod = dict_docenti['marcello.pelillo@unive.it']
     lucchese_cod = dict_docenti['claudio.lucchese@unive.it']
-
-    add(Esami(name='Programmazione ad Oggetti', cod='01QWERTY', cfu=6, anno=1, docente=ferrara_cod))  # creo un esame
-    add(Esami(name='Basi di dati', cod='02QWERTY', cfu=6, anno=2, docente=calzavara_cod)) # creo un esame
-    add(Esami(name='Sistemi operativi', cod='03QWERTY', cfu=12, anno=2, docente=focardi_cod)) # creo un esame
-    add(Esami(name='Programmazione e Laboratorio', cod='04QWERTY', cfu=12, anno=1, docente=marin_cod)) # creo un esame
-    add(Esami(name='Algoritmi e Strutture Dati', cod='05QWERTY', cfu=12, anno=2, docente=raffaeta_cod)) # creo un esame
-    add(Esami(name='Reti di Calcolatori', cod='06QWERTY', cfu=12, anno=2, docente=balsamo_cod)) # creo un esame
-    add(Esami(name='Introduzione alla programmazione', cod='07QWERTY', cfu=6, anno=1, docente=lucchese_cod))
 
     add(Prove(esame='01QWERTY', docente=ferrara_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='PO1',
               idoneità=False, Tipologia='Scritto', Bonus=0))
@@ -98,7 +140,7 @@ def create_exam_and_test(dict_docenti):
     add(Prove(esame='05QWERTY', docente=pelillo_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='ASD2',
                 idoneità=False, Tipologia='Scritto', Bonus=0))
 
-    add(Prove(esame='06QWERTY', docente=balsamo_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='RC1',
+    add(Prove(esame='06QWERTY', docente=balsamo_cod, dataScadenza='2024-01-01', peso=1.0, isValid=True, cod='RC1',
                 idoneità=False, Tipologia='Scritto', Bonus=0))
 
     add(Prove(esame='07QWERTY', docente=lucchese_cod, dataScadenza='2024-01-01', peso=1.0, isValid=True, cod='IAP',
@@ -167,19 +209,6 @@ def create_formalizzato():
     set_voto(892075, 18, '04QWERTY')
     set_voto(892075, 25, '05QWERTY')
 
-def create_formalizzato_2():
-    list_studenti = db.session.query(Studenti).filter().all()
-    studente = list_studenti[0]
-    set_voto_2(studente.matricola, 18, '01QWERTY')
-    set_voto_2(studente.matricola, 29, '02QWERTY')
-    set_voto_2(studente.matricola, 26, '03QWERTY')
-    studente = list_studenti[1]
-    set_voto_2(studente.matricola, 18, '01QWERTY')
-    set_voto_2(studente.matricola, 29, '02QWERTY')
-    set_voto_2(studente.matricola, 26, '03QWERTY')
-
-    set_voto_2(892075, 18, '04QWERTY')
-    set_voto_2(892075, 25, '05QWERTY')
 
 
 
@@ -187,9 +216,9 @@ def init_db():
     db.create_all()
     print("DB created")
 
-    list_docenti = create_teacher()
+    list_docenti = creat_exam_and_teacher()
     print("Docenti creati")
-    create_exam_and_test(list_docenti)
+    create_test(list_docenti)
     print("Esami  e prove creati")
     create_superamento()
     print("Superamenti creati")
