@@ -19,7 +19,7 @@
 
     <ul class="list-group">
         {% for docente in docenti %}
-            <li class="list-group-item">{{ docente.nome }}</li>
+            <li class="list-group-item">{{ docente.name  ~ ' ' ~  docente.surname }}</li>
         {% endfor %}
     </ul>
 
