@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import current_user, login_required
 
 from App.checkFunctions import checkDocente
-from App.db.models.database import Esami, Prove, db, Appelli
+from App.db.models.database import Esami, Prove, db, Appelli, Docenti
 from App.utils.utilies import get_appelli_docente, set_voto_prova
 
 teacher = Blueprint('teacher', __name__, url_prefix='/teacher', template_folder='templates')
@@ -26,10 +26,50 @@ def visualizzaCorsi():
     return render_template('teacher/corsi.html', user=current_user, esami=current_user.esami)
 
 
-@teacher.route('/visualizzaCorsi/creaProve', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/visualizzaDocenti/<codEsame>', methods=['GET'])
 @login_required
 @checkDocente
-def creaProve():
+def visualizzaDocenti(codEsame):
+    # Ottieni l'elenco dei docenti relativi all'esame con il codice fornito
+    print("sono in visualizzaDocenti")
+    print(codEsame)
+    docenti = Esami.query.get(codEsame).docenti
+    print(docenti)
+    # Passa l'elenco dei docenti al template HTML
+    return render_template('teacher/visualizzaDocenti.html', docenti=docenti, codEsame=codEsame)
+
+
+@teacher.route('/visualizzaCorsi/visualizzaDocenti/<codEsame>/ricercaDocente', methods=['GET'])
+@login_required
+@checkDocente
+def ricercaDocente(codEsame):
+    # Ottieni l'elenco dei docenti relativi all'esame con il codice fornito
+    print("sono in ricercaDocente")
+    docenti = Docenti.query.all()
+    esame = Esami.query.get(codEsame)
+    docenti_relativi_esame = esame.docenti
+
+    return render_template('teacher/ricercaDocente.html', docenti= set(set(docenti) - set(docenti_relativi_esame)), codEsame=codEsame)
+
+
+@teacher.route('/visualizzaCorsi/visualizzaDocenti/<codEsame>/ricercaDocente/aggiungiDocente/<codDocente>', methods=['POST', 'GET'])
+@login_required
+@checkDocente
+def aggiungiDocente(codEsame, codDocente):
+    # Ottieni l'elenco dei docenti relativi all'esame con il codice fornito
+    esame = Esami.query.get(codEsame)
+    docente = Docenti.query.get(codDocente)
+    esame.docenti.append(docente)
+    db.session.commit()
+    docenti = Esami.query.get(codEsame).docenti
+
+    return redirect(url_for('teacher.visualizzaDocenti', docenti = docenti, codEsame=codEsame))
+
+
+@teacher.route('/visualizzaCorsi/definisciProve', methods=['POST', 'GET'])
+@login_required
+@checkDocente
+def definisciProve():
     #la somma dei pesi delle prove relative a un corso deve fare 1.
     #se il professore non ha ancora creato prove per un corso, deve poterlo fare
     #se il professore ha già creato prove per un corso, deve poterle modificare
@@ -38,7 +78,7 @@ def creaProve():
     docente = current_user
     esame_id = request.form['esame']
 
-    return render_template('teacher/creaProve.html', user=current_user)
+    return render_template('teacher/definisciProve.html', user=current_user)
 
 
 @teacher.route('/visualizzaCorsi/eliminaProve', methods=['POST', 'GET'])
@@ -49,14 +89,12 @@ def eliminaProve():
     return redirect(url_for('teacher.visualizzaEsami'))
 
 
-
-@teacher.route('/visualizzaCorsi/visualizzaProve', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/visualizzaProve/<codEsame>', methods=['POST', 'GET'])
 @login_required
 @checkDocente
-def visualizzaProve():
-
-    esame_id = request.form['esame']
-    esame = Esami.query.get(esame_id)
+def visualizzaProve(codEsame):
+    #visualizza le prove relative ad un corso
+    esame = Esami.query.get(codEsame)
     prove = esame.prove
     print(prove)
     return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame,
@@ -67,10 +105,16 @@ def visualizzaProve():
 @login_required
 @checkDocente
 def definisciAppello():
-    #crea un appello per una prova
-    prova = request.form['prova']
-    return render_template('teacher/definisciAppello.html', user=current_user, prove = current_user.prove)
-
+    print("sono in definisciAppello")
+    isAbilitata = True #da implementare con il risulatato di una query
+    #prima bisogna controllare che una prova non sia già stata abilitata per un appello
+    #una prova è abilitata quando la somma dei pesi delle prove abilitate per un corso è 1
+    if isAbilitata:
+        # crea un appello per una prova
+        prova = request.form['prova']
+        return render_template('teacher/definisciAppello.html', user=current_user, prove=current_user.prove)
+    else:
+        return redirect(url_for('teacher.visualizzaProve'))
 
 
 @teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello/creaAppello', methods=['POST', 'GET'])
@@ -104,14 +148,14 @@ def visualizzaAppelli():
                            user=current_user)
 
 
-@teacher.route('/visualizzaAppelli/studentiIscritti', methods=['POST'])
+@teacher.route('/visualizzaAppelli/studentiIscritti/<codAppello>', methods=['GET'])
 @login_required
 @checkDocente
-def visualizzaStudentiIscritti():
-    codAppello = request.form['codAppello']
-    studenti = Appelli.query.get(codAppello).studenti
-    #gli studenti che hanno gia un voto devono comaparire con il voto settato.
-    return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
+def visualizzaStudentiIscritti(codAppello):
+        studenti = Appelli.query.get(codAppello).studenti
+        #gli studenti che hanno gia un voto devono comaparire con il voto settato.
+        print("sono in visualizzaStudentiIscritti")
+        return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
 
 
 @teacher.route('/visualizzaAppelli/studentiIscritti/setVoto', methods=['POST'])
@@ -125,7 +169,7 @@ def setVoto():
 
         set_voto_prova(studente_id, voto, codAppello)
 
-    return redirect(url_for('teacher.visualizzaStudentiIscritti'))
+    return redirect(url_for('teacher.visualizzaStudentiIscritti', codAppello=codAppello))
 
 
 @teacher.route('/visualizzaAppelli/eliminaAppello', methods=['POST'])
@@ -137,3 +181,14 @@ def eliminaAppello():
     db.session.delete(appello_to_delete)
     db.session.commit()
     return redirect(url_for('teacher.visualizzaAppelli'))
+
+
+@teacher.route('/visualizzaProveGestite')
+@login_required
+@checkDocente
+def visualizzaProveGestite():
+    print("sono in visualizzaProveGestite")
+    print(current_user.prove)
+    return render_template('teacher/visualizzaProveGestite.html', user=current_user, prove=current_user.prove,
+                           esami=current_user.esami)
+

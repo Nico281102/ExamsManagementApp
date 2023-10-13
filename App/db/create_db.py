@@ -1,7 +1,7 @@
 from flask_sqlalchemy.session import Session
 from sqlalchemy import text
 
-from App.utils.utilies import set_voto, set_voto_2
+from App.utils.utilies import set_voto
 from main import app
 from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamento, \
     formalizzazioneEsami
@@ -50,9 +50,72 @@ def create_teacher():
         obj[docente.email] = docente.cod
     return obj
 
+def creat_exam_and_teacher():
+    pietro_ferrara = Docenti(name='Pietro', surname='Ferrara', password='1')
+    alvise_spano = Docenti(name='Alvise', surname='Spano', password='1')
+    stefano_calzavara = Docenti(name='Stefano', surname='Calzavara', password='1')
+    alessandra_raffaeta = Docenti(name='Alessandra', surname='Raffaeta', password='1')
+    claudio_lucchese = Docenti(name='Claudio', surname='Lucchese', password='1')
+    andrea_marin = Docenti(name='Andrea', surname='Marin', password='1')
+    riccardo_focardi = Docenti(name='Riccardo', surname='Focardi', password='1')
+    simonetta_balsamo = Docenti(name='Simonetta', surname='Balsamo', password='1')
+    marcello_pelillo = Docenti(name='Marcello', surname='Pelillo', password='1')
+    simeoni_marta = Docenti(name='Marta', surname='Simeoni', password='1')
+    bergamasco_filippo = Docenti(name='Filippo', surname='Bergamasco', password='1')
 
 
-def create_exam_and_test(dict_docenti):
+    PO = Esami(name='Programmazione ad Oggetti', cod='01QWERTY', cfu=12, anno=2)
+    add(PO)
+    add(pietro_ferrara)
+    add(alvise_spano)
+    pietro_ferrara.esami.append(PO)
+    alvise_spano.esami.append(PO)
+    BD = Esami(name='Basi di dati', cod='02QWERTY', cfu=12, anno=2)
+    add(BD)
+    add(stefano_calzavara)
+    stefano_calzavara.esami.append(BD)
+    SO = Esami(name='Sistemi operativi', cod='03QWERTY', cfu=12, anno=2)
+    add(SO)
+    add(simonetta_balsamo)
+    add(riccardo_focardi)
+    simonetta_balsamo.esami.append(SO)
+    riccardo_focardi.esami.append(SO)
+    PL = Esami(name='Programmazione e Laboratorio', cod='04QWERTY', cfu=12, anno=1)
+    add(PL)
+    add(andrea_marin)
+    andrea_marin.esami.append(PL)
+    ASD = Esami(name='Algoritmi e Strutture Dati', cod='05QWERTY', cfu=12, anno=2)
+    add(ASD)
+    add(alessandra_raffaeta)
+    add(marcello_pelillo)
+    alessandra_raffaeta.esami.append(ASD)
+    marcello_pelillo.esami.append(ASD)
+    RC = Esami(name='Reti di Calcolatori', cod='06QWERTY', cfu=12, anno=3)
+    add(RC)
+    add(simonetta_balsamo)
+    simonetta_balsamo.esami.append(RC)
+    IAP = Esami(name='Introduzione alla programmazione', cod='07QWERTY', cfu=6, anno=1)
+    DWM = Esami(name='Data and Web Mining', cod='08QWERTY', cfu=6, anno=3)
+    add(IAP)
+    add(DWM)
+    add(claudio_lucchese)
+    claudio_lucchese.esami.append(IAP)
+    claudio_lucchese.esami.append(DWM)
+    ADE = Esami(name='Architettura degli Elaboratori', cod='09QWERTY', cfu=12, anno=1)
+    add(ADE)
+    add(simeoni_marta)
+    simeoni_marta.esami.append(ADE)
+
+    add(bergamasco_filippo)
+
+    obj = {}
+    for docente in Docenti.query.all():
+        obj[docente.email] = docente.cod
+    return obj
+
+
+
+def create_test(dict_docenti):
     ferrara_cod = dict_docenti['pietro.ferrara@unive.it']
     calzavara_cod = dict_docenti['stefano.calzavara@unive.it']
     focardi_cod = dict_docenti['riccardo.focardi@unive.it']
@@ -62,14 +125,6 @@ def create_exam_and_test(dict_docenti):
     balsamo_cod = dict_docenti['simonetta.balsamo@unive.it']
     pelillo_cod = dict_docenti['marcello.pelillo@unive.it']
     lucchese_cod = dict_docenti['claudio.lucchese@unive.it']
-
-    add(Esami(name='Programmazione ad Oggetti', cod='01QWERTY', cfu=6, anno=1, docente=ferrara_cod))  # creo un esame
-    add(Esami(name='Basi di dati', cod='02QWERTY', cfu=6, anno=2, docente=calzavara_cod)) # creo un esame
-    add(Esami(name='Sistemi operativi', cod='03QWERTY', cfu=12, anno=2, docente=focardi_cod)) # creo un esame
-    add(Esami(name='Programmazione e Laboratorio', cod='04QWERTY', cfu=12, anno=1, docente=marin_cod)) # creo un esame
-    add(Esami(name='Algoritmi e Strutture Dati', cod='05QWERTY', cfu=12, anno=2, docente=raffaeta_cod)) # creo un esame
-    add(Esami(name='Reti di Calcolatori', cod='06QWERTY', cfu=12, anno=2, docente=balsamo_cod)) # creo un esame
-    add(Esami(name='Introduzione alla programmazione', cod='07QWERTY', cfu=6, anno=1, docente=lucchese_cod))
 
     add(Prove(esame='01QWERTY', docente=ferrara_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='PO1',
               idoneità=False, Tipologia='Scritto', Bonus=0))
@@ -98,10 +153,10 @@ def create_exam_and_test(dict_docenti):
     add(Prove(esame='05QWERTY', docente=pelillo_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='ASD2',
                 idoneità=False, Tipologia='Scritto', Bonus=0))
 
-    add(Prove(esame='06QWERTY', docente=balsamo_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='RC1',
+    add(Prove(esame='06QWERTY', docente=balsamo_cod, dataScadenza='2024-01-01', peso=1.0, isValid=True, cod='RC1',
                 idoneità=False, Tipologia='Scritto', Bonus=0))
 
-    add(Prove(esame='07QWERTY', docente=lucchese_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='IAP',
+    add(Prove(esame='07QWERTY', docente=lucchese_cod, dataScadenza='2024-01-01', peso=1.0, isValid=True, cod='IAP',
                 idoneità=False, Tipologia='Scritto', Bonus=0))
 
 
@@ -167,19 +222,6 @@ def create_formalizzato():
     set_voto(892075, 18, '04QWERTY')
     set_voto(892075, 25, '05QWERTY')
 
-def create_formalizzato_2():
-    list_studenti = db.session.query(Studenti).filter().all()
-    studente = list_studenti[0]
-    set_voto_2(studente.matricola, 18, '01QWERTY')
-    set_voto_2(studente.matricola, 29, '02QWERTY')
-    set_voto_2(studente.matricola, 26, '03QWERTY')
-    studente = list_studenti[1]
-    set_voto_2(studente.matricola, 18, '01QWERTY')
-    set_voto_2(studente.matricola, 29, '02QWERTY')
-    set_voto_2(studente.matricola, 26, '03QWERTY')
-
-    set_voto_2(892075, 18, '04QWERTY')
-    set_voto_2(892075, 25, '05QWERTY')
 
 
 
@@ -187,10 +229,10 @@ def init_db():
     db.create_all()
     print("DB created")
 
-    list_docenti = create_teacher()
-    print("Docenti creati")
-    create_exam_and_test(list_docenti)
-    print("Esami  e prove creati")
+    list_docenti = creat_exam_and_teacher()
+    print("Docenti ed esami creati")
+    create_test(list_docenti)
+    print("prove create")
     create_superamento()
     print("Superamenti creati")
     creates_students()
@@ -201,6 +243,8 @@ def init_db():
     print("Iscrizioni create")
     create_piano_studi()
     print("Piano di studi creato")
+    create_formalizzato()
+    print("Formalizzato creato")
 
 
 def delete_db():

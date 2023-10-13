@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elenco Docenti</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- CSS aggiuntivo per personalizzazioni -->
+    <style>
+        /* Aggiungi eventuali stili personalizzati qui */
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Elenco Docenti</h1>
+
+    <ul class="list-group">
+        {% for docente in docenti %}
+            <li class="list-group-item">{{ docente.name  ~ ' ' ~  docente.surname }}</li>
+        {% endfor %}
+    </ul>
+
+    <div class="mt-4">
+        <!-- Pulsante per aggiungere un docente -->
+        <a href="{{ url_for('teacher.ricercaDocente', codEsame=codEsame) }}" class="btn btn-primary">Ricerca Docente</a>
+
+
+        <!-- Pulsante per tornare alla Pagina Principale -->
+        <a href="{{ url_for('teacher.teacherPage') }}" class="btn btn-secondary">Torna alla Pagina Principale</a>
+    </div>
+</div>
+
+<!-- Bootstrap JS e le sue dipendenze -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- JavaScript aggiuntivo per personalizzazioni -->
+<script>
+    // Esempio di JavaScript aggiuntivo
+    // Puoi aggiungere qui logiche interattive specifiche se necessario
+</script>
+
+</body>
+</html>

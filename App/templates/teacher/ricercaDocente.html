@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ricerca Docenti</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- CSS aggiuntivo per personalizzazioni -->
+    <style>
+        /* Aggiungi eventuali stili personalizzati qui */
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Ricerca Docenti</h1>
+
+    <!-- Barra di ricerca -->
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" id="searchInput" placeholder="Cerca un docente...">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" onclick="searchDocente()">Cerca</button>
+        </div>
+    </div>
+
+    <!-- Risultati della ricerca -->
+    <ul id="searchResults" class="list-group">
+        {% for docente in docenti %}
+            <li class="list-group-item">
+                <a href="#">{{ docente.name ~ ' ' ~  docente.surname }}</a>
+                <a href="{{ url_for('teacher.aggiungiDocente', codEsame=codEsame, codDocente=docente.cod) }}" class="btn btn-sm btn-success">Aggiungi</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="mt-4">
+        <!-- Pulsante per tornare alla Pagina Principale -->
+        <a href="{{ url_for('teacher.teacherPage') }}" class="btn btn-secondary">Torna alla Pagina Principale</a>
+    </div>
+</div>
+
+<!-- Bootstrap JS e le sue dipendenze -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- JavaScript aggiuntivo per personalizzazioni -->
+<script>
+    // Funzione per gestire la ricerca del docente
+    function searchDocente() {
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById('searchInput');
+        filter = input.value.toUpperCase();
+        ul = document.getElementById('searchResults');
+        li = ul.getElementsByTagName('li');
+
+        // Cicla attraverso tutti gli elementi della lista e nasconde quelli che non corrispondono alla ricerca
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName('a')[0];
+            txtValue = a.textContent || a.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = '';
+            } else {
+                li[i].style.display = 'none';
+            }
+        }
+    }
+
+    // Aggiungi un listener per rilevare i cambiamenti nell'input
+    document.getElementById('searchInput').addEventListener('input', function() {
+        searchDocente();
+    });
+</script>
+</body>
+</html>

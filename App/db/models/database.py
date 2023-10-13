@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from sqlalchemy import Sequence
 from sqlalchemy.types import TIMESTAMP
 from sqlalchemy.sql import func
+from sqlalchemy import select, and_
 
 db = SQLAlchemy()
 
@@ -29,6 +30,15 @@ formalizzazioneEsami = db.Table(
     db.Column('studente', db.Integer, db.ForeignKey('studenti.matricola'), primary_key=True),
     db.Column('esame', db.String(32), db.ForeignKey('esami.cod'), primary_key=True),
     db.Column('formalizzato', db.Boolean , default=False),
+    db.Column('created_at', TIMESTAMP, server_default=func.now()),
+    db.Column('updated_at', TIMESTAMP, server_default=func.now(), onupdate=func.now())
+)
+
+gestiscono = db.Table(
+    'gestiscono',
+    db.metadata,
+    db.Column('docente', db.Integer, db.ForeignKey('docenti.cod'), primary_key=True),
+    db.Column('esame', db.String(32), db.ForeignKey('esami.cod'), primary_key=True),
     db.Column('created_at', TIMESTAMP, server_default=func.now()),
     db.Column('updated_at', TIMESTAMP, server_default=func.now(), onupdate=func.now())
 )
@@ -64,6 +74,29 @@ class Studenti(db.Model, UserMixin):
     def generate_email(self):
         return f"{self.matricola}@stud.unive.it"
 
+
+    def getVotoProva(self, appello_cod):
+        # Query to get the voto directly from the iscrizioni table
+        query = select(iscrizioni.c.voto).where((iscrizioni.c.studente == self.matricola) & (iscrizioni.c.appello == appello_cod)
+        )
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+
+        res = result.fetchall()
+        if res:
+            return res[0][0]
+        else:
+            return None
+
+
+
+    def getVotoEsame(self, esame_cod):
+        for esame in self.esami:
+            if esame.cod == esame_cod:
+                #query per ottenere il voto dell'esame dalle prove
+                return 0
+        return None
+
     def __repr__(self):
         return '<Studente %r>' % self.name
 
@@ -78,8 +111,8 @@ class Docenti(db.Model, UserMixin):
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
-    esami = db.relationship('Esami', back_populates='docenti', lazy=True)
     prove = db.relationship('Prove', back_populates='docenti', lazy=True)
+    esami = db.relationship('Esami', secondary=gestiscono, back_populates='docenti', lazy=True)
 
     def __init__(self, name, surname, password):
         self.name = name
@@ -103,12 +136,11 @@ class Esami(db.Model):
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
     cfu = db.Column(db.Integer, nullable=False)
     anno = db.Column(db.Integer, nullable=False)
-    docente = db.Column(db.Integer, db.ForeignKey('docenti.cod'))
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     studenti = db.relationship('Studenti', secondary=formalizzazioneEsami, back_populates='esami', lazy=True)
-    docenti = db.relationship('Docenti', back_populates='esami', lazy=True)
+    docenti = db.relationship('Docenti', secondary=gestiscono, back_populates='esami', lazy=True)
     prove = db.relationship('Prove', back_populates='esami', lazy=True)
 
     def __repr__(self):
@@ -120,7 +152,7 @@ class Prove(db.Model):
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
     dataScadenza = db.Column(TIMESTAMP, nullable=False)
     idoneità = db.Column(db.Boolean, nullable=False)
-    peso = db.Column(db.Integer, nullable=False)
+    peso = db.Column(db.Float, nullable=False)
     isValid = db.Column(db.Boolean, nullable=False)
     Tipologia = db.Column(db.Enum('Orale', 'Scritto', 'Progetto', name='Tipologia'), nullable=False)
     Bonus = db.Column(db.Integer, nullable=False)
