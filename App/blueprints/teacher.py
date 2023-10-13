@@ -66,10 +66,10 @@ def aggiungiDocente(codEsame, codDocente):
     return redirect(url_for('teacher.visualizzaDocenti', docenti = docenti, codEsame=codEsame))
 
 
-@teacher.route('/visualizzaCorsi/creaProve', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/definisciProve', methods=['POST', 'GET'])
 @login_required
 @checkDocente
-def creaProve():
+def definisciProve():
     #la somma dei pesi delle prove relative a un corso deve fare 1.
     #se il professore non ha ancora creato prove per un corso, deve poterlo fare
     #se il professore ha già creato prove per un corso, deve poterle modificare
@@ -78,7 +78,7 @@ def creaProve():
     docente = current_user
     esame_id = request.form['esame']
 
-    return render_template('teacher/creaProve.html', user=current_user)
+    return render_template('teacher/definisciProve.html', user=current_user)
 
 
 @teacher.route('/visualizzaCorsi/eliminaProve', methods=['POST', 'GET'])
