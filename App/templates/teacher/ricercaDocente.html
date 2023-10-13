@@ -28,7 +28,10 @@
     <!-- Risultati della ricerca -->
     <ul id="searchResults" class="list-group">
         {% for docente in docenti %}
-            <li class="list-group-item"><a href="#">{{ docente }}</a></li>
+            <li class="list-group-item">
+                <a href="#">{{ docente.name ~ ' ' ~  docente.surname }}</a>
+                <a href="{{ url_for('teacher.aggiungiDocente', codEsame=codEsame, codDocente=docente.cod) }}" class="btn btn-sm btn-success">Aggiungi</a>
+            </li>
         {% endfor %}
     </ul>
 
@@ -64,7 +67,11 @@
             }
         }
     }
-</script>
 
+    // Aggiungi un listener per rilevare i cambiamenti nell'input
+    document.getElementById('searchInput').addEventListener('input', function() {
+        searchDocente();
+    });
+</script>
 </body>
 </html>
