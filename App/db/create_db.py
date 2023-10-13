@@ -101,7 +101,7 @@ def create_exam_and_test(dict_docenti):
     add(Prove(esame='06QWERTY', docente=balsamo_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='RC1',
                 idoneità=False, Tipologia='Scritto', Bonus=0))
 
-    add(Prove(esame='07QWERTY', docente=lucchese_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='IAP',
+    add(Prove(esame='07QWERTY', docente=lucchese_cod, dataScadenza='2024-01-01', peso=1.0, isValid=True, cod='IAP',
                 idoneità=False, Tipologia='Scritto', Bonus=0))
 
 
@@ -201,6 +201,8 @@ def init_db():
     print("Iscrizioni create")
     create_piano_studi()
     print("Piano di studi creato")
+    create_formalizzato()
+    print("Formalizzato creato")
 
 
 def delete_db():

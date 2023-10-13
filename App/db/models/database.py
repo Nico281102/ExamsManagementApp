@@ -34,6 +34,15 @@ formalizzazioneEsami = db.Table(
     db.Column('updated_at', TIMESTAMP, server_default=func.now(), onupdate=func.now())
 )
 
+gestiscono = db.Table(
+    'gestiscono',
+    db.metadata,
+    db.Column('docente', db.Integer, db.ForeignKey('docenti.cod'), primary_key=True),
+    db.Column('esame', db.String(32), db.ForeignKey('esami.cod'), primary_key=True),
+    db.Column('created_at', TIMESTAMP, server_default=func.now()),
+    db.Column('updated_at', TIMESTAMP, server_default=func.now(), onupdate=func.now())
+)
+
 # Ora `iscrizioni` può essere utilizzata per interagire direttamente con la tabella nel database.
 
 class Studenti(db.Model, UserMixin):
@@ -102,8 +111,8 @@ class Docenti(db.Model, UserMixin):
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
-    esami = db.relationship('Esami', back_populates='docenti', lazy=True)
     prove = db.relationship('Prove', back_populates='docenti', lazy=True)
+    esami = db.relationship('Esami', secondary=gestiscono, back_populates='docenti', lazy=True)
 
     def __init__(self, name, surname, password):
         self.name = name
@@ -132,7 +141,7 @@ class Esami(db.Model):
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     studenti = db.relationship('Studenti', secondary=formalizzazioneEsami, back_populates='esami', lazy=True)
-    docenti = db.relationship('Docenti', back_populates='esami', lazy=True)
+    docenti = db.relationship('Docenti', secondary=gestiscono, back_populates='esami', lazy=True)
     prove = db.relationship('Prove', back_populates='esami', lazy=True)
 
     def __repr__(self):
