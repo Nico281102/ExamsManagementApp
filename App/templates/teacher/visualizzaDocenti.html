@@ -24,7 +24,12 @@
     </ul>
 
     <div class="mt-4">
-        <a href="{{ url_for('home') }}" class="btn btn-secondary">Torna alla Home</a>
+        <!-- Pulsante per aggiungere un docente -->
+        <a href="{{ url_for('teacher.ricercaDocente', codEsame=codEsame) }}" class="btn btn-primary">Ricerca Docente</a>
+
+
+        <!-- Pulsante per tornare alla Pagina Principale -->
+        <a href="{{ url_for('teacher.teacherPage') }}" class="btn btn-secondary">Torna alla Pagina Principale</a>
     </div>
 </div>
 
