@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import current_user, login_required
 
 from App.checkFunctions import checkDocente
-from App.db.models.database import Esami, Prove, db, Appelli
+from App.db.models.database import Esami, Prove, db, Appelli, Docenti
 from App.utils.utilies import get_appelli_docente, set_voto_prova
 
 teacher = Blueprint('teacher', __name__, url_prefix='/teacher', template_folder='templates')
@@ -26,6 +26,44 @@ def visualizzaCorsi():
     return render_template('teacher/corsi.html', user=current_user, esami=current_user.esami)
 
 
+@teacher.route('/visualizzaCorsi/visualizzaDocenti/<codEsame>', methods=['GET'])
+@login_required
+@checkDocente
+def visualizzaDocenti(codEsame):
+    # Ottieni l'elenco dei docenti relativi all'esame con il codice fornito
+    print("sono in visualizzaDocenti")
+    print(codEsame)
+    docenti = Esami.query.get(codEsame).docenti
+    print(docenti)
+    # Passa l'elenco dei docenti al template HTML
+    return render_template('teacher/visualizzaDocenti.html', docenti=docenti, codEsame=codEsame)
+
+
+@teacher.route('/visualizzaCorsi/visualizzaDocenti/<codEsame>/ricercaDocente', methods=['GET'])
+@login_required
+@checkDocente
+def ricercaDocente(codEsame):
+    # Ottieni l'elenco dei docenti relativi all'esame con il codice fornito
+    print("sono in ricercaDocente")
+    docenti = Docenti.query.all()
+    esame = Esami.query.get(codEsame)
+    docenti_relativi_esame = esame.docenti
+
+    return render_template('teacher/ricercaDocente.html', docenti= set(set(docenti) - set(docenti_relativi_esame)), codEsame=codEsame)
+
+
+@teacher.route('/visualizzaCorsi/visualizzaDocenti/<codEsame>/ricercaDocente/aggiungiDocente/<codDocente>', methods=['POST', 'GET'])
+@login_required
+@checkDocente
+def aggiungiDocente(codEsame, codDocente):
+    # Ottieni l'elenco dei docenti relativi all'esame con il codice fornito
+    esame = Esami.query.get(codEsame)
+    docente = Docenti.query.get(codDocente)
+    esame.docenti.append(docente)
+    db.session.commit()
+    docenti = Esami.query.get(codEsame).docenti
+
+    return redirect(url_for('teacher.visualizzaDocenti', docenti = docenti, codEsame=codEsame))
 
 
 @teacher.route('/visualizzaCorsi/creaProve', methods=['POST', 'GET'])
@@ -51,7 +89,6 @@ def eliminaProve():
     return redirect(url_for('teacher.visualizzaEsami'))
 
 
-
 @teacher.route('/visualizzaCorsi/visualizzaProve/<codEsame>', methods=['POST', 'GET'])
 @login_required
 @checkDocente
@@ -68,10 +105,16 @@ def visualizzaProve(codEsame):
 @login_required
 @checkDocente
 def definisciAppello():
-    #crea un appello per una prova
-    prova = request.form['prova']
-    return render_template('teacher/definisciAppello.html', user=current_user, prove = current_user.prove)
-
+    print("sono in definisciAppello")
+    isAbilitata = True #da implementare con il risulatato di una query
+    #prima bisogna controllare che una prova non sia già stata abilitata per un appello
+    #una prova è abilitata quando la somma dei pesi delle prove abilitate per un corso è 1
+    if isAbilitata:
+        # crea un appello per una prova
+        prova = request.form['prova']
+        return render_template('teacher/definisciAppello.html', user=current_user, prove=current_user.prove)
+    else:
+        return redirect(url_for('teacher.visualizzaProve'))
 
 
 @teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello/creaAppello', methods=['POST', 'GET'])
@@ -114,6 +157,7 @@ def visualizzaStudentiIscritti(codAppello):
         print("sono in visualizzaStudentiIscritti")
         return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
 
+
 @teacher.route('/visualizzaAppelli/studentiIscritti/setVoto', methods=['POST'])
 @login_required
 @checkDocente
@@ -148,13 +192,3 @@ def visualizzaProveGestite():
     return render_template('teacher/visualizzaProveGestite.html', user=current_user, prove=current_user.prove,
                            esami=current_user.esami)
 
-
-@teacher.route('/visualizzaDocenti/<codEsame>')
-@login_required
-@checkDocente
-def visualizzaDocenti(codEsame):
-    # Ottieni l'elenco dei docenti relativi all'esame con il codice fornito
-    docenti = Esami.query.get(codEsame).docenti
-    print(docenti)
-    # Passa l'elenco dei docenti al template HTML
-    return render_template('teacher/visualizzaDocenti.html', docenti=docenti)
