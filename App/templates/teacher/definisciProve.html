@@ -33,7 +33,11 @@
 
             <div class="form-group">
                 <label for="richiede_superamento1">Richiede Superamento:</label>
-                <input type="text" class="form-control" id="richiede_superamento1" name="richiede_superamento[]" required>
+                <select class="form-control" id="richiede_superamento1" name="richiede_superamento[]" required>
+                    {% for prova in prove %}
+                        <option value="{{ prova.cod }}">{{ prova.cod }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div class="form-group">
