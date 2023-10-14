@@ -32,10 +32,9 @@
             <td>{{ prova.peso }}</td>
             <td>
                 {% if prova in lista_prove_abilitate %}
-                    <form method="POST" action="{{ url_for('teacher.definisciAppello') }}">
-                        <input type="hidden" name="prova" value="{{ prova.cod }}">
+                    <a  href="{{ url_for('teacher.definisciAppello', codProva = prova.cod) }}">
                         <button type="submit" class="btn btn-primary">Crea Appello</button>
-                    </form>
+                    </a>
                 {% else %}
                     <button type="button" class="btn btn-secondary" disabled>Crea Appello</button>
                 {% endif %}
