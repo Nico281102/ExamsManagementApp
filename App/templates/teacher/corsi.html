@@ -20,8 +20,6 @@
                 <th>Prove</th>
                 <th>Visualizza dettagli prove</th>
                 <th>Elenco Docenti</th> <!-- Nuova colonna -->
-                <th>Elimina e Crea nuovo set di Prove</th>
-                <th>Elimina set di Prove</th>
             </tr>
         </thead>
         <tbody>
@@ -43,18 +41,7 @@
                             <button type="button" class="btn btn-info">Visualizza Docenti</button>
                         </a>
                     </td>
-                    <td>
-                        <form method="POST" action="{{url_for('teacher.definisciProve')}}">
-                            <input type="hidden" name="esame" value="{{ esame.cod }}">
-                            <button type="submit" class="btn btn-primary">Elimina e Crea</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form method="POST" action="{{url_for('teacher.eliminaProve')}}">
-                            <input type="hidden" name="esame" value="{{ esame.cod }}">
-                            <button type="submit" class="btn btn-danger">Elimina</button>
-                        </form>
-                    </td>
+
                 </tr>
             {% endfor %}
         </tbody>
