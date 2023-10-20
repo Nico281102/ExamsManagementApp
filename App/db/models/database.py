@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from sqlalchemy import Sequence
@@ -18,6 +20,7 @@ iscrizioni = db.Table(
     db.Column('studente', db.Integer, db.ForeignKey('studenti.matricola'), primary_key=True),
     db.Column('appello', db.String(32), db.ForeignKey('appelli.codAppello'), primary_key=True),
     db.Column('isValid', db.Boolean, nullable=False, default=False),
+    db.Column('DataScadenza', TIMESTAMP, nullable = False, default = func.now() + timedelta(12*365/12)), #dura 12 mesi default
     db.Column('created_at', TIMESTAMP, server_default=func.now()),
     db.Column('updated_at', TIMESTAMP, server_default=func.now(), onupdate=func.now())
 )
@@ -150,12 +153,10 @@ class Esami(db.Model):
 class Prove(db.Model):
     __tablename__ = 'prove'
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
-    dataScadenza = db.Column(TIMESTAMP, nullable=False)
-    idoneità = db.Column(db.Boolean, nullable=False)
+    idoneità = db.Column(db.Boolean, nullable=False, default=False)
     peso = db.Column(db.Float, nullable=False)
-    isValid = db.Column(db.Boolean, nullable=False)
     Tipologia = db.Column(db.Enum('Orale', 'Scritto', 'Progetto', name='Tipologia'), nullable=False)
-    Bonus = db.Column(db.Integer, nullable=False)
+    Bonus = db.Column(db.Integer, nullable=False, default=0)
     esame = db.Column(db.String(32), db.ForeignKey('esami.cod'))
     docente = db.Column(db.Integer, db.ForeignKey('docenti.cod'))
     created_at = db.Column(TIMESTAMP, server_default=func.now())
