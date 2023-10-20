@@ -130,6 +130,53 @@ class Studenti(db.Model, UserMixin):
         print(esami)
         return esami
 
+    def getEsamiFormalizzati(self):
+#Query to get the esami formalizzati
+        #Invarianti:
+        #   - Gli esami formalizzati sono quelli che sono stati passati e che sono stati formalizzati
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.esame
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) & (
+                        formalizzazioneEsami.c.formalizzato == True) &
+                        (formalizzazioneEsami.c.voto != None))
+        )
+
+        # Execute the query
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+
+        res = result.fetchall()
+
+        esami = []
+        for i in range(len(res)):
+            esami.append(Esami.query.get(res[i][0]))
+
+        return esami
+
+    def getMean(self):
+        #Query to get the mean of the voti
+        #Invarianti:
+        #   - La media è calcolata in base ai voti formalizzati
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.voto
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) & (
+                        formalizzazioneEsami.c.formalizzato == True) &
+                        (formalizzazioneEsami.c.voto != None))
+        )
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+        res = result.fetchall()
+        if res:
+            return sum(res) / len(res)
+        else:
+            return None
+
     def getVotoProva(self, appello_cod):
         # Query to get the voto directly from the iscrizioni table
         query = select(iscrizioni.c.voto).where((iscrizioni.c.studente == self.matricola) & (iscrizioni.c.appello == appello_cod)
