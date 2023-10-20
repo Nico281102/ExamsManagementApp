@@ -77,6 +77,58 @@ class Studenti(db.Model, UserMixin):
     def generate_email(self):
         return f"{self.matricola}@stud.unive.it"
 
+    def getAppelliDisponibili(self):
+        #Query to get the appelli disponibili
+        #Invarianti:
+        #   - Gli appelli disponibili sono quelli che non sono scaduti e che non sono già stati prenotati
+        appelli = Appelli.query.all()
+        print("tutti gli appelli")
+        print(appelli)
+        appelli_disponibili = []
+
+       # Ottenere gli esami passati dallo studente
+        esami_non_formalizzati = self.getEsamiNonFormalizzati() # Perchè potenzialmente posso scegliere di rifare prove relative ad esami passati
+        prove_studente = []  # lista di prove di esami non passati
+        for esame in esami_non_formalizzati:
+            prove_studente.append(esame.prove)  # aggiorno la lista di prove di esami non passati (è list di list)
+        aux = []  # lista a una sola dimensione
+        for i in prove_studente:  # trasformo la lista di liste in una lista a una sola dimensione
+            for j in i:
+                aux.append(j)
+        prove_studente = aux  # lista di prove di esami non passati
+
+        for appello in appelli:  # per ogni appello
+            if appello.prove in prove_studente and appello not in self.appelli:  # se l'appello ha una prova che lo studente non ha passato e non è già prenotato
+                appelli_disponibili.append(appello)  # aggiungo l'appello alla lista di appelli disponibili
+        return appelli_disponibili
+
+    def getEsamiNonFormalizzati(self):
+        #Query to get the esami non formalizzati
+        #Invarianti:
+        #   - Gli esami non formalizzati sono quelli che sono stati passati e che non sono stati ancora formalizzati
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.esame
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) & (
+                        formalizzazioneEsami.c.formalizzato == False) &
+                        (formalizzazioneEsami.c.voto != None))
+        )
+
+        # Execute the query
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+
+        res = result.fetchall()
+
+        esami = []
+        for i in range(len(res)):
+            esami.append(Esami.query.get(res[i][0]))
+
+        print(res)
+        print(esami)
+        return esami
 
     def getVotoProva(self, appello_cod):
         # Query to get the voto directly from the iscrizioni table

@@ -5,7 +5,6 @@ from flask_login import login_required, current_user
 
 from App.checkFunctions import checkStudente
 from App.db.models.database import Appelli, db, formalizzazioneEsami
-from App.utils.utilies import appelli_disponibili, get_esami_nonFormalizzati
 
 student = Blueprint('student', __name__, url_prefix='/student', template_folder='templates')
 
@@ -22,8 +21,10 @@ def studentPage():
 @login_required
 @checkStudente
 def appelliDisponibili():
+    #rendere disponibili gli appelli per lo studente che non ha ancora prenotato un appello
+    #ma ha la possibilità di iscriversi ad un altro appello relativo ad una prova che ha gia passato, ma con voto non formalizzato
     print("sono in prenotaAppello")
-    appelli_disp = appelli_disponibili(current_user)
+    appelli_disp = current_user.getAppelliDisponibili()
     print(appelli_disp)
     return render_template('student/appelliDisponibili.html', appelli_disponibili=appelli_disp)
 
