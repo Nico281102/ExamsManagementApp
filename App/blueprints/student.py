@@ -2,9 +2,11 @@ from copy import copy
 
 from flask import Blueprint, render_template, request, url_for, redirect, json
 from flask_login import login_required, current_user
+from sqlalchemy import select, and_
+from sqlalchemy.orm.sync import update
 
 from App.checkFunctions import checkStudente
-from App.db.models.database import Appelli, db, formalizzazioneEsami
+from App.db.models.database import Appelli, db, formalizzazioneEsami, iscrizioni
 
 student = Blueprint('student', __name__, url_prefix='/student', template_folder='templates')
 
@@ -29,17 +31,42 @@ def appelliDisponibili():
     return render_template('student/appelliDisponibili.html', appelli_disponibili=appelli_disp)
 
 
+
 @student.route('/appelliDisponibili/prenota', methods=['POST', 'GET'])
 @login_required
 @checkStudente
 def prenotaAppello():
     print("sono in prenotaAppello")
-    appello_id = request.form['appello']
-    appello = Appelli.query.get(appello_id)
+    # Assuming you have some logic to retrieve the selected exam appointment
+    selected_appointment_id = request.form['appello']
+    appello = Appelli.query.get(selected_appointment_id)
     current_user.appelli.append(appello)
+
+    # Get the prova (exam) associated with the selected appointment
+    selected_appointment = Appelli.query.get(selected_appointment_id)
+    selected_prova = selected_appointment.prova
+
+    # Use SQLAlchemy's update method on the Iscrizioni table to set 'isValid' to False for existing appointments
+    stmt = iscrizioni.update().where(
+        and_(
+            iscrizioni.c.studente == current_user.matricola,
+            iscrizioni.c.appello != selected_appointment_id,
+            iscrizioni.c.appello.in_(
+                select(Appelli.codAppello).where(Appelli.prova == selected_prova)
+            )
+        )
+    ).values(isValid=False)
+
+
+
+    with db.engine.begin() as connection:
+        connection.execute(stmt)
+
+    # Commit the changes to the database
     db.session.commit()
 
     return redirect(url_for('student.appelliDisponibili'))
+
 
 
 @student.route('/prenotazioni')
@@ -85,9 +112,8 @@ def pianoDiStudi():
 @checkStudente
 def esiti():
     #renderizza la pagina di gestione della formalizzazione
-    esami_non_form = get_esami_nonFormalizzati(current_user.matricola)
-    print(esami_non_form)
-    return render_template('student/esiti.html', esami=esami_non_form)
+    esami_non_form = current_user.getEsamiNonFormalizzati()
+    return render_template('student/esiti.html', esami=esami_non_form, student = current_user)
 
 
 @student.route('/bachecaEsiti/formalizza', methods=['POST'])
