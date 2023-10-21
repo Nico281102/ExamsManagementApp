@@ -317,7 +317,7 @@ class Esami(db.Model):
     prove = db.relationship('Prove', back_populates='esami', lazy=True)
 
     def __repr__(self):
-        return '<Esame %r>' % self.name
+        return '[Esame: %r]' % self.name
 
     def getVoto(self, matricola):
 
@@ -346,7 +346,7 @@ class Prove(db.Model):
                                             foreign_keys='Superamento.provaSecondaria')
 
     def __repr__(self):
-        return '<Prova %r>' % self.cod
+        return '[Prova: %r]' % self.cod
 
 
 class Superamento(db.Model):
