@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
@@ -81,31 +81,22 @@ class Studenti(db.Model, UserMixin):
         #Query to get the appelli disponibili
         #Invarianti:
         #   - Gli appelli disponibili sono quelli che non sono scaduti e che non sono già stati prenotati
+
         appelli = Appelli.query.all()
-        print("tutti gli appelli")
-        print(appelli)
         appelli_disponibili = []
 
-       # Ottenere gli esami passati dallo studente
+            # Get the list of tests the student has not passed
         esami_non_formalizzati = self.getEsamiNonFormalizzati() # Perchè potenzialmente posso scegliere di rifare prove relative ad esami passati
-        prove_studente = []  # lista di prove di esami non passati
-        for esame in esami_non_formalizzati:
-            prove_studente.append(esame.prove)  # aggiorno la lista di prove di esami non passati (è list di list)
-        aux = []  # lista a una sola dimensione
-        for i in prove_studente:  # trasformo la lista di liste in una lista a una sola dimensione
-            for j in i:
-                aux.append(j)
-        prove_studente = aux  # lista di prove di esami non passati
+        prove_studente = [prova for esame in esami_non_formalizzati for prova in esame.prove]
 
-        for appello in appelli:  # per ogni appello
-            if appello.prove in prove_studente and appello not in self.appelli:  # se l'appello ha una prova che lo studente non ha passato e non è già prenotato
-                appelli_disponibili.append(appello)  # aggiungo l'appello alla lista di appelli disponibili
+        for appello in appelli:
+            if appello.prove in prove_studente and appello not in self.appelli:
+                appelli_disponibili.append(appello)
 
-        for appello in appelli_disponibili:
-            if appello.data < func.now(): #se l'appello è scaduto lo rimuovo
-                appelli_disponibili.remove(appello)
+        current_time = datetime.now()
+        appelli_disponibili_filtered = [appello for appello in appelli_disponibili if appello.data > current_time]
 
-        return appelli_disponibili
+        return appelli_disponibili_filtered
 
     def getEsamiNonFormalizzati(self):
         #Query to get the esami non formalizzati
@@ -251,7 +242,7 @@ class Studenti(db.Model, UserMixin):
                 out.append(appello)
             return out
         else:
-            return None
+            return []
 
     def computePassed(self):
         #da finire
