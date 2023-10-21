@@ -20,12 +20,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% for esame in esami %}
+                {% for esame in studente.esami %}
                     <tr>
                         <td>{{ esame.name }}</td>
+                        <td>{{ esame.getVoto(studente.matricola) }}</td>
                         <td>{{ esame.cfu }}</td>
                         <td>{{ esame.anno }}</td>
-                        <td>{{ esame.voto }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
