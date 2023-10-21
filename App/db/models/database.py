@@ -19,7 +19,7 @@ iscrizioni = db.Table(
     db.Column('voto', db.Integer, nullable=True),
     db.Column('studente', db.Integer, db.ForeignKey('studenti.matricola'), primary_key=True),
     db.Column('appello', db.String(32), db.ForeignKey('appelli.codAppello'), primary_key=True),
-    db.Column('isValid', db.Boolean, nullable=False, default=False),
+    db.Column('isValid', db.Boolean, nullable=False, default=True),
     db.Column('DataScadenza', TIMESTAMP, nullable = False, default = func.now() + timedelta(12*365/12)), #dura 12 mesi default
     db.Column('created_at', TIMESTAMP, server_default=func.now()),
     db.Column('updated_at', TIMESTAMP, server_default=func.now(), onupdate=func.now())
@@ -100,6 +100,11 @@ class Studenti(db.Model, UserMixin):
         for appello in appelli:  # per ogni appello
             if appello.prove in prove_studente and appello not in self.appelli:  # se l'appello ha una prova che lo studente non ha passato e non è già prenotato
                 appelli_disponibili.append(appello)  # aggiungo l'appello alla lista di appelli disponibili
+
+        for appello in appelli_disponibili:
+            if appello.data < func.now(): #se l'appello è scaduto lo rimuovo
+                appelli_disponibili.remove(appello)
+
         return appelli_disponibili
 
     def getEsamiNonFormalizzati(self):
@@ -113,6 +118,7 @@ class Studenti(db.Model, UserMixin):
             )
             .where((formalizzazioneEsami.c.studente == self.matricola) & (
                         formalizzazioneEsami.c.formalizzato == False) &
+                   (formalizzazioneEsami.c.passato == True) &
                         (formalizzazioneEsami.c.voto != None))
         )
 
@@ -172,14 +178,47 @@ class Studenti(db.Model, UserMixin):
         with db.engine.connect() as connection:
             result = connection.execute(query)
         res = result.fetchall()
+
+        for i in range(len(res)): #make the list of tuple a list of int
+            res[i] = res[i][0]
+
         if res:
             return sum(res) / len(res)
         else:
             return None
 
+    def getVotoEsame(self, codEsame):
+        #Query to get the voto of the esame
+        #Invarianti:
+        #   - Il voto è calcolato in base ai voti formalizzati
+        #   - l'esame può non essere formalizzato
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.voto
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) &
+                        (formalizzazioneEsami.c.voto != None) &
+                        (formalizzazioneEsami.c.esame == codEsame))
+        )
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+        res = result.fetchall()
+        if res:
+            print(res[0][0])
+            return res[0][0]
+        else:
+            return None
+
     def getVotoProva(self, appello_cod):
         # Query to get the voto directly from the iscrizioni table
-        query = select(iscrizioni.c.voto).where((iscrizioni.c.studente == self.matricola) & (iscrizioni.c.appello == appello_cod)
+        # Invarianti:
+        # - Prendo il voto dell'appello valido, assumendo che gli appelli passati siano stati invalidati durante la nuova iscrizione
+        query = select(
+            iscrizioni.c.voto).where(
+            (iscrizioni.c.studente == self.matricola) &
+            (iscrizioni.c.appello == appello_cod) &
+            (iscrizioni.c.isValid == True)
         )
         with db.engine.connect() as connection:
             result = connection.execute(query)
@@ -190,14 +229,46 @@ class Studenti(db.Model, UserMixin):
         else:
             return None
 
+    def getAppelliNonValidi(self):
+        # Query to get the appelli non validi
+        # Invarianti:
+        # - Prendo gli appelli non validi, assumendo che gli appelli passati siano stati invalidati durante la nuova iscrizione
+        query = select(
+            iscrizioni.c.appello).where(
+            (iscrizioni.c.studente == self.matricola) &
+            (iscrizioni.c.isValid == False)
+        )
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
 
+        res = result.fetchall()
+        out = []
+        if res:
+            for i in range(len(res)):
+                res[i] = res[i][0]
+            for codAppello in res:
+                appello = Appelli.query.get(codAppello)
+                out.append(appello)
+            return out
+        else:
+            return None
 
-    def getVotoEsame(self, esame_cod):
-        for esame in self.esami:
-            if esame.cod == esame_cod:
-                #query per ottenere il voto dell'esame dalle prove
-                return 0
+    def computePassed(self):
+        #da finire
+        #Query to set passato
+        #Considero ogni esame nel piano di studi dello studente
+        #per ogni esame mi prendo l'insieme delle prove che lo compone che non sono Bonus
+        #per ogni prova controllo se esiste un iscrizione VALIDA e con voto, relativa allo studente
+        #settare il voto qui(?)
+        passato = True
+        insieme_iscrizioni_valide = []
+        esami = self.esami
+        for esame in esami:
+            for prova in esame.prove and prova.bonus == 0:
+                passato = prova in insieme_iscrizioni_valide and passato
+            #metto passato all'esame nel caso passato sia true.
         return None
+
 
     def __repr__(self):
         return '<Studente %r>' % self.name
@@ -247,6 +318,12 @@ class Esami(db.Model):
 
     def __repr__(self):
         return '<Esame %r>' % self.name
+
+    def getVoto(self, matricola):
+
+        studente = Studenti.query.get(matricola)
+        return studente.getVotoEsame(self.cod)
+
 
 
 class Prove(db.Model):
