@@ -74,9 +74,8 @@ def prenotaAppello():
 @checkStudente
 def prenotazioni():
     print("sono in prenotazioni")
-    prenotazioni = current_user.appelli
     print(prenotazioni)
-    return render_template('student/prenotazioni.html', prenotazioni=prenotazioni)
+    return render_template('student/prenotazioni.html', studente=current_user)
 
 @student.route('/prenotazioni/eliminaPrenotazione', methods=['POST', 'GET'])
 @login_required
@@ -104,7 +103,7 @@ def pianoDiStudi():
     print(current_user.esami)
     #for each element in piano di studi, se formalizzato aggiungi il voto
 
-    return render_template('student/pianoDiStudi.html', esami=current_user.esami)
+    return render_template('student/pianoDiStudi.html', studente=current_user)
 
 
 @student.route('/bachecaEsiti')

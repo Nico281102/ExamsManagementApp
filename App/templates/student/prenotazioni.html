@@ -8,9 +8,9 @@
     <title>Prenotazioni effettuate dallo studente</title>
 </head>
 <body>
-                    <a href="{{ url_for('student.studentPage') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Torna Indietro
-            </a>
+    <a href="{{ url_for('student.studentPage') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Torna Indietro
+    </a>
     <div class="container mt-5">
         <h1>Prenotazioni effettuate dallo studente</h1>
         <table class="table">
@@ -20,11 +20,14 @@
                     <th scope="col">Luogo</th>
                     <th scope="col">Prova</th>
                     <th scope="col">Corso Relativo</th>
-                    <th scope="col">Prenota</th>
+                    <th scope="col">Elimina</th>
                 </tr>
             </thead>
             <tbody>
-                {% for appello in prenotazioni %}
+                <tr>
+                    <td colspan="5"><strong>Appelli non più validi</strong></td>
+                </tr>
+                {% for appello in studente.getAppelliNonValidi() %}
                     <tr>
                         <td>{{ appello.data }}</td>
                         <td>{{ appello.luogo }}</td>
@@ -33,10 +36,31 @@
                         <td>
                             <form method="POST" action="{{url_for('student.eliminaPrenotazioneAppello')}}">
                                 <input type="hidden" name="appello" value="{{ appello.codAppello }}">
-                                <button type="submit" class="btn btn-danger">Elimina</button>
+                                <button type="submit" class="btn btn-danger" disabled>Elimina</button>
                             </form>
                         </td>
                     </tr>
+                {% endfor %}
+            </tbody>
+            <tbody>
+                <tr>
+                    <td colspan="5"><strong>Appelli a cui sei iscritto</strong></td>
+                </tr>
+                {% for appello in studente.appelli %}
+                    {% if appello not in studente.getAppelliNonValidi() %}
+                        <tr>
+                            <td>{{ appello.data }}</td>
+                            <td>{{ appello.luogo }}</td>
+                            <td>{{ appello.prove }}</td>
+                            <td>{{ appello.prove.esami }}</td>
+                            <td>
+                                <form method="POST" action="{{url_for('student.eliminaPrenotazioneAppello')}}">
+                                    <input type="hidden" name="appello" value="{{ appello.codAppello }}">
+                                    <button type="submit" class="btn btn-danger">Elimina</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>
