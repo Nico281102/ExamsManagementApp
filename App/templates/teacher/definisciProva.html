@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crea Prova</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1>Crea Prove</h1>
+
+    <form method="POST" action="{{ url_for('teacher.creaProva', codEsame=codEsame) }}">
+        <div id="prova-container">
+            <!-- Prima prova -->
+            <div class="form-group">
+                <label for="codProva">Codice della Prova:</label>
+                <input type="text" class="form-control" id="codProva" name="codProva" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tipologia">Tipologia:</label>
+                <input type="text" class="form-control" id="tipologia" name="tipologia" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dataScadenza">Data di Scadenza:</label>
+                <input type="date" class="form-control" id="dataScadenza" name="dataScadenza" required>
+            </div>
+
+            <div class="form-group">
+                <label for="richiede_superamento">Richiede Superamento:</label>
+                <select class="form-control" id="richiede_superamento" name="richiede_superamento" required>
+                    {% for prova in prove %}
+                        <option value="{{ prova.cod }}">{{ prova.cod }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="peso">Peso:</label>
+                <input type="number" class="form-control" id="peso" name="peso" required>
+            </div>
+        </div>
+            <button type="submit" class="btn btn-primary" href ="{{ url_for('teacher.creaProva', codEsame=codEsame) }} ">Crea</button>
+    </form>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+    function validaPeso() {
+        var pesi = document.getElementsByName('peso[]');
+        var totalePeso = 0;
+
+        for (var i = 0; i < pesi.length; i++) {
+            totalePeso += parseFloat(pesi[i].value);
+        }
+
+        if (totalePeso !== 1) {
+            alert('Il peso totale delle prove deve essere esattamente 1.');
+            return false; // Blocca l'invio del modulo
+        }
+
+        return true; // Consente l'invio del modulo
+    }
+</script>
+
+</body>
+</html>

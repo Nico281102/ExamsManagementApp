@@ -17,33 +17,49 @@
         <thead>
             <tr>
                 <th>Codice Prova</th>
+                <th>Richiede </th>
                 <th>Tipologia</th>
                 <th>Data di Scadenza e Ora</th>
                 <th>Peso</th>
                 <th>Crea Appello</th>
+                <th>Elimina Prova</th>
             </tr>
         </thead>
-       <tbody>
-    {% for prova in prove %}
-        <tr>
-            <td>{{ prova.cod }}</td>
-            <td>{{ prova.Tipologia }}</td>
-            <td>{{ prova.dataScadenza }}</td>
-            <td>{{ prova.peso }}</td>
-            <td>
-                {% if prova in lista_prove_abilitate %}
-                    <form method="POST" action="{{ url_for('teacher.definisciAppello') }}">
-                        <input type="hidden" name="prova" value="{{ prova.cod }}">
-                        <button type="submit" class="btn btn-primary">Crea Appello</button>
-                    </form>
-                {% else %}
-                    <button type="button" class="btn btn-secondary" disabled>Crea Appello</button>
-                {% endif %}
-            </td>
-        </tr>
-    {% endfor %}
-</tbody>
+        <tbody>
+            {% for prova in prove %}
+                <tr>
+                    <td>{{ prova.cod }}</td>
+                    <td>{{prova.superamenti_secondari}} </td>
+                    <td>{{ prova.Tipologia }}</td>
+                    <td>{{ prova.dataScadenza }}</td>
+                    <td>{{ prova.peso }}</td>
+                    <td>
+                        {% if prova in lista_prove_abilitate %}
+                            <a href="{{ url_for('teacher.definisciAppello', codProva=prova.cod, codEsame= codEsame) }}">
+                                <button type="button" class="btn btn-primary">Crea Appello</button>
+                            </a>
+                        {% else %}
+                            <button type="button" class="btn btn-secondary" disabled>Crea Appello</button>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if prova in lista_prove_abilitate %}
+                            <a href="{{ url_for('teacher.eliminaProva', codEsame=codEsame, codProva=prova.cod) }}">
+                                <button type="button" class="btn btn-danger">Elimina Prova</button>
+                            </a>
+                        {% else %}
+                            <button type="button" class="btn btn-danger" disabled>Elimina Prova</button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
+
+    <!-- Pulsante "Definisci Nuova Prova" in basso -->
+    <a href="{{ url_for('teacher.definisciProva', codEsame=prove[0].esami.cod) }}">
+        <button type="button" class="btn btn-success mt-3">Definisci Nuova Prova</button>
+    </a>
 
     <!-- Altre informazioni dell'utente, se necessario -->
     <p class="mt-3">Benvenuto, {{ user.name }}!</p>

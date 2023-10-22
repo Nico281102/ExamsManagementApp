@@ -1,3 +1,5 @@
+from datetime import timedelta, datetime
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from sqlalchemy import Sequence
@@ -17,7 +19,8 @@ iscrizioni = db.Table(
     db.Column('voto', db.Integer, nullable=True),
     db.Column('studente', db.Integer, db.ForeignKey('studenti.matricola'), primary_key=True),
     db.Column('appello', db.String(32), db.ForeignKey('appelli.codAppello'), primary_key=True),
-    db.Column('isValid', db.Boolean, nullable=False, default=False),
+    db.Column('isValid', db.Boolean, nullable=False, default=True),
+    db.Column('DataScadenza', TIMESTAMP, nullable = False, default = func.now() + timedelta(12*365/12)), #dura 12 mesi default
     db.Column('created_at', TIMESTAMP, server_default=func.now()),
     db.Column('updated_at', TIMESTAMP, server_default=func.now(), onupdate=func.now())
 )
@@ -74,10 +77,139 @@ class Studenti(db.Model, UserMixin):
     def generate_email(self):
         return f"{self.matricola}@stud.unive.it"
 
+    def getAppelliDisponibili(self):
+        #Query to get the appelli disponibili
+        #Invarianti:
+        #   - Gli appelli disponibili sono quelli che non sono scaduti e che non sono già stati prenotati
+
+        appelli = Appelli.query.all()
+        appelli_disponibili = []
+
+            # Get the list of tests the student has not passed
+        esami_non_formalizzati = self.getEsamiNonFormalizzati() # Perchè potenzialmente posso scegliere di rifare prove relative ad esami passati
+        prove_studente = [prova for esame in esami_non_formalizzati for prova in esame.prove]
+
+        for appello in appelli:
+            if appello.prove in prove_studente and appello not in self.appelli:
+                appelli_disponibili.append(appello)
+
+        current_time = datetime.now()
+        appelli_disponibili_filtered = [appello for appello in appelli_disponibili if appello.data > current_time]
+
+        return appelli_disponibili_filtered
+
+    def getEsamiNonFormalizzati(self):
+        #Query to get the esami non formalizzati
+        #Invarianti:
+        #   - Gli esami non formalizzati sono quelli che sono stati passati e che non sono stati ancora formalizzati
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.esame
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) & (
+                        formalizzazioneEsami.c.formalizzato == False) &
+                   (formalizzazioneEsami.c.passato == True) &
+                        (formalizzazioneEsami.c.voto != None))
+        )
+
+        # Execute the query
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+
+        res = result.fetchall()
+
+        esami = []
+        for i in range(len(res)):
+            esami.append(Esami.query.get(res[i][0]))
+
+        print(res)
+        print(esami)
+        return esami
+
+    def getEsamiFormalizzati(self):
+#Query to get the esami formalizzati
+        #Invarianti:
+        #   - Gli esami formalizzati sono quelli che sono stati passati e che sono stati formalizzati
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.esame
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) & (
+                        formalizzazioneEsami.c.formalizzato == True) &
+                        (formalizzazioneEsami.c.voto != None))
+        )
+
+        # Execute the query
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+
+        res = result.fetchall()
+
+        esami = []
+        for i in range(len(res)):
+            esami.append(Esami.query.get(res[i][0]))
+
+        return esami
+
+    def getMean(self):
+        #Query to get the mean of the voti
+        #Invarianti:
+        #   - La media è calcolata in base ai voti formalizzati
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.voto
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) & (
+                        formalizzazioneEsami.c.formalizzato == True) &
+                        (formalizzazioneEsami.c.voto != None))
+        )
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+        res = result.fetchall()
+
+        for i in range(len(res)): #make the list of tuple a list of int
+            res[i] = res[i][0]
+
+        if res:
+            return sum(res) / len(res)
+        else:
+            return None
+
+    def getVotoEsame(self, codEsame):
+        #Query to get the voto of the esame
+        #Invarianti:
+        #   - Il voto è calcolato in base ai voti formalizzati
+        #   - l'esame può non essere formalizzato
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.voto
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) &
+                        (formalizzazioneEsami.c.voto != None) &
+                        (formalizzazioneEsami.c.esame == codEsame))
+        )
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+        res = result.fetchall()
+        if res:
+            print(res[0][0])
+            return res[0][0]
+        else:
+            return None
 
     def getVotoProva(self, appello_cod):
         # Query to get the voto directly from the iscrizioni table
-        query = select(iscrizioni.c.voto).where((iscrizioni.c.studente == self.matricola) & (iscrizioni.c.appello == appello_cod)
+        # Invarianti:
+        # - Prendo il voto dell'appello valido, assumendo che gli appelli passati siano stati invalidati durante la nuova iscrizione
+        query = select(
+            iscrizioni.c.voto).where(
+            (iscrizioni.c.studente == self.matricola) &
+            (iscrizioni.c.appello == appello_cod) &
+            (iscrizioni.c.isValid == True)
         )
         with db.engine.connect() as connection:
             result = connection.execute(query)
@@ -88,14 +220,46 @@ class Studenti(db.Model, UserMixin):
         else:
             return None
 
+    def getAppelliNonValidi(self):
+        # Query to get the appelli non validi
+        # Invarianti:
+        # - Prendo gli appelli non validi, assumendo che gli appelli passati siano stati invalidati durante la nuova iscrizione
+        query = select(
+            iscrizioni.c.appello).where(
+            (iscrizioni.c.studente == self.matricola) &
+            (iscrizioni.c.isValid == False)
+        )
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
 
+        res = result.fetchall()
+        out = []
+        if res:
+            for i in range(len(res)):
+                res[i] = res[i][0]
+            for codAppello in res:
+                appello = Appelli.query.get(codAppello)
+                out.append(appello)
+            return out
+        else:
+            return []
 
-    def getVotoEsame(self, esame_cod):
-        for esame in self.esami:
-            if esame.cod == esame_cod:
-                #query per ottenere il voto dell'esame dalle prove
-                return 0
+    def computePassed(self):
+        #da finire
+        #Query to set passato
+        #Considero ogni esame nel piano di studi dello studente
+        #per ogni esame mi prendo l'insieme delle prove che lo compone che non sono Bonus
+        #per ogni prova controllo se esiste un iscrizione VALIDA e con voto, relativa allo studente
+        #settare il voto qui(?)
+        passato = True
+        insieme_iscrizioni_valide = []
+        esami = self.esami
+        for esame in esami:
+            for prova in esame.prove and prova.bonus == 0:
+                passato = prova in insieme_iscrizioni_valide and passato
+            #metto passato all'esame nel caso passato sia true.
         return None
+
 
     def __repr__(self):
         return '<Studente %r>' % self.name
@@ -144,18 +308,22 @@ class Esami(db.Model):
     prove = db.relationship('Prove', back_populates='esami', lazy=True)
 
     def __repr__(self):
-        return '<Esame %r>' % self.name
+        return '[Esame: %r]' % self.name
+
+    def getVoto(self, matricola):
+
+        studente = Studenti.query.get(matricola)
+        return studente.getVotoEsame(self.cod)
+
 
 
 class Prove(db.Model):
     __tablename__ = 'prove'
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
-    dataScadenza = db.Column(TIMESTAMP, nullable=False)
-    idoneità = db.Column(db.Boolean, nullable=False)
+    idoneità = db.Column(db.Boolean, nullable=False, default=False)
     peso = db.Column(db.Float, nullable=False)
-    isValid = db.Column(db.Boolean, nullable=False)
     Tipologia = db.Column(db.Enum('Orale', 'Scritto', 'Progetto', name='Tipologia'), nullable=False)
-    Bonus = db.Column(db.Integer, nullable=False)
+    Bonus = db.Column(db.Integer, nullable=False, default=0)
     esame = db.Column(db.String(32), db.ForeignKey('esami.cod'))
     docente = db.Column(db.Integer, db.ForeignKey('docenti.cod'))
     created_at = db.Column(TIMESTAMP, server_default=func.now())
@@ -169,7 +337,7 @@ class Prove(db.Model):
                                             foreign_keys='Superamento.provaSecondaria')
 
     def __repr__(self):
-        return '<Prova %r>' % self.cod
+        return '[Prova: %r]' % self.cod
 
 
 class Superamento(db.Model):

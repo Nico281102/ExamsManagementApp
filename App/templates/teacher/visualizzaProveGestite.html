@@ -29,7 +29,6 @@
                         <tr>
                             <th>Codice Prova</th>
                             <th>Tipologia</th>
-                            <th>Data di Scadenza e Ora</th>
                             <th>Peso</th>
                             <th>Esame</th>
                             <th>Crea Appello</th>
@@ -41,13 +40,13 @@
                                 <tr>
                                     <td>{{ prova.cod }}</td>
                                     <td>{{ prova.Tipologia }}</td>
-                                    <td>{{ prova.dataScadenza }}</td>
                                     <td>{{ prova.peso }}</td>
-                                    <td>{{ esame.nome }}</td>
+                                    <td>{{ prova.esami.name }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary btn-sm"
-                                                onclick="creaAppello('{{ esame.nome }}', '{{ prova.cod }}')">Crea Appello
+                                        <a href = "{{url_for('teacher.definisciAppello', codProva = prova.cod)}}">
+                                        <button type="button" class="btn btn-primary btn-sm">Crea Appello
                                         </button>
+                                        </a>
                                     </td>
                                 </tr>
                             {% endif %}
@@ -67,14 +66,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script>
-    // Funzione per mostrare una notifica o eseguire azioni dopo la creazione di un appello
-    function creaAppello(nomeEsame, codiceProva) {
-        // Puoi aggiungere qui la logica per creare l'appello con il codice della prova
-        // e mostrare una notifica o eseguire altre azioni.
-        alert('Appello creato per la prova con codice ' + codiceProva + ' nell\'esame ' + nomeEsame);
-    }
-</script>
+
 
 </body>
 </html>

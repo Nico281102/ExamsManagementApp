@@ -18,27 +18,6 @@ def check_credentials(email, password):
     return False, None
 
 
-def appelli_disponibili(studente):
-    appelli = Appelli.query.all()
-    print("tutti gli appelli")
-    print(appelli)
-    appelli_disponibili = []
-
-    # Ottenere gli esami passati dallo studente
-    esami_non_passati = get_esami_non_passati(studente)  # lista di esami non passati
-    prove_studente = []  # lista di prove di esami non passati
-    for esame in esami_non_passati:
-        prove_studente.append(esame.prove)  # aggiorno la lista di prove di esami non passati (è list di list)
-    aux = []  # lista a una sola dimensione
-    for i in prove_studente:  # trasformo la lista di liste in una lista a una sola dimensione
-        for j in i:
-            aux.append(j)
-    prove_studente = aux  # lista di prove di esami non passati
-
-    for appello in appelli:  # per ogni appello
-        if appello.prove in prove_studente and appello not in studente.appelli:  # se l'appello ha una prova che lo studente non ha passato e non è già prenotato
-            appelli_disponibili.append(appello)  # aggiungo l'appello alla lista di appelli disponibili
-    return appelli_disponibili
 
 
 def get_esami_non_passati(studente):
@@ -155,29 +134,7 @@ def get_esame(codEsame):
 
     return result.fetchone()
 
-def get_esami_nonFormalizzati(studente_matricola):
-    # Build the SQL query
-    query = (
-        select(
-            formalizzazioneEsami.c.voto,
-            formalizzazioneEsami.c.passato,
-            formalizzazioneEsami.c.esame
-        )
-        .where((formalizzazioneEsami.c.studente == studente_matricola) & (formalizzazioneEsami.c.formalizzato == False) &
-               (formalizzazioneEsami.c.voto != None))
-    )
 
-    # Execute the query
-    with db.engine.connect() as connection:
-        result = connection.execute(query)
-
-    res = result.fetchall()
-
-    for i in range(len(res)):
-        res[i] = list(res[i])
-        res[i][2] = (get_esame(res[i][2]).name, res[i][2])
-
-    return res
 
 def get_appelli_docente(teacher):
     appelli = Appelli.query.all()

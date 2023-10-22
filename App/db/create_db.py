@@ -126,38 +126,25 @@ def create_test(dict_docenti):
     pelillo_cod = dict_docenti['marcello.pelillo@unive.it']
     lucchese_cod = dict_docenti['claudio.lucchese@unive.it']
 
-    add(Prove(esame='01QWERTY', docente=ferrara_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='PO1',
-              idoneità=False, Tipologia='Scritto', Bonus=0))
-    add(Prove(esame='01QWERTY', docente=spano_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='PO2',
-              idoneità=False, Tipologia='Scritto', Bonus=0))
+    add(Prove(esame='01QWERTY', docente=ferrara_cod, peso=0.5, cod='PO1',  Tipologia='Scritto'))
+    add(Prove(esame='01QWERTY', docente=spano_cod, peso=0.5, cod='PO2',Tipologia='Scritto'))
 
-    add(Prove(esame='02QWERTY', docente=raffaeta_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='BD1',
-              idoneità=False, Tipologia='Scritto', Bonus=0))
-    add(Prove(esame='02QWERTY', docente=calzavara_cod, dataScadenza='2024-01-01', peso=0.3, isValid=True, cod='BD2',
-              idoneità=False, Tipologia='Scritto', Bonus=0))
-    add(Prove(esame='02QWERTY', docente=calzavara_cod, dataScadenza='2024-01-01', peso=0.2, isValid=True,
-              cod='BDProject', idoneità=False, Tipologia='Progetto', Bonus=0))
+    add(Prove(esame='02QWERTY', docente=raffaeta_cod, peso=0.5, cod='BD1', Tipologia='Scritto'))
+    add(Prove(esame='02QWERTY', docente=calzavara_cod, peso=0.3, cod='BD2', Tipologia='Scritto'))
+    add(Prove(esame='02QWERTY', docente=calzavara_cod, peso=0.2,  cod='BDProject', Tipologia='Progetto'))
 
-    add(Prove(esame='03QWERTY', docente=balsamo_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='SO1',
-                idoneità=False, Tipologia='Scritto', Bonus=0))
-    add(Prove(esame='03QWERTY', docente=focardi_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='SO2',
-                idoneità=False, Tipologia='Scritto', Bonus=0))
+    add(Prove(esame='03QWERTY', docente=balsamo_cod, peso=0.5,  cod='SO1', Tipologia='Scritto'))
+    add(Prove(esame='03QWERTY', docente=focardi_cod, peso=0.5,  cod='SO2', Tipologia='Scritto'))
 
-    add(Prove(esame='04QWERTY', docente=marin_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='PL1',
-                idoneità=False, Tipologia='Scritto', Bonus=0))
-    add(Prove(esame='04QWERTY', docente=marin_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='PL2',
-                idoneità=False, Tipologia='Orale', Bonus=0))
+    add(Prove(esame='04QWERTY', docente=marin_cod, peso=0.5,  cod='PL1', Tipologia='Scritto'))
+    add(Prove(esame='04QWERTY', docente=marin_cod, peso=0.5, cod='PL2', Tipologia='Orale'))
 
-    add(Prove(esame='05QWERTY', docente=raffaeta_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='ASD1',
-                idoneità=False, Tipologia='Scritto', Bonus=0))
-    add(Prove(esame='05QWERTY', docente=pelillo_cod, dataScadenza='2024-01-01', peso=0.5, isValid=True, cod='ASD2',
-                idoneità=False, Tipologia='Scritto', Bonus=0))
+    add(Prove(esame='05QWERTY', docente=raffaeta_cod, peso=0.5, cod='ASD1', Tipologia='Scritto'))
+    add(Prove(esame='05QWERTY', docente=pelillo_cod, peso=0.5, cod='ASD2', Tipologia='Scritto'))
 
-    add(Prove(esame='06QWERTY', docente=balsamo_cod, dataScadenza='2024-01-01', peso=1.0, isValid=True, cod='RC1',
-                idoneità=False, Tipologia='Scritto', Bonus=0))
+    add(Prove(esame='06QWERTY', docente=balsamo_cod, peso=1.0, cod='RC1', Tipologia='Scritto'))
 
-    add(Prove(esame='07QWERTY', docente=lucchese_cod, dataScadenza='2024-01-01', peso=1.0, isValid=True, cod='IAP',
-                idoneità=False, Tipologia='Scritto', Bonus=0))
+    add(Prove(esame='07QWERTY', docente=lucchese_cod, peso=1.0, cod='IAP', Tipologia='Scritto'))
 
 
 def create_appelli():
