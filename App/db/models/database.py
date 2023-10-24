@@ -87,7 +87,7 @@ class Studenti(db.Model, UserMixin):
 
 
             # Get the list of tests the student has not passed
-        esami_non_passati = self.getEsamiNonPassati() # Perchè potenzialmente posso scegliere di rifare prove relative ad esami passati
+        esami_non_passati = self.getEsamiNonFormalizzati() # Perchè potenzialmente posso scegliere di rifare prove relative ad esami passati
         prove_studente = [prova for esame in esami_non_passati for prova in esame.prove]
 
         for appello in appelli:
@@ -118,8 +118,32 @@ class Studenti(db.Model, UserMixin):
             esami.append(Esami.query.get(res[i][0]))
 
         return esami
-
     def getEsamiNonFormalizzati(self):
+        #Query to get the esami non formalizzati
+        #Invarianti:
+        #   - Gli esami non formalizzati sono quelli che sono stati passati e che non sono stati ancora formalizzati
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.esame
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) & (
+                        formalizzazioneEsami.c.formalizzato == False)
+                     )
+        )
+
+        # Execute the query
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+
+        res = result.fetchall()
+
+        esami = []
+        for i in range(len(res)):
+            esami.append(Esami.query.get(res[i][0]))
+
+        return esami
+    def getEsamiNonFormalizzatiandPassati(self):
         #Query to get the esami non formalizzati
         #Invarianti:
         #   - Gli esami non formalizzati sono quelli che sono stati passati e che non sono stati ancora formalizzati
@@ -354,30 +378,37 @@ class Prove(db.Model):
     appelli = db.relationship('Appelli', back_populates='prove', lazy=True)
     docenti = db.relationship('Docenti', back_populates='prove', lazy=True)
 
-    prove_da_superare = db.relationship(
-        'Superamento',
-        primaryjoin='Prove.cod == foreign(Superamento.provaSuccessiva)',
-        lazy=True,
-    )
-    prove_superate = db.relationship(
-        'Prove',
-        secondary='superamento',
-        primaryjoin='Prove.cod == Superamento.provaSuccessiva',
-        secondaryjoin='Prove.cod == Superamento.provaDaSuperare',
-        lazy=True
-    )
+
+   # __table_args__ = (
+    #    db.CheckConstraint('(prove.Bonus = 0 OR peso = 0)', name='check_bonus_peso'),
+    #)
 
 
     def __repr__(self):
         return '[Prova: %r]' % self.cod
 
 
+    def getProveSuccessive(self, codProva):
+        query = db.session.query(Superamento.provaSuccessiva).filter(Superamento.provaPrimaria == codProva)
+        return query.all()
+
+
+    def getProvePrecedenti(self, codProva):
+        #Nota: Questa funzione tornerà sempre e solo una prova, per via della 1:M
+        query = db.session.query(Superamento.provaPrimaria).filter(Superamento.provaSuccessiva == codProva)
+        results = query.all()
+        res = [result[0] for result in results]
+        return res
+
+
 class Superamento(db.Model):
     __tablename__ = 'superamento'
-    provaDaSuperare = db.Column(db.String(32), db.ForeignKey('prove.cod'), primary_key=True)
-    provaSuccessiva = db.Column(db.String(32), db.ForeignKey('prove.cod'))
+    provaSuccessiva = db.Column(db.String(32), db.ForeignKey('prove.cod'), primary_key=True)
+    provaPrimaria = db.Column(db.String(32), db.ForeignKey('prove.cod'))
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+
+
 
 
 
