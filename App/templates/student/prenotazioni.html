@@ -34,10 +34,9 @@
                         <td>{{ appello.prove }}</td>
                         <td>{{ appello.prove.esami }}</td>
                         <td>
-                            <form method="POST" action="{{url_for('student.eliminaPrenotazioneAppello')}}">
-                                <input type="hidden" name="appello" value="{{ appello.codAppello }}">
+                            <a href="{{url_for('student.eliminaPrenotazioneAppello', codAppello=appello.codAppello)}}">
                                 <button type="submit" class="btn btn-danger" disabled>Elimina</button>
-                            </form>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -54,10 +53,9 @@
                             <td>{{ appello.prove }}</td>
                             <td>{{ appello.prove.esami }}</td>
                             <td>
-                                <form method="POST" action="{{url_for('student.eliminaPrenotazioneAppello')}}">
-                                    <input type="hidden" name="appello" value="{{ appello.codAppello }}">
-                                    <button type="submit" class="btn btn-danger">Elimina</button>
-                                </form>
+                                <a href="{{url_for('student.eliminaPrenotazioneAppello', codAppello=appello.codAppello)}}">
+                                    <button type="submit" class="btn btn-danger" disabled>Elimina</button>
+                                </a>
                             </td>
                         </tr>
                     {% endif %}
