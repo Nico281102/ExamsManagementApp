@@ -77,6 +77,30 @@ class Studenti(db.Model, UserMixin):
     def generate_email(self):
         return f"{self.matricola}@stud.unive.it"
 
+    def formalizzaEsame(self, codEsame):
+        with db.engine.begin() as connection:
+            # Execute the update statement
+            connection.execute(
+                formalizzazioneEsami
+                .update()
+                .where(
+                    (formalizzazioneEsami.c.studente == self.matricola) & (
+                                formalizzazioneEsami.c.esame == codEsame))
+                .values({'formalizzato': True})
+            )
+
+    def rifiutaEsame(self, codEsame):
+        with db.engine.begin() as connection:
+            # Execute the update statement
+            connection.execute(
+                formalizzazioneEsami
+                .update()
+                .where(
+                    (formalizzazioneEsami.c.studente == self.matricola) & (
+                                formalizzazioneEsami.c.esame == codEsame))
+                .values({'voto': None, 'formalizzato': False})
+            )
+
     def getAppelliDisponibili(self):
         #Query to get the appelli disponibili
         #Invarianti:
@@ -121,7 +145,7 @@ class Studenti(db.Model, UserMixin):
     def getEsamiNonFormalizzati(self):
         #Query to get the esami non formalizzati
         #Invarianti:
-        #   - Gli esami non formalizzati sono quelli che sono stati passati e che non sono stati ancora formalizzati
+        #   - Gli esami non formalizzati stati ancora formalizzati
         # Build the SQL query
         query = (
             select(
