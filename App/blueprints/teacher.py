@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from App.checkFunctions import checkDocente
 from App.db.models.database import Esami, Prove, db, Appelli, Docenti, iscrizioni
-from App.utils.utilies import get_appelli_docente, set_voto_prova
+from App.utils.utilies import set_voto_prova
 
 teacher = Blueprint('teacher', __name__, url_prefix='/teacher', template_folder='templates')
 
@@ -81,9 +81,7 @@ def visualizzaProve(codEsame):
     #visualizza le prove relative ad un corso
     esame = Esami.query.get(codEsame)
     prove = esame.prove
-    print(prove)
     #potrei passare anche un booleano che mi dice se si può creare la prova oppure no
-    print(current_user.prove)
     return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame,
                            lista_prove_abilitate=current_user.prove, codEsame=codEsame)
 
@@ -113,8 +111,8 @@ def creaProva(codEsame):
     tipologia = request.form['tipologia']
     peso = request.form['peso']
     dataScadenza = request.form['dataScadenza']
-    add_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, dataScadenza=dataScadenza, Bonus=0,
-                      idoneità=False, isValid=False)
+    add_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=0,
+                      idoneità=False)
 
 
     #richiede il superamento della prova....
@@ -196,9 +194,7 @@ def creaAppello():
 @checkDocente
 def visualizzaAppelli():
     print("sono in visualizzaAppelli")
-    print(get_appelli_docente(current_user))
-    return render_template('teacher/visualizzaAppelli.html', appelli=get_appelli_docente(current_user),
-                           user=current_user)
+    return render_template('teacher/visualizzaAppelli.html', docente=current_user)
 
 
 @teacher.route('/visualizzaAppelli/studentiIscritti/<codAppello>', methods=['GET'])
@@ -211,20 +207,12 @@ def visualizzaStudentiIscritti(codAppello):
         return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
 
 
-@teacher.route('/visualizzaAppelli/studentiSuperato/<codAppello>', methods=['GET'])
+@teacher.route('/visualizzaAppelli/dettagliAppello/<codAppello>', methods=['GET'])
 @login_required
 @checkDocente
-def visualizzaSuperamenti(codAppello):
-    #Questa funzione permette di visualizzare solo gli studenti che hanno superato la prova.
-    #La funzione è raggiungibile solo se l'appello è scadutof
-        studenti = Appelli.query.get(codAppello).studenti
-        res = iscrizioni.query.filter(iscrizioni.c.appello == codAppello, iscrizioni.c.voto >= 18)
+def visualizzaDettagliAppello(codAppello):
 
-        print(res)
-        print(type(res))
-        #gli studenti che hanno gia un voto devono comaparire con il voto settato.
-        print("sono in visualizzaStudentiIscritti")
-        return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
+        return render_template('teacher/visualizzaDettagliAppello.html', appello=Appelli.query.get(codAppello))
 
 
 @teacher.route('/visualizzaAppelli/studentiIscritti/setVoto', methods=['POST'])
