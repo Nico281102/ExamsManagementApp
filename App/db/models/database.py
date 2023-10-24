@@ -359,6 +359,33 @@ class Docenti(db.Model, UserMixin):
     def generate_email(self):
         return f"{self.name.lower()}.{self.surname.lower()}@unive.it"
 
+    def getAppelliDocente(self):
+        #Query to get the appelli of the docente
+        #Invarianti:
+        #   - Gli appelli del docente sono quelli che sono stati creati da lui
+        appelli = Appelli.query.all()
+        appelli_docente = []
+        for appello in appelli:
+            if appello.prove and appello.prove.docente == self.cod:
+                appelli_docente.append(appello)
+        return appelli_docente
+
+    def getAppelliScaduti(self):
+        appelli_docente = self.getAppelliDocente()
+        res = []
+        for appello in appelli_docente:
+            if appello.data < datetime.now():
+                res.append(appello)
+        return res
+
+    def getAppelliNonScaduti(self):
+        appelli_docente = self.getAppelliDocente()
+        res = []
+        for appello in appelli_docente:
+            if appello.data > datetime.now():
+                res.append(appello)
+        return res
+
     def __repr__(self):
         return '<Docente %r>' % self.name
 
