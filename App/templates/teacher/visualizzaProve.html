@@ -29,7 +29,7 @@
             {% for prova in prove %}
                 <tr>
                     <td>{{ prova.cod }}</td>
-                    <td>{{prova.superamenti_secondari}} </td>
+                    <td>{{prova.getProvePrecedenti(prova.cod)}} </td>
                     <td>{{ prova.Tipologia }}</td>
                     <td>{{ prova.dataScadenza }}</td>
                     <td>{{ prova.peso }}</td>
