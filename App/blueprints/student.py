@@ -31,13 +31,13 @@ def appelliDisponibili():
 
 
 
-@student.route('/appelliDisponibili/prenota', methods=['POST', 'GET'])
+@student.route('/appelliDisponibili/prenota/<codAppello>', methods=['POST', 'GET'])
 @login_required
 @checkStudente
-def prenotaAppello():
+def prenotaAppello(codAppello):
     print("sono in prenotaAppello")
     # Assuming you have some logic to retrieve the selected exam appointment
-    selected_appointment_id = request.form['appello']
+    selected_appointment_id = codAppello
     appello = Appelli.query.get(selected_appointment_id)
     current_user.appelli.append(appello)
 

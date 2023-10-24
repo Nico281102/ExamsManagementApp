@@ -30,12 +30,11 @@
                         <td>{{ appello.luogo }}</td>
                         <td>{{ appello.prove }}</td>
                         <td>{{ appello.prove.esami }}</td>
-                        <form method="POST" action="{{url_for('student.prenotaAppello')}}">
-                        <input type="hidden" name="appello" value="{{ appello.codAppello }}">
-                        <td>
-                        <button type="submit" class="btn btn-primary">Prenota</button>
-                        </td>
-                        </form>
+                            <td>
+                                <a href="{{url_for('student.prenotaAppello', codAppello = appello.codAppello)}}">
+                            <button type="submit" class="btn btn-primary">Prenota</button>
+                                </a>
+                            </td>
                     </tr>
                 {% endfor %}
             </tbody>
