@@ -420,6 +420,7 @@ class Prove(db.Model):
     peso = db.Column(db.Float, nullable=False)
     Tipologia = db.Column(db.Enum('Orale', 'Scritto', 'Progetto', name='Tipologia'), nullable=False)
     Bonus = db.Column(db.Integer, nullable=False, default=0)
+    durata = db.Column(db.Integer, nullable=False, default=90)
     esame = db.Column(db.String(32), db.ForeignKey('esami.cod'))
     docente = db.Column(db.Integer, db.ForeignKey('docenti.cod'))
     created_at = db.Column(TIMESTAMP, server_default=func.now())
@@ -440,26 +441,26 @@ class Prove(db.Model):
 
 
     def getProveSuccessive(self, codProva):
-        query = db.session.query(Superamento.provaSuccessiva).filter(Superamento.provaPrimaria == codProva)
+        query = db.session.query(Superamenti.provaSuccessiva).filter(Superamenti.provaPrimaria == codProva)
         return query.all()
 
 
     def getProvePrecedenti(self, codProva):
-        #Nota: Questa funzione tornerà sempre e solo una prova, per via della 1:M
-        query = db.session.query(Superamento.provaPrimaria).filter(Superamento.provaSuccessiva == codProva)
+        query = db.session.query(Superamenti.provaPrimaria).filter(Superamenti.provaSuccessiva == codProva)
         results = query.all()
-        res = [result[0] for result in results]
-        return res
+        return results
 
 
 class Superamenti(db.Model):
-    __tablename__ = 'superamento'
+    __tablename__ = 'superamenti'
     provaSuccessiva = db.Column(db.String(32), db.ForeignKey('prove.cod'), primary_key=True)
     provaPrimaria = db.Column(db.String(32), db.ForeignKey('prove.cod'), primary_key = True)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
-
+    def __init__(self, provaPrimaria, provaSuccessiva):
+        self.provaPrimaria = provaPrimaria
+        self.provaSuccessiva = provaSuccessiva
 
 
 
