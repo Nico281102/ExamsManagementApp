@@ -19,7 +19,6 @@
                 <th>Codice Prova</th>
                 <th>Richiede</th>
                 <th>Tipologia</th>
-                <th>Data di Scadenza e Ora</th>
                 <th>Peso</th>
                 <th>Crea Appello</th>
                 <th>Elimina Prova</th>
@@ -31,7 +30,6 @@
                     <td data-prove-successive="{{ prova.getProveSuccessive(prova.cod) }}">{{ prova.cod }}</td>
                     <td>{{prova.getProvePrecedenti(prova.cod)}}</td>
                     <td>{{ prova.Tipologia }}</td>
-                    <td>{{ prova.dataScadenza }}</td>
                     <td>{{ prova.peso }}</td>
                     <td>
                         {% if prova in lista_prove_abilitate %}
@@ -44,8 +42,10 @@
                     </td>
                     <td>
                         {% if prova in lista_prove_abilitate and not nessun_appello_relativo_all_esame %}
+                        <a href="{{ url_for('teacher.eliminaProva', codProva=prova.cod, codEsame= codEsame) }}">
                             <button type="button" class="btn btn-danger">Elimina Prova</button>
                         {% else %}
+                        </a>
                             <button type="button" class="btn btn-danger" disabled>Elimina Prova</button>
                         {% endif %}
                     </td>
@@ -61,7 +61,7 @@
     </div>
 
     <!-- Pulsante "Definisci Nuova Prova" in basso -->
-    <a href="{{ url_for('teacher.definisciProva', codEsame=prove[0].esami.cod) }}">
+    <a href="{{ url_for('teacher.definisciProva', codEsame = codEsame) }}">
         <button type="button" class="btn btn-success mt-3">Definisci Nuova Prova</button>
     </a>
 
@@ -85,9 +85,17 @@
                 const cellaProva = this.closest("tr").querySelector("td[data-prove-successive]");
                 const proveSuccessive = cellaProva.getAttribute("data-prove-successive");
 
-                if (proveSuccessive) {
+                // Rimuovi le parentesi quadre dalla stringa
+                const pulita = proveSuccessive.replace(/[\[\]]/g, '');
+                const vuota = [' ']
+
+                // Dividi la stringa pulita in un array utilizzando lo spazio come delimitatore
+                const arrayDiValori = pulita.split(' ');
+                console.log(arrayDiValori.includes(''));
+                if (!arrayDiValori.includes('')) {
+
                     avvisoEliminazione.style.display = "block";
-                    proveSuccessiveSpan.textContent = proveSuccessive;
+                    proveSuccessiveSpan.textContent = arrayDiValori + "proveSuccessive.length > 0?" + arrayDiValori;
 
                     event.preventDefault();
                 }
@@ -95,6 +103,7 @@
         });
     });
 </script>
+
 
 </body>
 </html>
