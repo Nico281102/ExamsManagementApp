@@ -43,7 +43,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if prova in lista_prove_abilitate %}
+                        {% if prova in lista_prove_abilitate and not nessun_appello_relativo_all_esame%}
                             <a href="{{ url_for('teacher.eliminaProva', codEsame=codEsame, codProva=prova.cod) }}">
                                 <button type="button" class="btn btn-danger">Elimina Prova</button>
                             </a>

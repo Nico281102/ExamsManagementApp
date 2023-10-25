@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import current_user, login_required
 
 from App.checkFunctions import checkDocente
-from App.db.models.database import Esami, Prove, db, Appelli, Docenti, iscrizioni
+from App.db.models.database import Esami, Prove, db, Appelli, Docenti, iscrizioni, Superamenti
 from App.utils.utilies import set_voto_prova
 
 teacher = Blueprint('teacher', __name__, url_prefix='/teacher', template_folder='templates')
@@ -49,7 +49,8 @@ def ricercaDocente(codEsame):
     esame = Esami.query.get(codEsame)
     docenti_relativi_esame = esame.docenti
 
-    return render_template('teacher/ricercaDocente.html', docenti= set(set(docenti) - set(docenti_relativi_esame)), codEsame=codEsame)
+    return render_template('teacher/ricercaDocente.html', docenti= set(set(docenti) - set(docenti_relativi_esame)),
+                           codEsame=codEsame)
 
 
 @teacher.route('/visualizzaCorsi/visualizzaDocenti/<codEsame>/ricercaDocente/aggiungiDocente/<codDocente>', methods=['POST', 'GET'])
@@ -81,9 +82,11 @@ def visualizzaProve(codEsame):
     #visualizza le prove relative ad un corso
     esame = Esami.query.get(codEsame)
     prove = esame.prove
+    esiste_appello_realtivo_all_esame = any(prova.appelli for prova in esame.prove)
     #potrei passare anche un booleano che mi dice se si può creare la prova oppure no
     return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame,
-                           lista_prove_abilitate=current_user.prove, codEsame=codEsame)
+                           lista_prove_abilitate=current_user.prove, codEsame=codEsame,
+                           nessun_appello_relativo_all_esame = esiste_appello_realtivo_all_esame)
 
 
 @teacher.route('/visualizzaCorsi/visualizzaProve/<codEsame>/definisciProva', methods=['POST', 'GET'])
@@ -101,6 +104,10 @@ def definisciProva(codEsame):
     return render_template('teacher/definisciProva.html', user=current_user, prove=prove, codEsame=codEsame)
 
 
+class Superamenti:
+    pass
+
+
 @teacher.route('/visualizzaCorsi/visualizzaProve/<codEsame>/definisciProve/creaProva', methods=['POST', 'GET'])
 @login_required
 @checkDocente
@@ -110,19 +117,24 @@ def creaProva(codEsame):
     codProva = request.form['codProva']
     tipologia = request.form['tipologia']
     peso = request.form['peso']
-    dataScadenza = request.form['dataScadenza']
-    add_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=0,
-                      idoneità=False)
+    bonus = request.form['bonus']
+    provePrimarie = request.form.getlist('prove_primarie[]')
+    new_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=bonus)
 
 
     #richiede il superamento della prova....
+    new_superamenti = []
+    for provaPrimaria in provePrimarie:
+         new_superamenti.append(Superamenti(provaPrimaria=provaPrimaria, provaSuccessiva=codProva))
 
     #controllare le invariatni....
 
     esame = Esami.query.get(codEsame)
-    esame.prove.append(add_prova)
-    current_user.prove.append(add_prova)
-    db.session.add(add_prova)
+    esame.prove.append(new_prova)
+    current_user.prove.append(new_prova)
+    db.session.add(new_prova)
+    for superamento in new_superamenti:
+        db.session.add(superamento)
     db.session.commit()
 
     return redirect(url_for('teacher.visualizzaProve', codEsame=codEsame))
@@ -135,13 +147,16 @@ def eliminaProva(codEsame, codProva):
     docente = current_user
     prova_to_delete = Prove.query.get(codProva)
     owner_prova = Docenti.query.get(prova_to_delete.docente)
+    #Controllo che NON esista nessun appello relativo a nessuna prova relativa al corso.
+    esame = Esami.query.get(codEsame)
+    esiste_appello_esame = any(prova.appelli for prova in esame.prove)
 
-    if owner_prova == docente:
-        print("puoi eliminare questa prova")
+    if owner_prova == docente and not esiste_appello_esame:
+        print("Puoi eliminare questa prova")
         db.session.delete(prova_to_delete)
         db.session.commit()
     else:
-        print("non puoi eliminare questa prova")
+        print("Non puoi eliminare questa prova")
     return redirect(url_for('teacher.visualizzaProve', codEsame=codEsame))
 
 
