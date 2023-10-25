@@ -104,9 +104,6 @@ def definisciProva(codEsame):
     return render_template('teacher/definisciProva.html', user=current_user, prove=prove, codEsame=codEsame)
 
 
-class Superamenti:
-    pass
-
 
 @teacher.route('/visualizzaCorsi/visualizzaProve/<codEsame>/definisciProve/creaProva', methods=['POST', 'GET'])
 @login_required
@@ -118,8 +115,9 @@ def creaProva(codEsame):
     tipologia = request.form['tipologia']
     peso = request.form['peso']
     bonus = request.form['bonus']
+    durata = request.form['durata']
     provePrimarie = request.form.getlist('prove_primarie[]')
-    new_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=bonus)
+    new_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=bonus, durata=durata)
 
 
     #richiede il superamento della prova....
@@ -168,6 +166,7 @@ def definisciAppello(codProva):
     isAbilitata = False   #una prova è abilitata quando la somma dei pesi delle prove abilitate per un corso è 1
     prova = Prove.query.get(codProva)
     esame = prova.esami
+    codEsame = esame.cod
     pesoTot = 0
     for prova in esame.prove:
         pesoTot = pesoTot + prova.peso
@@ -176,9 +175,11 @@ def definisciAppello(codProva):
 
     if isAbilitata:
         # crea un appello per una prova
-        return render_template('teacher/definisciAppello.html', user=current_user, prove=current_user.prove)
+        prova = Prove.query.get(codProva)
+        return render_template('teacher/definisciAppello.html', user=current_user, prove=current_user.prove,
+                               codEsame = codEsame)
     else:
-        return redirect(url_for('teacher.visualizzaProve'))
+        return redirect(url_for('teacher.visualizzaProve', codEsame = codEsame))
 
 
 @teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello/creaAppello', methods=['POST', 'GET'])
