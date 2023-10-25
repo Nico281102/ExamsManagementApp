@@ -453,8 +453,10 @@ class Prove(db.Model):
 
 class Superamenti(db.Model):
     __tablename__ = 'superamenti'
-    provaSuccessiva = db.Column(db.String(32), db.ForeignKey('prove.cod'), primary_key=True)
-    provaPrimaria = db.Column(db.String(32), db.ForeignKey('prove.cod'), primary_key = True)
+    provaSuccessiva = db.Column(db.String(32), db.ForeignKey('prove.cod',ondelete='CASCADE')
+                                            ,primary_key=True)
+    provaPrimaria = db.Column(db.String(32), db.ForeignKey('prove.cod', ondelete='CASCADE')
+                                            ,primary_key = True)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
