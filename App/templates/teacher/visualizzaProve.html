@@ -17,7 +17,7 @@
         <thead>
             <tr>
                 <th>Codice Prova</th>
-                <th>Richiede </th>
+                <th>Richiede</th>
                 <th>Tipologia</th>
                 <th>Data di Scadenza e Ora</th>
                 <th>Peso</th>
@@ -28,8 +28,8 @@
         <tbody>
             {% for prova in prove %}
                 <tr>
-                    <td>{{ prova.cod }}</td>
-                    <td>{{prova.getProvePrecedenti(prova.cod)}} </td>
+                    <td data-prove-successive="{{ prova.getProveSuccessive(prova.cod) }}">{{ prova.cod }}</td>
+                    <td>{{prova.getProvePrecedenti(prova.cod)}}</td>
                     <td>{{ prova.Tipologia }}</td>
                     <td>{{ prova.dataScadenza }}</td>
                     <td>{{ prova.peso }}</td>
@@ -43,10 +43,8 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if prova in lista_prove_abilitate and not nessun_appello_relativo_all_esame%}
-                            <a href="{{ url_for('teacher.eliminaProva', codEsame=codEsame, codProva=prova.cod) }}">
-                                <button type="button" class="btn btn-danger">Elimina Prova</button>
-                            </a>
+                        {% if prova in lista_prove_abilitate and not nessun_appello_relativo_all_esame %}
+                            <button type="button" class="btn btn-danger">Elimina Prova</button>
                         {% else %}
                             <button type="button" class="btn btn-danger" disabled>Elimina Prova</button>
                         {% endif %}
@@ -55,6 +53,12 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <div id="avviso-eliminazione" class="alert alert-warning" style="display: none;">
+        Attenzione, stai cercando di eliminare una prova che è primaria per le seguenti prove: <span id="prove-successive"></span>
+            <br>
+    Per proseguire devi prima eliminare le prove "Primarie".
+    </div>
 
     <!-- Pulsante "Definisci Nuova Prova" in basso -->
     <a href="{{ url_for('teacher.definisciProva', codEsame=prove[0].esami.cod) }}">
@@ -69,6 +73,28 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const avvisoEliminazione = document.getElementById("avviso-eliminazione");
+        const proveSuccessiveSpan = document.getElementById("prove-successive");
+
+        const pulsantiEliminazione = document.querySelectorAll("button.btn-danger");
+        pulsantiEliminazione.forEach(function(pulsante) {
+            pulsante.addEventListener("click", function(event) {
+                const cellaProva = this.closest("tr").querySelector("td[data-prove-successive]");
+                const proveSuccessive = cellaProva.getAttribute("data-prove-successive");
+
+                if (proveSuccessive) {
+                    avvisoEliminazione.style.display = "block";
+                    proveSuccessiveSpan.textContent = proveSuccessive;
+
+                    event.preventDefault();
+                }
+            });
+        });
+    });
+</script>
 
 </body>
 </html>
