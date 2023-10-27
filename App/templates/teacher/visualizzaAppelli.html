@@ -21,6 +21,7 @@
                     <th>Appello</th>
                     <th>Esame</th>
                     <th>Prova</th>
+                    <th>Data</th>
                     <th>Visualizza studenti iscritti</th>
                     <th>Dettagli Appello</th>
                     <th>Elimina Appello</th>
@@ -32,6 +33,7 @@
                         <td>{{ appello.codAppello }}</td>
                         <td>{{ appello.prove.esami.name }}</td>
                         <td>{{ appello.prove.cod }}</td>
+                         <td>{{ appello.data }}</td>
                         <td>
                             <a href="{{ url_for('teacher.visualizzaStudentiIscritti', codAppello=appello.codAppello) }}">
                                 <button type="submit" class="btn btn-primary">Visualizza Iscritti </button>
@@ -64,6 +66,7 @@
                     <th>Appello</th>
                     <th>Esame</th>
                     <th>Prova</th>
+                    <th>Data</th>
                     <th>Visualizza studenti iscritti</th>
                     <th>Dettagli Appello</th>
                     <th>Elimina Appello</th>
@@ -75,6 +78,7 @@
                         <td>{{ appello.codAppello }}</td>
                         <td>{{ appello.prove.esami.name }}</td>
                         <td>{{ appello.prove.cod }}</td>
+                        <td>{{ appello.data }}</td>
                         <td>
                             <a href="{{ url_for('teacher.visualizzaStudentiIscritti', codAppello=appello.codAppello) }}">
                                 <button type="submit" class="btn btn-primary">Visualizza Iscritti </button>
