@@ -1,5 +1,8 @@
+from pytz import UTC
+
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import func
 
 from App.checkFunctions import checkDocente
 from App.db.models.database import Esami, Prove, db, Appelli, Docenti, iscrizioni, Superamenti
@@ -220,7 +223,12 @@ def visualizzaStudentiIscritti(codAppello):
         studenti = Appelli.query.get(codAppello).studenti
         #gli studenti che hanno gia un voto devono comaparire con il voto settato.
         print("sono in visualizzaStudentiIscritti")
-        return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
+        appello = Appelli.query.get(codAppello)
+        db_stamp = db.session.query(func.now()).scalar()
+        appello_data_aware = appello.data.replace(tzinfo=UTC)
+        is_appello_nel_passato = appello_data_aware < db_stamp
+        return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello,
+                               is_appello_nel_passato=is_appello_nel_passato)
 
 
 @teacher.route('/visualizzaAppelli/dettagliAppello/<codAppello>', methods=['GET'])
