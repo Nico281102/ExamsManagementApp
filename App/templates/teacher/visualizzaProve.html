@@ -59,12 +59,16 @@
             <br>
     Per proseguire devi prima eliminare le prove "Primarie".
     </div>
-
+    {% if not nessun_appello_relativo_all_esame %}
     <!-- Pulsante "Definisci Nuova Prova" in basso -->
     <a href="{{ url_for('teacher.definisciProva', codEsame = codEsame) }}">
         <button type="button" class="btn btn-success mt-3">Definisci Nuova Prova</button>
     </a>
-
+    {% else %}
+        <a href="{{ url_for('teacher.definisciProva', codEsame = codEsame) }}">
+        <button type="button" class="btn btn-success mt-3" disabled>Definisci Nuova Prova</button>
+    </a>
+    {% endif %}
     <!-- Altre informazioni dell'utente, se necessario -->
     <p class="mt-3">Benvenuto, {{ user.name }}!</p>
 </div>
