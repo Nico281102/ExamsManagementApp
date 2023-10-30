@@ -27,7 +27,10 @@ def appelliDisponibili():
     #ma ha la possibilità di iscriversi ad un altro appello relativo ad una prova che ha gia passato, ma con voto non formalizzato
     print("sono in prenotaAppello")
     appelli_disp = current_user.getAppelliDisponibili()
-    return render_template('student/appelliDisponibili.html', appelli_disponibili=appelli_disp)
+    appelli_non_validi = current_user.getAppelliNonValidi()
+    appelli_a_cui_sei_iscritto = set(current_user.appelli) - set(appelli_non_validi)
+    prove_a_cui_sono_iscritto = [appello.prove for appello in appelli_a_cui_sei_iscritto]
+    return render_template('student/appelliDisponibili.html', appelli_disponibili=appelli_disp, studente = current_user, prove_a_cui_sono_iscritto = prove_a_cui_sono_iscritto)
 
 
 

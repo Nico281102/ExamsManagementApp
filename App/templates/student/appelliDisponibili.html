@@ -8,9 +8,9 @@
     <title>Prenotazioni disponibili per lo studente</title>
 </head>
 <body>
-                    <a href="{{ url_for('student.studentPage') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Torna Indietro
-            </a>
+    <a href="{{ url_for('student.studentPage') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Torna Indietro
+    </a>
     <div class="container mt-5">
         <h1>Prenotazioni disponibili per lo studente</h1>
         <table class="table">
@@ -24,17 +24,28 @@
                 </tr>
             </thead>
             <tbody>
-                {% for appello in appelli_disponibili %}
+                {% for appello in studente.getAppelliDisponibiliPossibili() %}
                     <tr>
                         <td>{{ appello.data }}</td>
                         <td>{{ appello.luogo }}</td>
                         <td>{{ appello.prove }}</td>
                         <td>{{ appello.prove.esami }}</td>
-                            <td>
-                                <a href="{{url_for('student.prenotaAppello', codAppello = appello.codAppello)}}">
-                            <button type="submit" class="btn btn-primary">Prenota</button>
-                                </a>
-                            </td>
+                        <td>
+                                {% if appello.prove in prove_a_cui_sono_iscritto %}
+                                    <a href="{{ url_for('student.prenotaAppello', codAppello=appello.codAppello) }}"
+                                       onclick="return confirm('Stai andando ad eliminare un appello che hai già effettuato,' +
+                                        ' procedendo con la prenotazione andrai ad invalidare l appello che hai selezionato' +
+                                         ' e anche gli eventuali appelli relativi a prove che richiedevano il superamento di una prova' +
+                                          ' relativa all appelllo selezionato.' +
+                                           ' Sei sicuro di voler effettuare la prenotazione?');">
+                                        <button type="submit" class="btn btn-warning">Prenota</button>
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('student.prenotaAppello', codAppello=appello.codAppello) }}">
+                                        <button type="submit" class="btn btn-primary">Prenota</button>
+                                    </a>
+                                {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

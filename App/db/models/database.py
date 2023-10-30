@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from sqlalchemy import Sequence
+from sqlalchemy import Sequence, CheckConstraint
 from sqlalchemy.types import TIMESTAMP
 from sqlalchemy.sql import func
 from sqlalchemy import select, and_
@@ -222,6 +222,37 @@ class Studenti(db.Model, UserMixin):
 
         return esami
 
+    def getAppelliDisponibiliPossibili(self):
+        #Sono tutti gli esami disponibili per uno studente, ma anche possibli, perchè uno studente non può iscriversi
+        #ad un esame che richiede il superamento di una prova primaria
+        lista_prenotazioni_disponibili = []
+        lista_appelli_prove_base = []
+        lista_prove_successive = []
+        res = []
+        for appello in self.appelli:
+            if appello not in self.getAppelliNonValidi():
+                lista_prenotazioni_disponibili.append(appello)
+        appelli_disponibili = self.getAppelliDisponibili()
+        for appello in appelli_disponibili:
+            prova = appello.prove
+            if not prova.getProvePrecedenti(prova.cod):
+                lista_appelli_prove_base.append(appello)
+        for appello in lista_prenotazioni_disponibili:
+            prova = appello.prove
+            prove_successive = prova.getProveSuccessive(prova.cod)
+            for prova_successiva in prove_successive:
+                for cod in prova_successiva:
+                    lista_prove_successive.append(cod)
+        lista_prove_successive = set(lista_prove_successive)
+        lista_appelli_prove_base = set(lista_appelli_prove_base)
+        for appello in appelli_disponibili:
+            if appello.prove.cod in lista_prove_successive or appello in lista_appelli_prove_base:
+                res.append(appello)
+        return res
+
+
+
+
     def getMean(self):
         #Query to get the mean of the voti
         #Invarianti:
@@ -431,9 +462,18 @@ class Prove(db.Model):
     docenti = db.relationship('Docenti', back_populates='prove', lazy=True)
 
 
-   # __table_args__ = (
-    #    db.CheckConstraint('(prove.Bonus = 0 OR peso = 0)', name='check_bonus_peso'),
-    #)
+    __table_args__ = (
+    #0 <= peso <= 1
+        db.CheckConstraint('peso >= 0 and peso <= 1', name='check_peso'),
+    #peso = 0 => Bonus <> 0
+        db.CheckConstraint('(prove."Bonus" = 0 OR peso = 0)', name='check_bonus_peso'),
+
+    #durata >= 0 and durata <= 180
+        db.CheckConstraint('durata >= 0 and durata <= 180', name='check_durata'),
+        # Altri vincoli di verifica se necessario
+    )
+
+
 
 
     def __repr__(self):
