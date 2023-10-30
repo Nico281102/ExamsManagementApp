@@ -180,15 +180,15 @@ def definisciAppello(codProva):
         # crea un appello per una prova
         prova = Prove.query.get(codProva)
         return render_template('teacher/definisciAppello.html', user=current_user, prove=current_user.prove,
-                               codEsame = codEsame)
+                               codEsame = codEsame, codProva=codProva)
     else:
-        return redirect(url_for('teacher.visualizzaProve', codEsame = codEsame))
+        return redirect(url_for('teacher.visualizzaProve', codEsame=codEsame))
 
 
-@teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello/creaAppello', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello/<codProva>/creaAppello', methods=['POST', 'GET'])
 @login_required
 @checkDocente
-def creaAppello():
+def creaAppello(codProva):
     print("sono in creaAppello")
     #crea un appello per una prova
     #impedire la creazione di un appello per una prova il quale appello è definito per una certa distanza di data ?
@@ -198,7 +198,7 @@ def creaAppello():
     data = request.form['data']
     print("prima di creare l'appello")
     print(Appelli.query.all())
-    new_appello = Appelli(data=data, luogo=luogo, prova=prova_id)
+    new_appello = Appelli(data=data, luogo=luogo, prova=codProva)
     db.session.add(new_appello)
     db.session.commit()
     print("dopo aver creato l'appello")

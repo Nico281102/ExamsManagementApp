@@ -12,7 +12,7 @@
     <div class="container mt-5">
         <h2 class="mb-4">Crea Appello</h2>
 
-        <form id="appelloForm" method="POST" action="{{ url_for('teacher.creaAppello') }}">
+        <form id="appelloForm" method="POST" action="{{ url_for('teacher.creaAppello', codProva=codProva) }}">
             <div class="form-group">
                 <label for="data">Data:</label>
                 <input type="date" class="form-control" id="data" name="data" required>
@@ -33,8 +33,7 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-success" href="{{ url_for('teacher.creaAppello') }}"
-                    onclick="creaAppello()">Crea Appello</button>
+            <button type="submit" class="btn btn-success" onclick="creaAppello()">Crea Appello</button>
         </form>
     </div>
 
