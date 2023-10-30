@@ -1,5 +1,5 @@
 from copy import copy
-
+from datetime import datetime
 from flask import Blueprint, render_template, request, url_for, redirect, json
 from flask_login import login_required, current_user
 from sqlalchemy import select, and_
@@ -76,7 +76,7 @@ def prenotaAppello(codAppello):
 def prenotazioni():
     print("sono in prenotazioni")
     print(prenotazioni)
-    return render_template('student/prenotazioni.html', studente=current_user)
+    return render_template('student/prenotazioni.html', studente=current_user, datetime= datetime)
 
 
 @student.route('/prenotazioni/eliminaPrenotazione/<codAppello>', methods=['POST', 'GET'])
@@ -84,8 +84,7 @@ def prenotazioni():
 @checkStudente
 def eliminaPrenotazioneAppello(codAppello):
     print("sono in prenotaAppello")
-    appello_id = request.form['appello']
-    appello = Appelli.query.get(appello_id)
+    appello = Appelli.query.get(codAppello)
     if appello in current_user.appelli:
         current_user.appelli.remove(appello)
 
