@@ -290,7 +290,6 @@ def create_iscrizioni():
     appello11 = db.session.get(Appelli,'11')
     for studente in studenti:
         studente.appelli.append(appello1)
-        studente.appelli.append(appello11)
     db.session.commit()
 
 
