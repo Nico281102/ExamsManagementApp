@@ -344,21 +344,6 @@ class Studenti(db.Model, UserMixin):
         else:
             return []
 
-    def computePassed(self):
-        #da finire
-        #Query to set passato
-        #Considero ogni esame nel piano di studi dello studente
-        #per ogni esame mi prendo l'insieme delle prove che lo compone che non sono Bonus
-        #per ogni prova controllo se esiste un iscrizione VALIDA e con voto, relativa allo studente
-        #settare il voto qui(?)
-        passato = True
-        insieme_iscrizioni_valide = []
-        esami = self.esami
-        for esame in esami:
-            for prova in esame.prove and prova.bonus == 0:
-                passato = prova in insieme_iscrizioni_valide and passato
-            #metto passato all'esame nel caso passato sia true.
-        return None
 
 
     def __repr__(self):
