@@ -136,17 +136,4 @@ def get_esame(codEsame):
 
 
 
-def get_appelli_docente(teacher):
-    appelli = Appelli.query.all()
-    print("tutti gli appelli")
-    print(appelli)
-    appelli_docente = []
-    for appello in appelli:
-        if appello.prove:
-            prove = appello.prove
-            if prove.docenti == teacher:
-                appelli_docente.append(appello)
-
-    return appelli_docente
-
 

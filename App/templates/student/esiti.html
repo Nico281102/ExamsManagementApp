@@ -28,16 +28,14 @@
                     <td>{{ esame.name }}</td>
                     <td>{{ student.getVotoEsame(esame.cod) }}</td>
                     <td>
-                            <form method="POST" action="{{url_for('student.formalizza')}}">
-                                <input type="hidden" name="esame" value="{{ esame.cod }}">
+                            <a href="{{url_for('student.formalizza', codEsame = esame.cod)}}">
                                 <button type="submit" class="btn btn-danger">Formalizza</button>
-                            </form>
+                            </a>
                         </td>
-                                            <td>
-                        <form method="POST" action="{{url_for('student.rifiuta')}}">
-                                <input type="hidden" name="esame" value="{{ esame.cod }}">
-                                <button type="submit" class="btn btn-danger">rifiuta</button>
-                            </form>
+                    <td>
+                        <a href="{{url_for('student.rifiuta', codEsame = esame.cod)}}">
+                            <button type="submit" class="btn btn-danger">Rifiuta</button>
+                        </a>
                     </td>
                 </tr>
             {% endfor %}

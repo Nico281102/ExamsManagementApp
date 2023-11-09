@@ -1,9 +1,12 @@
+from pytz import UTC
+
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import func
 
 from App.checkFunctions import checkDocente
-from App.db.models.database import Esami, Prove, db, Appelli, Docenti, iscrizioni
-from App.utils.utilies import get_appelli_docente, set_voto_prova
+from App.db.models.database import Esami, Prove, db, Appelli, Docenti, iscrizioni, Superamenti
+from App.utils.utilies import set_voto_prova
 
 teacher = Blueprint('teacher', __name__, url_prefix='/teacher', template_folder='templates')
 
@@ -49,7 +52,8 @@ def ricercaDocente(codEsame):
     esame = Esami.query.get(codEsame)
     docenti_relativi_esame = esame.docenti
 
-    return render_template('teacher/ricercaDocente.html', docenti= set(set(docenti) - set(docenti_relativi_esame)), codEsame=codEsame)
+    return render_template('teacher/ricercaDocente.html', docenti= set(set(docenti) - set(docenti_relativi_esame)),
+                           codEsame=codEsame)
 
 
 @teacher.route('/visualizzaCorsi/visualizzaDocenti/<codEsame>/ricercaDocente/aggiungiDocente/<codDocente>', methods=['POST', 'GET'])
@@ -81,11 +85,11 @@ def visualizzaProve(codEsame):
     #visualizza le prove relative ad un corso
     esame = Esami.query.get(codEsame)
     prove = esame.prove
-    print(prove)
+    esiste_appello_realtivo_all_esame = any(prova.appelli for prova in esame.prove)
     #potrei passare anche un booleano che mi dice se si può creare la prova oppure no
-    print(current_user.prove)
     return render_template('teacher/visualizzaProve.html', user=current_user, prove=prove, esame=esame,
-                           lista_prove_abilitate=current_user.prove, codEsame=codEsame)
+                           lista_prove_abilitate=current_user.prove, codEsame=codEsame,
+                           nessun_appello_relativo_all_esame = esiste_appello_realtivo_all_esame)
 
 
 @teacher.route('/visualizzaCorsi/visualizzaProve/<codEsame>/definisciProva', methods=['POST', 'GET'])
@@ -103,6 +107,7 @@ def definisciProva(codEsame):
     return render_template('teacher/definisciProva.html', user=current_user, prove=prove, codEsame=codEsame)
 
 
+
 @teacher.route('/visualizzaCorsi/visualizzaProve/<codEsame>/definisciProve/creaProva', methods=['POST', 'GET'])
 @login_required
 @checkDocente
@@ -112,19 +117,25 @@ def creaProva(codEsame):
     codProva = request.form['codProva']
     tipologia = request.form['tipologia']
     peso = request.form['peso']
-    dataScadenza = request.form['dataScadenza']
-    add_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, dataScadenza=dataScadenza, Bonus=0,
-                      idoneità=False, isValid=False)
+    bonus = request.form['bonus']
+    durata = request.form['durata']
+    provePrimarie = request.form.getlist('prove_primarie[]')
+    new_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=bonus, durata=durata)
 
 
     #richiede il superamento della prova....
+    new_superamenti = []
+    for provaPrimaria in provePrimarie:
+         new_superamenti.append(Superamenti(provaPrimaria=provaPrimaria, provaSuccessiva=codProva))
 
     #controllare le invariatni....
 
     esame = Esami.query.get(codEsame)
-    esame.prove.append(add_prova)
-    current_user.prove.append(add_prova)
-    db.session.add(add_prova)
+    esame.prove.append(new_prova)
+    current_user.prove.append(new_prova)
+    db.session.add(new_prova)
+    for superamento in new_superamenti:
+        db.session.add(superamento)
     db.session.commit()
 
     return redirect(url_for('teacher.visualizzaProve', codEsame=codEsame))
@@ -137,13 +148,16 @@ def eliminaProva(codEsame, codProva):
     docente = current_user
     prova_to_delete = Prove.query.get(codProva)
     owner_prova = Docenti.query.get(prova_to_delete.docente)
+    #Controllo che NON esista nessun appello relativo a nessuna prova relativa al corso.
+    esame = Esami.query.get(codEsame)
+    esiste_appello_esame = any(prova.appelli for prova in esame.prove)
 
-    if owner_prova == docente:
-        print("puoi eliminare questa prova")
+    if owner_prova == docente and not esiste_appello_esame:
+        print("Puoi eliminare questa prova")
         db.session.delete(prova_to_delete)
         db.session.commit()
     else:
-        print("non puoi eliminare questa prova")
+        print("Non puoi eliminare questa prova")
     return redirect(url_for('teacher.visualizzaProve', codEsame=codEsame))
 
 
@@ -155,6 +169,7 @@ def definisciAppello(codProva):
     isAbilitata = False   #una prova è abilitata quando la somma dei pesi delle prove abilitate per un corso è 1
     prova = Prove.query.get(codProva)
     esame = prova.esami
+    codEsame = esame.cod
     pesoTot = 0
     for prova in esame.prove:
         pesoTot = pesoTot + prova.peso
@@ -163,15 +178,17 @@ def definisciAppello(codProva):
 
     if isAbilitata:
         # crea un appello per una prova
-        return render_template('teacher/definisciAppello.html', user=current_user, prove=current_user.prove)
+        prova = Prove.query.get(codProva)
+        return render_template('teacher/definisciAppello.html', user=current_user, prove=current_user.prove,
+                               codEsame = codEsame, codProva=codProva)
     else:
-        return redirect(url_for('teacher.visualizzaProve'))
+        return redirect(url_for('teacher.visualizzaProve', codEsame=codEsame))
 
 
-@teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello/creaAppello', methods=['POST', 'GET'])
+@teacher.route('/visualizzaCorsi/visualizzaProve/definisciAppello/<codProva>/creaAppello', methods=['POST', 'GET'])
 @login_required
 @checkDocente
-def creaAppello():
+def creaAppello(codProva):
     print("sono in creaAppello")
     #crea un appello per una prova
     #impedire la creazione di un appello per una prova il quale appello è definito per una certa distanza di data ?
@@ -181,7 +198,7 @@ def creaAppello():
     data = request.form['data']
     print("prima di creare l'appello")
     print(Appelli.query.all())
-    new_appello = Appelli(data=data, luogo=luogo, prova=prova_id)
+    new_appello = Appelli(data=data, luogo=luogo, prova=codProva)
     db.session.add(new_appello)
     db.session.commit()
     print("dopo aver creato l'appello")
@@ -196,9 +213,7 @@ def creaAppello():
 @checkDocente
 def visualizzaAppelli():
     print("sono in visualizzaAppelli")
-    print(get_appelli_docente(current_user))
-    return render_template('teacher/visualizzaAppelli.html', appelli=get_appelli_docente(current_user),
-                           user=current_user)
+    return render_template('teacher/visualizzaAppelli.html', docente=current_user)
 
 
 @teacher.route('/visualizzaAppelli/studentiIscritti/<codAppello>', methods=['GET'])
@@ -208,23 +223,20 @@ def visualizzaStudentiIscritti(codAppello):
         studenti = Appelli.query.get(codAppello).studenti
         #gli studenti che hanno gia un voto devono comaparire con il voto settato.
         print("sono in visualizzaStudentiIscritti")
-        return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
+        appello = Appelli.query.get(codAppello)
+        db_stamp = db.session.query(func.now()).scalar()
+        appello_data_aware = appello.data.replace(tzinfo=UTC)
+        is_appello_nel_passato = appello_data_aware < db_stamp
+        return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello,
+                               is_appello_nel_passato=is_appello_nel_passato)
 
 
-@teacher.route('/visualizzaAppelli/studentiSuperato/<codAppello>', methods=['GET'])
+@teacher.route('/visualizzaAppelli/dettagliAppello/<codAppello>', methods=['GET'])
 @login_required
 @checkDocente
-def visualizzaSuperamenti(codAppello):
-    #Questa funzione permette di visualizzare solo gli studenti che hanno superato la prova.
-    #La funzione è raggiungibile solo se l'appello è scadutof
-        studenti = Appelli.query.get(codAppello).studenti
-        res = iscrizioni.query.filter(iscrizioni.c.appello == codAppello, iscrizioni.c.voto >= 18)
+def visualizzaDettagliAppello(codAppello):
 
-        print(res)
-        print(type(res))
-        #gli studenti che hanno gia un voto devono comaparire con il voto settato.
-        print("sono in visualizzaStudentiIscritti")
-        return render_template('teacher/visualizzaStudentiIscritti.html', studenti=studenti, codAppello=codAppello)
+        return render_template('teacher/visualizzaDettagliAppello.html', appello=Appelli.query.get(codAppello))
 
 
 @teacher.route('/visualizzaAppelli/studentiIscritti/setVoto', methods=['POST'])

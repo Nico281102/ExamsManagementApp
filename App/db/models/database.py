@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from sqlalchemy import Sequence
+from sqlalchemy import Sequence, CheckConstraint
 from sqlalchemy.types import TIMESTAMP
 from sqlalchemy.sql import func
 from sqlalchemy import select, and_
@@ -77,6 +77,30 @@ class Studenti(db.Model, UserMixin):
     def generate_email(self):
         return f"{self.matricola}@stud.unive.it"
 
+    def formalizzaEsame(self, codEsame):
+        with db.engine.begin() as connection:
+            # Execute the update statement
+            connection.execute(
+                formalizzazioneEsami
+                .update()
+                .where(
+                    (formalizzazioneEsami.c.studente == self.matricola) & (
+                                formalizzazioneEsami.c.esame == codEsame))
+                .values({'formalizzato': True})
+            )
+
+    def rifiutaEsame(self, codEsame):
+        with db.engine.begin() as connection:
+            # Execute the update statement
+            connection.execute(
+                formalizzazioneEsami
+                .update()
+                .where(
+                    (formalizzazioneEsami.c.studente == self.matricola) & (
+                                formalizzazioneEsami.c.esame == codEsame))
+                .values({'voto': None, 'formalizzato': False})
+            )
+
     def getAppelliDisponibili(self):
         #Query to get the appelli disponibili
         #Invarianti:
@@ -85,9 +109,10 @@ class Studenti(db.Model, UserMixin):
         appelli = Appelli.query.all()
         appelli_disponibili = []
 
+
             # Get the list of tests the student has not passed
-        esami_non_formalizzati = self.getEsamiNonFormalizzati() # Perchè potenzialmente posso scegliere di rifare prove relative ad esami passati
-        prove_studente = [prova for esame in esami_non_formalizzati for prova in esame.prove]
+        esami_non_passati = self.getEsamiNonFormalizzati() # Perchè potenzialmente posso scegliere di rifare prove relative ad esami passati
+        prove_studente = [prova for esame in esami_non_passati for prova in esame.prove]
 
         for appello in appelli:
             if appello.prove in prove_studente and appello not in self.appelli:
@@ -98,7 +123,51 @@ class Studenti(db.Model, UserMixin):
 
         return appelli_disponibili_filtered
 
+    def getEsamiNonPassati(self):
+        query = (
+            select(
+                formalizzazioneEsami.c.esame
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) & (
+                        formalizzazioneEsami.c.passato == False) )
+        )
+
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+
+        res = result.fetchall()
+
+        esami = []
+        for i in range(len(res)):
+            esami.append(Esami.query.get(res[i][0]))
+
+        return esami
     def getEsamiNonFormalizzati(self):
+        #Query to get the esami non formalizzati
+        #Invarianti:
+        #   - Gli esami non formalizzati stati ancora formalizzati
+        # Build the SQL query
+        query = (
+            select(
+                formalizzazioneEsami.c.esame
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) & (
+                        formalizzazioneEsami.c.formalizzato == False)
+                     )
+        )
+
+        # Execute the query
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+
+        res = result.fetchall()
+
+        esami = []
+        for i in range(len(res)):
+            esami.append(Esami.query.get(res[i][0]))
+
+        return esami
+    def getEsamiNonFormalizzatiandPassati(self):
         #Query to get the esami non formalizzati
         #Invarianti:
         #   - Gli esami non formalizzati sono quelli che sono stati passati e che non sono stati ancora formalizzati
@@ -152,6 +221,37 @@ class Studenti(db.Model, UserMixin):
             esami.append(Esami.query.get(res[i][0]))
 
         return esami
+
+    def getAppelliDisponibiliPossibili(self):
+        #Sono tutti gli esami disponibili per uno studente, ma anche possibli, perchè uno studente non può iscriversi
+        #ad un esame che richiede il superamento di una prova primaria
+        lista_prenotazioni_disponibili = []
+        lista_appelli_prove_base = []
+        lista_prove_successive = []
+        res = []
+        for appello in self.appelli:
+            if appello not in self.getAppelliNonValidi():
+                lista_prenotazioni_disponibili.append(appello)
+        appelli_disponibili = self.getAppelliDisponibili()
+        for appello in appelli_disponibili:
+            prova = appello.prove
+            if not prova.getProvePrecedenti(prova.cod):
+                lista_appelli_prove_base.append(appello)
+        for appello in lista_prenotazioni_disponibili:
+            prova = appello.prove
+            prove_successive = prova.getProveSuccessive(prova.cod)
+            for prova_successiva in prove_successive:
+                for cod in prova_successiva:
+                    lista_prove_successive.append(cod)
+        lista_prove_successive = set(lista_prove_successive)
+        lista_appelli_prove_base = set(lista_appelli_prove_base)
+        for appello in appelli_disponibili:
+            if appello.prove.cod in lista_prove_successive or appello in lista_appelli_prove_base:
+                res.append(appello)
+        return res
+
+
+
 
     def getMean(self):
         #Query to get the mean of the voti
@@ -244,21 +344,6 @@ class Studenti(db.Model, UserMixin):
         else:
             return []
 
-    def computePassed(self):
-        #da finire
-        #Query to set passato
-        #Considero ogni esame nel piano di studi dello studente
-        #per ogni esame mi prendo l'insieme delle prove che lo compone che non sono Bonus
-        #per ogni prova controllo se esiste un iscrizione VALIDA e con voto, relativa allo studente
-        #settare il voto qui(?)
-        passato = True
-        insieme_iscrizioni_valide = []
-        esami = self.esami
-        for esame in esami:
-            for prova in esame.prove and prova.bonus == 0:
-                passato = prova in insieme_iscrizioni_valide and passato
-            #metto passato all'esame nel caso passato sia true.
-        return None
 
 
     def __repr__(self):
@@ -289,6 +374,33 @@ class Docenti(db.Model, UserMixin):
 
     def generate_email(self):
         return f"{self.name.lower()}.{self.surname.lower()}@unive.it"
+
+    def getAppelliDocente(self):
+        #Query to get the appelli of the docente
+        #Invarianti:
+        #   - Gli appelli del docente sono quelli che sono stati creati da lui
+        appelli = Appelli.query.all()
+        appelli_docente = []
+        for appello in appelli:
+            if appello.prove and appello.prove.docente == self.cod:
+                appelli_docente.append(appello)
+        return appelli_docente
+
+    def getAppelliScaduti(self):
+        appelli_docente = self.getAppelliDocente()
+        res = []
+        for appello in appelli_docente:
+            if appello.data < datetime.now():
+                res.append(appello)
+        return res
+
+    def getAppelliNonScaduti(self):
+        appelli_docente = self.getAppelliDocente()
+        res = []
+        for appello in appelli_docente:
+            if appello.data > datetime.now():
+                res.append(appello)
+        return res
 
     def __repr__(self):
         return '<Docente %r>' % self.name
@@ -324,6 +436,7 @@ class Prove(db.Model):
     peso = db.Column(db.Float, nullable=False)
     Tipologia = db.Column(db.Enum('Orale', 'Scritto', 'Progetto', name='Tipologia'), nullable=False)
     Bonus = db.Column(db.Integer, nullable=False, default=0)
+    durata = db.Column(db.Integer, nullable=False, default=90)
     esame = db.Column(db.String(32), db.ForeignKey('esami.cod'))
     docente = db.Column(db.Integer, db.ForeignKey('docenti.cod'))
     created_at = db.Column(TIMESTAMP, server_default=func.now())
@@ -333,23 +446,48 @@ class Prove(db.Model):
     appelli = db.relationship('Appelli', back_populates='prove', lazy=True)
     docenti = db.relationship('Docenti', back_populates='prove', lazy=True)
 
-    superamenti_secondari = db.relationship('Superamento', back_populates='prova_secondaria', lazy=True,
-                                            foreign_keys='Superamento.provaSecondaria')
+
+    __table_args__ = (
+    #0 <= peso <= 1
+        db.CheckConstraint('peso >= 0 and peso <= 1', name='check_peso'),
+    #peso = 0 => Bonus <> 0
+        db.CheckConstraint('(prove."Bonus" = 0 OR peso = 0)', name='check_bonus_peso'),
+
+    #durata >= 0 and durata <= 180
+        db.CheckConstraint('durata >= 0 and durata <= 180', name='check_durata'),
+        # Altri vincoli di verifica se necessario
+    )
+
+
+
 
     def __repr__(self):
         return '[Prova: %r]' % self.cod
 
 
-class Superamento(db.Model):
-    __tablename__ = 'superamento'
-    provaPrincipale = db.Column(db.String(32), db.ForeignKey('prove.cod'))
-    provaSecondaria = db.Column(db.String(32), db.ForeignKey('prove.cod'), primary_key=True)
+    def getProveSuccessive(self, codProva):
+        query = db.session.query(Superamenti.provaSuccessiva).filter(Superamenti.provaPrimaria == codProva)
+        return query.all()
+
+
+    def getProvePrecedenti(self, codProva):
+        query = db.session.query(Superamenti.provaPrimaria).filter(Superamenti.provaSuccessiva == codProva)
+        results = query.all()
+        return results
+
+
+class Superamenti(db.Model):
+    __tablename__ = 'superamenti'
+    provaSuccessiva = db.Column(db.String(32), db.ForeignKey('prove.cod',ondelete='CASCADE')
+                                            ,primary_key=True)
+    provaPrimaria = db.Column(db.String(32), db.ForeignKey('prove.cod', ondelete='CASCADE')
+                                            ,primary_key = True)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
-    prova_secondaria = db.relationship('Prove', back_populates='superamenti_secondari', foreign_keys=[provaSecondaria],
-                                       lazy=True)
-
+    def __init__(self, provaPrimaria, provaSuccessiva):
+        self.provaPrimaria = provaPrimaria
+        self.provaSuccessiva = provaSuccessiva
 
 
 

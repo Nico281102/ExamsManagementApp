@@ -3,7 +3,7 @@ from sqlalchemy import text
 
 from App.utils.utilies import set_voto
 from main import app
-from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamento, \
+from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamenti, \
     formalizzazioneEsami
 
 query = Session(db)
@@ -11,6 +11,95 @@ query = Session(db)
 def add(obj):
     db.session.add(obj)
     db.session.commit()
+
+
+def create_trigger():
+    # Comando SQL per creare il trigger PostgreSQL
+    create_trigger_sql = """
+        CREATE TRIGGER invalidate_trial 
+        BEFORE INSERT ON Iscrizioni 
+        FOR EACH ROW 
+        EXECUTE FUNCTION invalidate_trial_function(); 
+    """
+
+    # Comando SQL per creare la funzione PostgreSQL
+    create_function_sql = """
+        CREATE OR REPLACE FUNCTION invalidate_trial_function() RETURNS TRIGGER AS $$ 
+        BEGIN
+            UPDATE Iscrizioni 
+            SET "isValid" = FALSE 
+            WHERE studente = new.studente 
+            AND appello IN (
+                SELECT Appelli."codAppello"
+                FROM Appelli JOIN Iscrizioni ON  Appelli."codAppello" = appello
+                WHERE Iscrizioni."isValid" = TRUE 
+                AND Iscrizioni."voto" >= 18 
+                AND prova IN (
+                    SELECT prova 
+                    FROM Appelli 
+                    WHERE Appelli."codAppello" = new.appello
+                )
+            );
+            RETURN NEW;
+        END; 
+        $$ LANGUAGE plpgsql;"""
+
+    create_trigger_sql2= """
+        CREATE TRIGGER invalidate_exam_cascade
+        BEFORE UPDATE ON Iscrizioni 
+        FOR EACH ROW 
+        WHEN (new."isValid" = FALSE)
+        EXECUTE FUNCTION invalidate_exam_cascade_function(); """
+
+    create_function_sql2 = """
+        CREATE OR REPLACE FUNCTION invalidate_exam_cascade_function() RETURNS TRIGGER AS $$ 
+        BEGIN
+            -- Rimozione dell'esame che era formalizzabile, in quanto una prova che lo costituiva non è più valida
+            UPDATE "formalizzazioneEsami"	
+            SET "passato" = FALSE 		 
+            WHERE studente = new.studente 
+            AND passato = TRUE 
+            AND "formalizzazioneEsami".esame IN (
+                SELECT esame 
+                FROM appelli JOIN prove ON  appelli."prova" = prove."cod"
+                WHERE appelli."codAppello" = new.appello
+            ); 
+
+            -- Gestione invalida prove che richiedevano una prova che è stata invalidata, produce ricorsione di chiamate 
+            UPDATE Iscrizioni
+            SET "isValid" = FALSE
+            WHERE studente = new.studente AND "isValid" = TRUE 
+            AND appello IN (
+                SELECT appelli."codAppello"
+                FROM Appelli 
+                WHERE prova IN (
+                    SELECT superamenti."provaSuccessiva"
+                    FROM Superamenti JOIN Appelli ON prova = superamenti."provaPrimaria"
+                    WHERE appelli."codAppello" = NEW.appello
+                )
+            );	 
+            RETURN NEW; 
+        END; 
+        $$ LANGUAGE plpgsql;
+    """
+
+    # Esegui i comandi SQL per creare il trigger e la funzione
+
+    with db.engine.connect() as conn:
+        # Ottieni una connessione al database
+        conn = db.session.connection()
+
+        # Esegui i comandi SQL per creare il trigger e la funzione
+        conn.execute(text(create_function_sql))
+        conn.execute(text(create_function_sql2))
+        conn.execute(text(create_trigger_sql))
+        conn.execute(text(create_trigger_sql2))
+
+
+
+    db.session.commit()
+
+        # Chiamata alla funzione per creare il trigger e la funzione
 
 
 def creates_students():
@@ -149,6 +238,22 @@ def create_test(dict_docenti):
 
 def create_appelli():
 
+    add(Appelli(data='2023-01-10 12:00:00', luogo='Aula1', prova='PO1'))
+    add(Appelli(data='2023-01-10', luogo='Aula2', prova='PO2'))
+
+    add(Appelli(data='2023-01-15', luogo='Aula1', prova='BD1'))
+    add(Appelli(data='2023-01-15', luogo='Aula2', prova='BD2'))
+
+    add(Appelli(data='2023-01-20', luogo='Aula1', prova='SO1'))
+    add(Appelli(data='2023-01-20', luogo='Aula2', prova='SO2'))
+
+    add(Appelli(data='2023-01-25', luogo='Aula1', prova='PL1'))
+    add(Appelli(data='2023-01-25', luogo='Aula2', prova='PL2'))
+
+    add(Appelli(data='2023-01-30', luogo='Aula1', prova='ASD1'))
+    add(Appelli(data='2023-01-30', luogo='Aula2', prova='ASD2'))
+
+
     add(Appelli(data='2024-01-01', luogo='Aula1', prova='PO1'))
     add(Appelli(data='2024-01-01', luogo='Aula2', prova='PO2'))
 
@@ -171,18 +276,20 @@ def create_appelli():
 
 
 def create_superamento():
-    add(Superamento(provaPrincipale='PO1', provaSecondaria='PO2'))
-    add(Superamento(provaPrincipale='BD1', provaSecondaria='BD2'))
-    add(Superamento(provaPrincipale='SO1', provaSecondaria='SO2'))
-    add(Superamento(provaPrincipale='PL1', provaSecondaria='PL2'))
-    add(Superamento(provaPrincipale='ASD1', provaSecondaria='ASD2'))
+    add(Superamenti(provaPrimaria='PO1', provaSuccessiva='PO2'))
+    add(Superamenti(provaPrimaria='BD1', provaSuccessiva='BD2'))
+    add(Superamenti(provaPrimaria='BD2', provaSuccessiva='BDProject'))
+    add(Superamenti(provaPrimaria='SO1', provaSuccessiva='SO2'))
+    add(Superamenti(provaPrimaria='PL1', provaSuccessiva='PL2'))
+    add(Superamenti(provaPrimaria='ASD1', provaSuccessiva='ASD2'))
 
 
 def create_iscrizioni():
     studenti = db.session.query(Studenti).filter().all()
-    appello = db.session.get(Appelli, '1')
+    appello1 = db.session.get(Appelli, '1')
+    appello11 = db.session.get(Appelli,'11')
     for studente in studenti:
-        studente.appelli.append(appello)
+        studente.appelli.append(appello1)
     db.session.commit()
 
 
@@ -196,6 +303,7 @@ def create_piano_studi():
 
 def create_formalizzato():
     #attenzione!!! prima di aggiungere il voto ad una esame bisognerebbe calcolarlo in base alle prove relative a tale esame!!
+    #Questa funzione serviva per testare la funzione di formalizzazione
     list_studenti = db.session.query(Studenti).filter().all()
     studente = list_studenti[0]
     set_voto(studente.matricola, 18, '01QWERTY')
@@ -214,7 +322,12 @@ def create_formalizzato():
 
 def init_db():
     db.create_all()
+
     print("DB created")
+
+
+    create_trigger()
+    print("Trigger creati")
 
     list_docenti = creat_exam_and_teacher()
     print("Docenti ed esami creati")
@@ -234,10 +347,11 @@ def init_db():
     print("Formalizzato creato")
 
 
+    db.session.commit()
+
 def delete_db():
     db.drop_all()
     db.session.commit()
-
 
     print("DB deleted")
 

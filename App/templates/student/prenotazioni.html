@@ -1,4 +1,3 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,12 +19,13 @@
                     <th scope="col">Luogo</th>
                     <th scope="col">Prova</th>
                     <th scope="col">Corso Relativo</th>
+                    <th scope="col">Stato attività</th>
                     <th scope="col">Elimina</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td colspan="5"><strong>Appelli non più validi</strong></td>
+                    <td colspan="6"><strong>Appelli non più validi</strong></td>
                 </tr>
                 {% for appello in studente.getAppelliNonValidi() %}
                     <tr>
@@ -33,18 +33,22 @@
                         <td>{{ appello.luogo }}</td>
                         <td>{{ appello.prove }}</td>
                         <td>{{ appello.prove.esami }}</td>
+                            {% if appello.data < datetime.utcnow() %}
+                                <td><button class="btn btn-success" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
+                            {% else %}
+                                <td><button class="btn btn-danger" >Non Svolto</button></td>
+                            {% endif %}
                         <td>
-                            <form method="POST" action="{{url_for('student.eliminaPrenotazioneAppello')}}">
-                                <input type="hidden" name="appello" value="{{ appello.codAppello }}">
+                            <a href="{{url_for('student.eliminaPrenotazioneAppello', codAppello=appello.codAppello)}}">
                                 <button type="submit" class="btn btn-danger" disabled>Elimina</button>
-                            </form>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
             <tbody>
                 <tr>
-                    <td colspan="5"><strong>Appelli a cui sei iscritto</strong></td>
+                    <td colspan="6"><strong>Appelli a cui sei iscritto</strong></td>
                 </tr>
                 {% for appello in studente.appelli %}
                     {% if appello not in studente.getAppelliNonValidi() %}
@@ -53,11 +57,15 @@
                             <td>{{ appello.luogo }}</td>
                             <td>{{ appello.prove }}</td>
                             <td>{{ appello.prove.esami }}</td>
+                            {% if appello.data < datetime.utcnow() %}
+                                <td><button class="btn btn-success" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
+                            {% else %}
+                                <td><button class="btn btn-danger" >Non Svolto</button></td>
+                            {% endif %}
                             <td>
-                                <form method="POST" action="{{url_for('student.eliminaPrenotazioneAppello')}}">
-                                    <input type="hidden" name="appello" value="{{ appello.codAppello }}">
-                                    <button type="submit" class="btn btn-danger">Elimina</button>
-                                </form>
+                                <a href="{{url_for('student.eliminaPrenotazioneAppello', codAppello=appello.codAppello)}}">
+                                    <button type="submit" class="btn btn-danger" disabled>Elimina</button>
+                                </a>
                             </td>
                         </tr>
                     {% endif %}
@@ -69,5 +77,10 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        function mostraData(data) {
+            alert("Hai svolto l'appello in data: " + data);
+        }
+    </script>
 </body>
 </html>

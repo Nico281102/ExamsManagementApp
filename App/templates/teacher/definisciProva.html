@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crea Prova</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 <body>
 
@@ -23,29 +23,39 @@
 
             <div class="form-group">
                 <label for="tipologia">Tipologia:</label>
-                <input type="text" class="form-control" id="tipologia" name="tipologia" required>
-            </div>
-
-            <div class="form-group">
-                <label for="dataScadenza">Data di Scadenza:</label>
-                <input type="date" class="form-control" id="dataScadenza" name="dataScadenza" required>
-            </div>
-
-            <div class="form-group">
-                <label for="richiede_superamento">Richiede Superamento:</label>
-                <select class="form-control" id="richiede_superamento" name="richiede_superamento" required>
-                    {% for prova in prove %}
-                        <option value="{{ prova.cod }}">{{ prova.cod }}</option>
-                    {% endfor %}
+                <select class="form-control" id="tipologia" name="tipologia" required>
+                    <option value="Orale">Orale</option>
+                    <option value="Scritto">Scritto</option>
+                    <option value="Progetto">Progetto</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label for="durata">Durata della Prova (minuti):</label>
+                <input type="number" class="form-control" id="durata" name="durata" required>
+            </div>
+            <div class="form-group">
+                <label for="bonus">Bonus:</label>
+                <input type="text" class="form-control" id="bonus" name="bonus" required>
+            </div>
+
+            <div class="form-group form-switch">
+                <label for="prove_primarie">Richiede Superamento:</label>
+                {% for prova in prove %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="prove_primarie" name="prove_primarie[]" value="{{ prova.cod }}">
+                        <label class="form-check-label" for="prove_primarie">
+                            {{ prova.cod }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
 
             <div class="form-group">
-                <label for="peso">Peso:</label>
-                <input type="number" class="form-control" id="peso" name="peso" required>
+                <label for="peso">Peso (da 0 a 1):</label>
+                <input type="number" class="form-control" id="peso" name="peso" min="0" max="1" step="0.01" required>
             </div>
         </div>
-            <button type="submit" class="btn btn-primary" href ="{{ url_for('teacher.creaProva', codEsame=codEsame) }} ">Crea</button>
+        <button type="submit" class="btn btn-primary">Crea</button>
     </form>
 </div>
 
@@ -55,23 +65,18 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const durataInput = document.getElementById("durata");
 
-    function validaPeso() {
-        var pesi = document.getElementsByName('peso[]');
-        var totalePeso = 0;
-
-        for (var i = 0; i < pesi.length; i++) {
-            totalePeso += parseFloat(pesi[i].value);
-        }
-
-        if (totalePeso !== 1) {
-            alert('Il peso totale delle prove deve essere esattamente 1.');
-            return false; // Blocca l'invio del modulo
-        }
-
-        return true; // Consente l'invio del modulo
-    }
+        durataInput.addEventListener("input", function() {
+            const durataValue = parseFloat(durataInput.value);
+            if (isNaN(durataValue) || durataValue < 0) {
+                durataInput.setCustomValidity("La durata non può essere negativa.");
+            } else {
+                durataInput.setCustomValidity("");
+            }
+        });
+    });
 </script>
-
 </body>
 </html>
