@@ -296,6 +296,8 @@ def create_appelli():
 
     add(Appelli(data='2024-01-19', luogo='Aula1', prova='IAP'))
 
+    add(Appelli(data='2023-09-19', luogo='Aula1', prova='BD1'))
+
 
 
 def create_superamento():
@@ -310,9 +312,10 @@ def create_superamento():
 def create_iscrizioni():
     studenti = db.session.query(Studenti).filter().all()
     appello1 = db.session.get(Appelli, '1')
-    appello11 = db.session.get(Appelli,'11')
+    appello23 = db.session.get(Appelli,'23')
     for studente in studenti:
         studente.appelli.append(appello1)
+        studente.appelli.append(appello23)
     db.session.commit()
 
 
