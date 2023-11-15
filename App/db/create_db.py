@@ -88,11 +88,12 @@ def create_trigger():
                                 FOR EACH ROW EXECUTE FUNCTION check_if_other_tests_are_required(); 
                                 """
 
+
     create_function_sql3= """ CREATE OR REPLACE FUNCTION check_if_other_tests_are_required() RETURNS TRIGGER AS $$ 
                                 BEGIN 
                                 IF(
                                 (SELECT COUNT(superamenti."provaPrimaria") FROM Superamenti WHERE superamenti."provaSuccessiva" IN (SELECT prova FROM Appelli WHERE appelli."codAppello" = NEW.appello)) != 
-                                (SELECT COUNT(*) FROM Appelli JOIN Iscrizioni ON appelli."codAppello" = appello WHERE studente = NEW.studente AND iscrizioni."isValid" = TRUE AND prova IN
+                                (SELECT COUNT(prova) FROM Appelli JOIN Iscrizioni ON appelli."codAppello" = appello WHERE studente = NEW.studente AND voto >= 18 AND iscrizioni."isValid" = TRUE AND prova IN
                                     (SELECT superamenti."provaPrimaria" FROM Superamenti WHERE superamenti."provaSuccessiva" IN    
                                                                                                 (SELECT prova
                                                                                                  FROM Appelli 
@@ -313,9 +314,11 @@ def create_iscrizioni():
     studenti = db.session.query(Studenti).filter().all()
     appello1 = db.session.get(Appelli, '1')
     appello23 = db.session.get(Appelli,'23')
+    appello9 = db.session.get(Appelli,'9') #appello di asd1
     for studente in studenti:
         studente.appelli.append(appello1)
         studente.appelli.append(appello23)
+        studente.appelli.append(appello9)
     db.session.commit()
 
 
