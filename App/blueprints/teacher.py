@@ -6,7 +6,6 @@ from sqlalchemy import func
 
 from App.checkFunctions import checkDocente
 from App.db.models.database import Esami, Prove, db, Appelli, Docenti, iscrizioni, Superamenti
-from App.utils.utilies import set_voto_prova
 
 teacher = Blueprint('teacher', __name__, url_prefix='/teacher', template_folder='templates')
 
@@ -248,7 +247,7 @@ def setVoto():
         studente_id = request.form['studente_id']
         codAppello = request.form['codAppello']
 
-        set_voto_prova(studente_id, voto, codAppello)
+        current_user.set_voto_prova(studente_id, voto, codAppello)
 
     return redirect(url_for('teacher.visualizzaStudentiIscritti', codAppello=codAppello))
 
