@@ -83,6 +83,27 @@ def create_trigger():
         $$ LANGUAGE plpgsql;
     """
 
+    create_trigger_sql3 = """ CREATE TRIGGER check_if_other_tests_are_required 
+                                BEFORE INSERT ON Iscrizioni 
+                                FOR EACH ROW EXECUTE FUNCTION check_if_other_tests_are_required(); 
+                                """
+
+    create_function_sql3= """ CREATE OR REPLACE FUNCTION check_if_other_tests_are_required() RETURNS TRIGGER AS $$ 
+                                BEGIN 
+                                IF(
+                                (SELECT COUNT(superamenti."provaPrimaria") FROM Superamenti WHERE superamenti."provaSuccessiva" IN (SELECT prova FROM Appelli WHERE appelli."codAppello" = NEW.appello)) != 
+                                (SELECT COUNT(*) FROM Appelli JOIN Iscrizioni ON appelli."codAppello" = appello WHERE studente = NEW.studente AND iscrizioni."isValid" = TRUE AND prova IN
+                                    (SELECT superamenti."provaPrimaria" FROM Superamenti WHERE superamenti."provaSuccessiva" IN    
+                                                                                                (SELECT prova
+                                                                                                 FROM Appelli 
+                                                                                                 WHERE appelli."codAppello" = NEW.appello)
+                                ))) THEN 
+                                RETURN NULL; 
+                                END IF; 
+                                 RETURN NEW;
+                                END; 
+                                $$ LANGUAGE plpgsql; """
+
     # Esegui i comandi SQL per creare il trigger e la funzione
 
     with db.engine.connect() as conn:
@@ -92,8 +113,10 @@ def create_trigger():
         # Esegui i comandi SQL per creare il trigger e la funzione
         conn.execute(text(create_function_sql))
         conn.execute(text(create_function_sql2))
+        conn.execute(text(create_function_sql3))
         conn.execute(text(create_trigger_sql))
         conn.execute(text(create_trigger_sql2))
+        conn.execute(text(create_trigger_sql3))
 
 
 
