@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from sqlalchemy import Sequence, CheckConstraint
+from sqlalchemy import Sequence, CheckConstraint, text
 from sqlalchemy.types import TIMESTAMP
 from sqlalchemy.sql import func
 from sqlalchemy import select, and_
@@ -308,8 +308,7 @@ class Studenti(db.Model, UserMixin):
         query = select(
             iscrizioni.c.voto).where(
             (iscrizioni.c.studente == self.matricola) &
-            (iscrizioni.c.appello == appello_cod) &
-            (iscrizioni.c.isValid == True)
+            (iscrizioni.c.appello == appello_cod)
         )
         with db.engine.connect() as connection:
             result = connection.execute(query)
@@ -401,6 +400,41 @@ class Docenti(db.Model, UserMixin):
             if appello.data > datetime.now():
                 res.append(appello)
         return res
+
+    def set_voto_prova(self, studente_matricola, voto, prova_cod):
+        voto = int(voto)
+        isValid = False
+        if voto >= 18 and voto <= 30 and voto != None:
+            # controllare anche se la data in cui è stata svoltà la prova è antecedente alla data di scadenza
+            isValid = True
+        with db.engine.begin() as connection:
+            # Execute the update statement
+            connection.execute(
+                iscrizioni
+                .update()
+                .where((iscrizioni.c.studente == studente_matricola) & (iscrizioni.c.appello == prova_cod))
+                .values({'voto': voto, 'isValid': isValid})
+            )
+
+            # Fetch the updated row immediately after the update
+            select_query = text(
+                f"SELECT * FROM public.\"iscrizioni\" WHERE studente = {studente_matricola} AND appello = '{prova_cod}'"
+            )
+            updated_row = connection.execute(select_query).fetchone()
+
+            # Check if the row is not None before attempting to convert to a dictionary
+            if updated_row is not None:
+                # Fetch the column names using result.keys()
+                column_names = connection.execute(select_query).keys()
+
+                # Convert the row to a dictionary
+                row_dict = dict(zip(column_names, updated_row))
+                print("Updated Row:", row_dict)
+            else:
+                print("No row found after update.")
+
+            # Commit the changes to the database
+            db.session.commit()
 
     def __repr__(self):
         return '<Docente %r>' % self.name
