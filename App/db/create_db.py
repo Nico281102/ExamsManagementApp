@@ -83,6 +83,28 @@ def create_trigger():
         $$ LANGUAGE plpgsql;
     """
 
+    create_trigger_sql3 = """ CREATE TRIGGER check_if_other_tests_are_required 
+                                BEFORE INSERT ON Iscrizioni 
+                                FOR EACH ROW EXECUTE FUNCTION check_if_other_tests_are_required(); 
+                                """
+
+
+    create_function_sql3= """ CREATE OR REPLACE FUNCTION check_if_other_tests_are_required() RETURNS TRIGGER AS $$ 
+                                BEGIN 
+                                IF(
+                                (SELECT COUNT(superamenti."provaPrimaria") FROM Superamenti WHERE superamenti."provaSuccessiva" IN (SELECT prova FROM Appelli WHERE appelli."codAppello" = NEW.appello)) != 
+                                (SELECT COUNT(prova) FROM Appelli JOIN Iscrizioni ON appelli."codAppello" = appello WHERE studente = NEW.studente AND voto >= 18 AND iscrizioni."isValid" = TRUE AND prova IN
+                                    (SELECT superamenti."provaPrimaria" FROM Superamenti WHERE superamenti."provaSuccessiva" IN    
+                                                                                                (SELECT prova
+                                                                                                 FROM Appelli 
+                                                                                                 WHERE appelli."codAppello" = NEW.appello)
+                                ))) THEN 
+                                RETURN NULL; 
+                                END IF; 
+                                 RETURN NEW;
+                                END; 
+                                $$ LANGUAGE plpgsql; """
+
     # Esegui i comandi SQL per creare il trigger e la funzione
 
     with db.engine.connect() as conn:
@@ -92,8 +114,10 @@ def create_trigger():
         # Esegui i comandi SQL per creare il trigger e la funzione
         conn.execute(text(create_function_sql))
         conn.execute(text(create_function_sql2))
+        conn.execute(text(create_function_sql3))
         conn.execute(text(create_trigger_sql))
         conn.execute(text(create_trigger_sql2))
+        conn.execute(text(create_trigger_sql3))
 
 
 
@@ -273,6 +297,8 @@ def create_appelli():
 
     add(Appelli(data='2024-01-19', luogo='Aula1', prova='IAP'))
 
+    add(Appelli(data='2023-09-19', luogo='Aula1', prova='BD1'))
+
 
 
 def create_superamento():
@@ -287,9 +313,12 @@ def create_superamento():
 def create_iscrizioni():
     studenti = db.session.query(Studenti).filter().all()
     appello1 = db.session.get(Appelli, '1')
-    appello11 = db.session.get(Appelli,'11')
+    appello23 = db.session.get(Appelli,'23')
+    appello9 = db.session.get(Appelli,'9') #appello di asd1
     for studente in studenti:
         studente.appelli.append(appello1)
+        studente.appelli.append(appello23)
+        studente.appelli.append(appello9)
     db.session.commit()
 
 

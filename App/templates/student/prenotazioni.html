@@ -20,6 +20,7 @@
                     <th scope="col">Prova</th>
                     <th scope="col">Corso Relativo</th>
                     <th scope="col">Stato attività</th>
+                    <th scope="col">Voto</th>
                     <th scope="col">Elimina</th>
                 </tr>
             </thead>
@@ -38,6 +39,7 @@
                             {% else %}
                                 <td><button class="btn btn-danger" >Non Svolto</button></td>
                             {% endif %}
+                        <td>{{ studente.getVotoProva(appello.codAppello) }}</td>
                         <td>
                             <a href="{{url_for('student.eliminaPrenotazioneAppello', codAppello=appello.codAppello)}}">
                                 <button type="submit" class="btn btn-danger" disabled>Elimina</button>
@@ -62,9 +64,10 @@
                             {% else %}
                                 <td><button class="btn btn-danger" >Non Svolto</button></td>
                             {% endif %}
+                            <td>{{ studente.getVotoProva(appello.codAppello) }}</td>
                             <td>
                                 <a href="{{url_for('student.eliminaPrenotazioneAppello', codAppello=appello.codAppello)}}">
-                                    <button type="submit" class="btn btn-danger" disabled>Elimina</button>
+                                    <button type="submit" class="btn btn-danger" >Elimina</button>
                                 </a>
                             </td>
                         </tr>
