@@ -490,6 +490,10 @@ class Prove(db.Model):
     #durata >= 0 and durata <= 180
         db.CheckConstraint('durata >= 0 and durata <= 180', name='check_durata'),
         # Altri vincoli di verifica se necessario
+    #idoneità = True => peso = 0 and Bonus = 0
+        db.CheckConstraint('(prove."idoneità" = False OR (peso = 0 AND prove."Bonus" = 0))', name='check_idoneità'),
+    #Bonus != 0 => peso = 0 and idoneità = False
+        db.CheckConstraint('(prove."Bonus" = 0 OR (peso = 0 AND prove."idoneità" = False))', name='check_bonus_idoneità'),
     )
 
 
