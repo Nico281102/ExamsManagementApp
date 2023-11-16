@@ -119,7 +119,7 @@ def creaProva(codEsame):
     bonus = request.form['bonus']
     durata = request.form['durata']
     provePrimarie = request.form.getlist('prove_primarie[]')
-    new_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=bonus, durata=durata)
+    new_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=bonus, durata=durata, idoneità=True if request.form.get('idoneita') == 'true' else False )
 
 
     #richiede il superamento della prova....
