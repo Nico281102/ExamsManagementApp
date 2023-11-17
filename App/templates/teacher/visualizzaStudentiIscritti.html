@@ -28,6 +28,7 @@
                     <td>{{ studente.surname }}</td>
                     <td>{{ studente.getVotoProva( codAppello ) }}</td>
                     <td>
+                    {% if is_appello_nel_passato %}
                         <form method="post" action="{{ url_for('teacher.setVoto') }}" onsubmit="return validateForm()">
                             <input type="hidden" name="studente_id" value="{{ studente.matricola }}">
                             <input type="hidden" name="codAppello" value="{{ codAppello }}">
@@ -36,6 +37,9 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Imposta Voto</button>
                         </form>
+                    {% else %}
+                        <button type="button" class="btn btn-secondary" disabled>Operazioni Non Consentite</button>
+                    {% endif %}
                     </td>
                 </tr>
             {% endfor %}
