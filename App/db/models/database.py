@@ -442,7 +442,7 @@ class Docenti(db.Model, UserMixin):
 
 class Esami(db.Model):
     __tablename__ = 'esami'
-    name = db.Column(db.String(32), nullable=False)
+    name = db.Column(db.String(64), nullable=False)
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
     cfu = db.Column(db.Integer, nullable=False)
     anno = db.Column(db.Integer, nullable=False)
