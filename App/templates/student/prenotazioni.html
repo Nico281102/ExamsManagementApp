@@ -5,15 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <title>Prenotazioni effettuate dallo studente</title>
+        <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .btnteall {
+            background-color: teal;
+            color: white;
+        }
+
+        thead {
+            color: #ffffff;
+        }
+        .containergrigio {
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
-    <a href="{{ url_for('student.studentPage') }}" class="btn btn-secondary">
+
+    <nav class="navbar navbar-dark bg-info">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Gestione universitaria > Profilo studente > Storico prenotazioni
+        </a>
+    </nav>
+
+    <div class="p-3 my-2 m-5  containergrigio">
+    <div class="container p-3">
+
+    <h2>Prenotazioni effettuate dallo studente</h2>
+    <hr>
+
+    <a href="{{ url_for('student.studentPage') }}" class="btn btn-info">
         <i class="fas fa-arrow-left"></i> Torna Indietro
     </a>
-    <div class="container mt-5">
-        <h1>Prenotazioni effettuate dallo studente</h1>
+    <br>
         <table class="table">
-            <thead>
+            <thead class="bg-info">
                 <tr>
                     <th scope="col">Data</th>
                     <th scope="col">Luogo</th>
@@ -75,6 +108,7 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

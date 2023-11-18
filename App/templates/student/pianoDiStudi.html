@@ -6,12 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <title>Esami dello studente</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        thead {
+            color: #ffffff;
+        }
+        .containergrigio {
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1>Esami dello studente</h1>
+
+    <nav class="navbar navbar-dark bg-info">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Gestione universitaria > Profilo studente > Piano di studio
+        </a>
+    </nav>
+
+    <div class="p-3 mb-2 m-5  containergrigio">
+    <div class="container p-3">
+
+    <h2>Piano di studio</h2>
+    <hr>
         <table class="table">
-            <thead>
+            <thead class="bg-info">
                 <tr>
                     <th scope="col">Corso</th>
                     <th scope="col">Voto</th>
@@ -30,6 +57,7 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
