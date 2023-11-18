@@ -15,6 +15,7 @@
                 <tr>
                     <th scope="col">Corso</th>
                     <th scope="col">Voto</th>
+                    <th scope="col">Lode</th>
                     <th scope="col">CFU</th>
                     <th scope="col">Anno</th>
                 </tr>
@@ -23,7 +24,16 @@
                 {% for esame in studente.esami %}
                     <tr>
                         <td>{{ esame.name }}</td>
-                        <td>{{ esame.getVoto(studente.matricola) }}</td>
+                        <td>
+                            {% if esame.getVoto(studente.matricola) == None %}
+                            Non ancora sostenuto
+                            {% elif esame.getVoto(studente.matricola) > 30 %}
+                                    30
+                            {% else %}
+                                {{ esame.getVoto(studente.matricola) }}
+                            {% endif %}
+                        </td>
+                        <td> {{esame.getLode(studente.matricola) }}</td>
                         <td>{{ esame.cfu }}</td>
                         <td>{{ esame.anno }}</td>
                     </tr>

@@ -401,7 +401,7 @@ class Docenti(db.Model, UserMixin):
                 res.append(appello)
         return res
 
-    def set_voto_prova(self, studente_matricola, voto, prova_cod):
+    def set_voto_prova(self, studente_matricola, voto, codAppello):
         voto = int(voto)
         isValid = False
         if voto >= 18 and voto <= 30 and voto != None:
@@ -412,13 +412,13 @@ class Docenti(db.Model, UserMixin):
             connection.execute(
                 iscrizioni
                 .update()
-                .where((iscrizioni.c.studente == studente_matricola) & (iscrizioni.c.appello == prova_cod))
+                .where((iscrizioni.c.studente == studente_matricola) & (iscrizioni.c.appello == codAppello))
                 .values({'voto': voto, 'isValid': isValid})
             )
 
             # Fetch the updated row immediately after the update
             select_query = text(
-                f"SELECT * FROM public.\"iscrizioni\" WHERE studente = {studente_matricola} AND appello = '{prova_cod}'"
+                f"SELECT * FROM public.\"iscrizioni\" WHERE studente = {studente_matricola} AND appello = '{codAppello}'"
             )
             updated_row = connection.execute(select_query).fetchone()
 
@@ -460,6 +460,15 @@ class Esami(db.Model):
 
         studente = Studenti.query.get(matricola)
         return studente.getVotoEsame(self.cod)
+
+    def getLode(self, matricola):
+        voto = self.getVoto(matricola)
+        if voto == None:
+            return "Non Computata"
+        if voto > 30:
+            return "SI"
+        else:
+            return "NO"
 
 
 
