@@ -9,10 +9,9 @@
     <style>
         body {
             background-color: #f8f9fa;
-            padding: 20px;
         }
 
-        .container {
+        .containergrigio {
             background-color: #ffffff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
@@ -20,43 +19,56 @@
             margin-top: 50px;
         }
 
-        h2 {
-            color: #007bff;
-        }
-
-        .card {
-            margin-top: 20px;
+        .half-width-btn {
+            width: 50%;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
+    <nav class="navbar navbar-dark bg-info">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Gestione universitaria > Profilo Insegnante
+        </a>
+    </nav>
+
+    <div class="p-3 mb-2 m-5  containergrigio">
+    <div class="container p-3">
         <h2>Benvenuto {{professore.name }} {{professore.surname}}</h2>
+        <hr>
 
-        <!-- Informazioni del Professore -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Informazioni Personali</h5>
-                <p class="card-text"><strong>Nome:</strong> {{ professore.name }}</p>
-                <p class="card-text"><strong>Cognome:</strong> {{ professore.surname }}</p>
-                <p class="card-text"><strong>Email:</strong> {{ professore.email }}</p>
-            </div>
+        <div class="row p-2 mt-5">
+            <div class="col-5"><h5><strong>Informazioni personali:</strong></h5></div>
+            <div class="col-7"><h5><strong>Funzionalità:</strong></h5></div>
         </div>
 
-        <!-- Collegamenti a funzionalità specifiche con bottoni Bootstrap -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Funzionalità</h5>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><a href="{{ url_for('teacher.visualizzaCorsi') }}" class="btn btn-primary">Visualizza Corsi</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('teacher.visualizzaAppelli') }}" class="btn btn-primary">Visualizza Appelli</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('teacher.visualizzaProveGestite') }}" class="btn btn-primary">Visualizza Prove Gestite</a></li>
-                    <li class="list-group-item"><a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Logout</a></li>
-                </ul>
-            </div>
+        <div class="row p-2">
+            <div class="col-5"><strong>Name:</strong> {{ professore.name }}</div>
+            <div class="col-7">
+               <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('teacher.visualizzaCorsi') }}" >Visualizza Corsi</a> </div>
         </div>
+
+        <div class="row p-2">
+            <div class="col-5"><strong>Name:</strong> {{ professore.surname }}</div>
+            <div class="col-7">
+               <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('teacher.visualizzaAppelli') }}">Visualizza Appelli</a> </div>
+        </div>
+
+        <div class="row p-2">
+            <div class="col-5"><strong>Name:</strong> {{ professore.email }}</div>
+            <div class="col-7">
+               <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('teacher.visualizzaProveGestite') }}">Visualizza Prove Gestite</a></div>
+        </div>
+
+        <div class="row p-2">
+            <div class="col-5"></div>
+            <div class="col-7">
+               <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('auth.logout') }}">Logout</a></div>
+        </div>
+
+    </div>
     </div>
 
     <!-- Bootstrap e script JS necessari -->

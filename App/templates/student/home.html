@@ -10,6 +10,18 @@
         .half-width-btn {
             width: 50%;
         }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .containergrigio {
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+        }
     </style>
 </head>
 
@@ -18,17 +30,18 @@
     <nav class="navbar navbar-dark bg-info">
         <a class="navbar-brand" href="#">
             <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
-            University Management > Student profile
+            Gestione universitaria > Profilo studente
         </a>
     </nav>
 
-    <div class="p-3 mb-2 m-5  bg-light text-dark">
+    <div class="p-3 mb-2 m-5  containergrigio">
     <div class="container p-3">
-        <h2>{{ student.name }}'s Profile</h2>
+        <h2>Benvenuto {{ student.name }}</h2>
+        <hr>
 
         <div class="row p-2 mt-5">
-            <div class="col-5"><h5><strong>Information:</strong></h5></div>
-            <div class="col-7"><h5><strong>Actions:</strong></h5></div>
+            <div class="col-5"><h5><strong>Informazioni personali:</strong></h5></div>
+            <div class="col-7"><h5><strong>Funzionalità:</strong></h5></div>
         </div>
         <div class="row p-2">
         <!-- Use Jinja to dynamically display student information -->
