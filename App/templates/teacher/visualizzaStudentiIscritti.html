@@ -6,14 +6,47 @@
     <title>Elenco Studenti Appello</title>
     <!-- Link agli stili Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+        body {
+            background-color: #f8f9fa;
+        }
+        thead {
+            color: #ffffff;
+        }
+        .btnteall {
+            background-color: teal;
+            color: white;
+        }
+        .btnteall:hover {
+            background-color: #00796B;
+            color: white;
+        }
+        .containergrigio {
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+   </style>
 </head>
 <body>
 
-<div class="container mt-5">
-    <h2>Elenco Studenti Iscritti all'Appello relativo alla prova : </h2>
+    <nav class="navbar navbar-dark bg-info">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Gestione universitaria > Profilo Insegnante > Prove
+        </a>
+    </nav>
 
-    <table class="table mt-4">
-        <thead>
+    <div class="p-3 mb-2 m-5 containergrigio">
+    <div class="container p-3">
+    <h2>Elenco Studenti Iscritti all'Appello relativo alla prova : </h2>
+    <hr>
+
+    <table class="table mt-4 table-striped">
+        <thead class="bg-info">
             <tr>
                 <th>Nome Studente</th>
                 <th>Cognome Studente</th>
@@ -35,16 +68,17 @@
                             <div class="form-group">
                                 <input type="number" name="voto" id="voto" class="form-control" placeholder="Inserisci il voto" required min="0" max="31">
                             </div>
-                            <button type="submit" class="btn btn-primary">Imposta Voto</button>
+                            <button type="submit" class="btn btn-danger">Imposta Voto</button>
                         </form>
                     {% else %}
-                        <button type="button" class="btn btn-secondary" disabled>Operazioni Non Consentite</button>
+                        <button type="button" class="btn btnteall" disabled>Operazioni Non Consentite</button>
                     {% endif %}
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
 </div>
 
 <!-- Script di Bootstrap (jQuery e Popper.js sono richiesti per alcune funzionalità) -->
