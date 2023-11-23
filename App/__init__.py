@@ -13,6 +13,8 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+
+
     login_manager = LoginManager()  # inizializzo il login manager
     login_manager.login_view = 'auth.login'  # definisco la pagina di login
     login_manager.init_app(app)  # inizializzo il login manager
@@ -34,8 +36,10 @@ def create_app():
     def load_user(id):
         # utilizzo le funzioni fornite da UserMixin
         if session['user_type'] == Docenti.__name__:  # Discrimino in base all'insegnante
+           # conn.execute("SET ROLE docente") #da testare
             return Docenti.query.get(int(id))
         elif session['user_type'] == Studenti.__name__:  # Discrimino in base allo studente
+          #  conn.execute("SET ROLE studente") #da testare
             return Studenti.query.get(int(id))
 
     return app
