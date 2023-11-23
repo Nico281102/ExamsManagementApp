@@ -44,7 +44,7 @@
 
     <nav class="navbar navbar-dark bg-info">
         <a class="navbar-brand" href="#">
-            <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
             Gestione universitaria > Profilo Insegnante > Gestione prove
         </a>
     </nav>
@@ -76,19 +76,19 @@
                     <td>
                         {% if prova in lista_prove_abilitate %}
                             <a href="{{ url_for('teacher.definisciAppello', codProva=prova.cod, codEsame= codEsame) }}">
-                                <button type="button" class="btn btnteall btn-sm">Crea Appello</button>
+                                <button type="button" class="btn btnteall">Crea Appello</button>
                             </a>
                         {% else %}
-                            <button type="button" class="btn btnteall btn-sm" disabled>Crea Appello</button>
+                            <button type="button" class="btn btnteall" disabled>Crea Appello</button>
                         {% endif %}
                     </td>
                     <td>
                         {% if prova in lista_prove_abilitate and not nessun_appello_relativo_all_esame %}
                         <a href="{{ url_for('teacher.eliminaProva', codProva=prova.cod, codEsame= codEsame) }}">
-                            <button type="button" class="btn btn-danger btn-sm">Elimina Prova</button>
+                            <button type="button" class="btn btn-danger">Elimina Prova</button>
                         </a>
                         {% else %}
-                            <button type="button" class="btn btn-danger btn-sm" disabled>Elimina Prova</button>
+                            <button type="button" class="btn btn-danger" disabled>Elimina Prova</button>
                         {% endif %}
                     </td>
                 </tr>
