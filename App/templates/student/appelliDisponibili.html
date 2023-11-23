@@ -57,7 +57,7 @@
             <tbody>
                 {% for appello in studente.getAppelliDisponibiliPossibili() %}
                     <tr>
-                        <td>{{ appello.data }}</td>
+                        <td>{{ appello.data.strftime('%Y-%m-%d') }}</td>
                         <td>{{ appello.luogo }}</td>
                         <td>{{ appello.prove }}</td>
                         <td>{{ appello.prove.esami }}</td>

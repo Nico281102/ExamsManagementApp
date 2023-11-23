@@ -63,7 +63,7 @@
                 </tr>
                 {% for appello in studente.getAppelliNonValidi() %}
                     <tr>
-                        <td>{{ appello.data }}</td>
+                        <td>{{ appello.data.strftime('%Y-%m-%d') }}</td>
                         <td>{{ appello.luogo }}</td>
                         <td>{{ appello.prove }}</td>
                         <td>{{ appello.prove.esami }}</td>
@@ -88,7 +88,7 @@
                 {% for appello in studente.appelli %}
                     {% if appello not in studente.getAppelliNonValidi() %}
                         <tr>
-                            <td>{{ appello.data }}</td>
+                            <td>{{ appello.data.strftime('%Y-%m-%d') }}</td>
                             <td>{{ appello.luogo }}</td>
                             <td>{{ appello.prove }}</td>
                             <td>{{ appello.prove.esami }}</td>
