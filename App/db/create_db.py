@@ -99,11 +99,76 @@ def create_trigger():
                                                                                                  FROM Appelli 
                                                                                                  WHERE appelli."codAppello" = NEW.appello)
                                 ))) THEN 
+                                 RAISE EXCEPTION 'La condizione è stata soddisfatta per NEW.appello = % e NEW.studente = %', NEW.appello, NEW.studente;
                                 RETURN NULL; 
                                 END IF; 
                                  RETURN NEW;
                                 END; 
                                 $$ LANGUAGE plpgsql; """
+
+    create_trigger_sql4 = """ CREATE TRIGGER set_final_score
+                                AFTER UPDATE ON Iscrizioni
+                                FOR EACH ROW
+                                EXECUTE FUNCTION set_final_score_function();                          """
+
+    create_function_sql4 = """CREATE OR REPLACE FUNCTION set_final_score_function() RETURNS TRIGGER AS $$ 
+BEGIN 
+    IF (
+        (SELECT COUNT(prove."cod") 
+        FROM Prove 
+        WHERE esame IN (
+            SELECT esame 
+            FROM Appelli 
+            JOIN Prove ON prova = prove."cod"
+            WHERE appelli."codAppello" = new.appello
+        )) =
+        (SELECT COUNT(prove."cod") 
+        FROM Appelli 
+        JOIN Iscrizioni ON appelli."codAppello" = appello 
+        JOIN Prove ON prova = prove."cod" 
+        WHERE studente = new.studente
+            AND voto >= 18 
+            AND iscrizioni."isValid" = TRUE 
+            AND esame IN (
+                SELECT esame 
+                FROM Appelli 
+                JOIN Prove ON prova = prove."cod" 
+                WHERE appelli."codAppello" = new.appello
+            )
+        )
+    )
+     THEN
+        UPDATE "formalizzazioneEsami"
+        SET "voto" = (
+            SELECT SUM(voto * peso + prove."Bonus") 
+            FROM (Iscrizioni 
+            JOIN Appelli ON appello = appelli."codAppello" ) JOIN Prove ON prova = prove."cod"
+            WHERE studente = NEW.studente 
+                AND voto >= 18 
+                AND iscrizioni."isValid" = TRUE 
+                AND prova IN (
+                    SELECT prove."cod" 
+                    FROM Prove 
+                    WHERE esame IN (
+                        SELECT esame 
+                        FROM Appelli 
+                        JOIN Prove ON prova = prove."cod" 
+                        WHERE NEW.appello = appelli."codAppello"
+                    )
+                )
+        ),
+        passato = TRUE
+        WHERE studente = NEW.studente 
+            AND esame IN (
+                SELECT esame 
+                FROM Appelli 
+                JOIN Prove ON prova = prove."cod" 
+                WHERE NEW.appello = appelli."codAppello"
+            );
+    END IF; 
+    RETURN NULL;
+END; 
+$$ LANGUAGE plpgsql;                  """
 
     # Esegui i comandi SQL per creare il trigger e la funzione
 
@@ -115,9 +180,11 @@ def create_trigger():
         conn.execute(text(create_function_sql))
         conn.execute(text(create_function_sql2))
         conn.execute(text(create_function_sql3))
+        conn.execute(text(create_function_sql4))
         conn.execute(text(create_trigger_sql))
         conn.execute(text(create_trigger_sql2))
         conn.execute(text(create_trigger_sql3))
+        conn.execute(text(create_trigger_sql4))
 
 
 
@@ -149,6 +216,7 @@ def create_teacher():
     riccardo_focardi = Docenti(name='Riccardo', surname='Focardi', password='1')
     simonetta_balsamo = Docenti(name='Simonetta', surname='Balsamo', password='1')
     marcello_pelillo = Docenti(name='Marcello', surname='Pelillo', password='1')
+
     add(pietro_ferrara)
     add(alvis_spano)
     add(stefano_calzavara)
@@ -175,7 +243,9 @@ def creat_exam_and_teacher():
     marcello_pelillo = Docenti(name='Marcello', surname='Pelillo', password='1')
     simeoni_marta = Docenti(name='Marta', surname='Simeoni', password='1')
     bergamasco_filippo = Docenti(name='Filippo', surname='Bergamasco', password='1')
-
+    cristiana_pagliarusco = Docenti(name='Cristiana', surname='Pagliarusco', password='1')
+    isadora_antoniano = Docenti(name='Isadora', surname='Antoniano', password='1')
+    damiano_pasetto = Docenti(name='Damiano', surname='Pasetto', password='1')
 
     PO = Esami(name='Programmazione ad Oggetti', cod='01QWERTY', cfu=12, anno=2)
     add(PO)
@@ -218,7 +288,24 @@ def creat_exam_and_teacher():
     add(ADE)
     add(simeoni_marta)
     simeoni_marta.esami.append(ADE)
-
+    ENG = Esami(name='Lingua Inglese', cod='10QWERTY', cfu=3, anno=1)
+    add(ENG)
+    add(cristiana_pagliarusco)
+    cristiana_pagliarusco.esami.append(ENG)
+    PES = Esami(name='Probabilità e Statistica', cod='11QWERTY', cfu=12, anno=2)
+    add(PES)
+    add(isadora_antoniano)
+    isadora_antoniano.esami.append(PES)
+    CL1 = Esami(name='Calcolo 1', cod='12QWERTY', cfu=6, anno=1)
+    CL2 = Esami(name='Calcolo 2', cod='13QWERTY', cfu=6, anno=1)
+    add(CL1)
+    add(CL2)
+    add(damiano_pasetto)
+    damiano_pasetto.esami.append(CL1)
+    damiano_pasetto.esami.append(CL2)
+    CLF = Esami(name='Calcolabilità e Linguaggi Formali', cod='014QWERTY', cfu=6, anno=3)
+    add(CLF)
+    stefano_calzavara.esami.append(CLF)
     add(bergamasco_filippo)
 
     obj = {}
@@ -238,6 +325,7 @@ def create_test(dict_docenti):
     balsamo_cod = dict_docenti['simonetta.balsamo@unive.it']
     pelillo_cod = dict_docenti['marcello.pelillo@unive.it']
     lucchese_cod = dict_docenti['claudio.lucchese@unive.it']
+    isadora = Docenti.query.filter_by(email = 'isadora.antoniano@unive.it').first()
 
     add(Prove(esame='01QWERTY', docente=ferrara_cod, peso=0.5, cod='PO1',  Tipologia='Scritto'))
     add(Prove(esame='01QWERTY', docente=spano_cod, peso=0.5, cod='PO2',Tipologia='Scritto'))
@@ -259,6 +347,8 @@ def create_test(dict_docenti):
 
     add(Prove(esame='07QWERTY', docente=lucchese_cod, peso=1.0, cod='IAP', Tipologia='Scritto'))
 
+    add(Prove(esame='11QWERTY', docente=isadora.cod, peso=1.0, cod='PES', Tipologia='Scritto'))
+    add(Prove(esame='11QWERTY', docente=isadora.cod, peso=0.0, Bonus=1, cod='Esercitazione-1', Tipologia='Scritto'))
 
 def create_appelli():
 
@@ -298,6 +388,14 @@ def create_appelli():
     add(Appelli(data='2024-01-19', luogo='Aula1', prova='IAP'))
 
     add(Appelli(data='2023-09-19', luogo='Aula1', prova='BD1'))
+    add(Appelli(data='2023-09-19', luogo='Aula2', prova='BD2'))
+    add(Appelli(data='2023-09-19', luogo='Aula3', prova='BDProject'))
+
+    add(Appelli(data='2023-09-11', luogo='Aula1', prova='IAP'))
+
+    add(Appelli(data='2023-09-11', luogo='Aula1', prova='PES'))
+    add(Appelli(data='2023-02-11', luogo='Aula1', prova='Esercitazione-1'))
+
 
 
 
@@ -311,14 +409,31 @@ def create_superamento():
 
 
 def create_iscrizioni():
+    raffaeta = Docenti.query.filter_by(email = 'alessandra.raffaeta@unive.it').first()
+    calza = Docenti.query.filter_by(email = 'stefano.calzavara@unive.it').first()
     studenti = db.session.query(Studenti).filter().all()
     appello1 = db.session.get(Appelli, '1')
-    appello23 = db.session.get(Appelli,'23')
+    appello23 = db.session.get(Appelli,'23')#appeello di bd1
     appello9 = db.session.get(Appelli,'9') #appello di asd1
+    appello24 = db.session.get(Appelli,'24') #appello di bd2
+    appello25 = db.session.get(Appelli,'25') #appello di iap
+    appello26 = db.session.get(Appelli,'26') #appello di bdproject
+    appello27 = db.session.get(Appelli,'27') #appello di pes
+    appello28 = db.session.get(Appelli,'28') #appello di esercitazione-1 per pes
     for studente in studenti:
+
         studente.appelli.append(appello1)
         studente.appelli.append(appello23)
+        db.session.commit()
+        raffaeta.set_voto_prova(studente.matricola, 26, '23')
         studente.appelli.append(appello9)
+        studente.appelli.append(appello24)
+        db.session.commit()
+        calza.set_voto_prova(studente.matricola, 24, '24')
+        studente.appelli.append(appello25)
+        studente.appelli.append(appello26)
+        studente.appelli.append(appello27)
+        studente.appelli.append(appello28)
     db.session.commit()
 
 
@@ -333,18 +448,19 @@ def create_piano_studi():
 def create_formalizzato():
     #attenzione!!! prima di aggiungere il voto ad una esame bisognerebbe calcolarlo in base alle prove relative a tale esame!!
     #Questa funzione serviva per testare la funzione di formalizzazione
-    list_studenti = db.session.query(Studenti).filter().all()
-    studente = list_studenti[0]
-    set_voto(studente.matricola, 18, '01QWERTY')
-    set_voto(studente.matricola, 29, '02QWERTY')
-    set_voto(studente.matricola, 26, '03QWERTY')
-    studente = list_studenti[1]
-    set_voto(studente.matricola, 18, '01QWERTY')
-    set_voto(studente.matricola, 29, '02QWERTY')
-    set_voto(studente.matricola, 26, '03QWERTY')
+    #list_studenti = db.session.query(Studenti).filter().all()
+    #studente = list_studenti[0]
+    #set_voto(studente.matricola, 18, '01QWERTY')
+    #set_voto(studente.matricola, 29, '02QWERTY')
+    #set_voto(studente.matricola, 26, '03QWERTY')
+    #studente = list_studenti[1]
+    #set_voto(studente.matricola, 18, '01QWERTY')
+    #set_voto(studente.matricola, 29, '02QWERTY')
+    #set_voto(studente.matricola, 26, '03QWERTY')
 
-    set_voto(892075, 18, '04QWERTY')
-    set_voto(892075, 25, '05QWERTY')
+    #set_voto(892075, 18, '04QWERTY')
+    #set_voto(892075, 25, '05QWERTY')
+    pass
 
 
 

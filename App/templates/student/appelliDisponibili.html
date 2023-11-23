@@ -13,6 +13,12 @@
     </a>
     <div class="container mt-5">
         <h1>Prenotazioni disponibili per lo studente</h1>
+        {% if messaggi %}
+    <!-- Mostra un alert -->
+    <script>
+        alert("{{ messaggi[0] }}");
+    </script>
+        {% endif %}
         <table class="table">
             <thead>
                 <tr>

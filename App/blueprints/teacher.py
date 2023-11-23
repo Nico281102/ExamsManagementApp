@@ -119,7 +119,7 @@ def creaProva(codEsame):
     bonus = request.form['bonus']
     durata = request.form['durata']
     provePrimarie = request.form.getlist('prove_primarie[]')
-    new_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=bonus, durata=durata)
+    new_prova = Prove(cod=codProva, Tipologia=tipologia, peso=peso, Bonus=bonus, durata=durata, idoneità=True if request.form.get('idoneita') == 'true' else False )
 
 
     #richiede il superamento della prova....
@@ -175,7 +175,7 @@ def definisciAppello(codProva):
     if pesoTot == 1:
         isAbilitata = True
 
-    if isAbilitata:
+    if isAbilitata or prova.idoneità == True:
         # crea un appello per una prova
         prova = Prove.query.get(codProva)
         return render_template('teacher/definisciAppello.html', user=current_user, prove=current_user.prove,

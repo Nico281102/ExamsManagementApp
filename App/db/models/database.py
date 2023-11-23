@@ -401,7 +401,7 @@ class Docenti(db.Model, UserMixin):
                 res.append(appello)
         return res
 
-    def set_voto_prova(self, studente_matricola, voto, prova_cod):
+    def set_voto_prova(self, studente_matricola, voto, codAppello):
         voto = int(voto)
         isValid = False
         if voto >= 18 and voto <= 30 and voto != None:
@@ -412,13 +412,13 @@ class Docenti(db.Model, UserMixin):
             connection.execute(
                 iscrizioni
                 .update()
-                .where((iscrizioni.c.studente == studente_matricola) & (iscrizioni.c.appello == prova_cod))
+                .where((iscrizioni.c.studente == studente_matricola) & (iscrizioni.c.appello == codAppello))
                 .values({'voto': voto, 'isValid': isValid})
             )
 
             # Fetch the updated row immediately after the update
             select_query = text(
-                f"SELECT * FROM public.\"iscrizioni\" WHERE studente = {studente_matricola} AND appello = '{prova_cod}'"
+                f"SELECT * FROM public.\"iscrizioni\" WHERE studente = {studente_matricola} AND appello = '{codAppello}'"
             )
             updated_row = connection.execute(select_query).fetchone()
 
@@ -442,7 +442,7 @@ class Docenti(db.Model, UserMixin):
 
 class Esami(db.Model):
     __tablename__ = 'esami'
-    name = db.Column(db.String(32), nullable=False)
+    name = db.Column(db.String(64), nullable=False)
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
     cfu = db.Column(db.Integer, nullable=False)
     anno = db.Column(db.Integer, nullable=False)
@@ -460,6 +460,15 @@ class Esami(db.Model):
 
         studente = Studenti.query.get(matricola)
         return studente.getVotoEsame(self.cod)
+
+    def getLode(self, matricola):
+        voto = self.getVoto(matricola)
+        if voto == None:
+            return "Non Computata"
+        if voto > 30:
+            return "SI"
+        else:
+            return "NO"
 
 
 
@@ -490,6 +499,10 @@ class Prove(db.Model):
     #durata >= 0 and durata <= 180
         db.CheckConstraint('durata >= 0 and durata <= 180', name='check_durata'),
         # Altri vincoli di verifica se necessario
+    #idoneità = True => peso = 0 and Bonus = 0
+        db.CheckConstraint('(prove."idoneità" = False OR (peso = 0 AND prove."Bonus" = 0))', name='check_idoneità'),
+    #Bonus != 0 => peso = 0 and idoneità = False
+        db.CheckConstraint('(prove."Bonus" = 0 OR (peso = 0 AND prove."idoneità" = False))', name='check_bonus_idoneità'),
     )
 
 
