@@ -6,21 +6,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <title>Prenotazioni disponibili per lo studente</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        thead {
+            color: #ffffff;
+        }
+        .containergrigio {
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
-    <a href="{{ url_for('student.studentPage') }}" class="btn btn-secondary">
-        <i class="fas fa-arrow-left"></i> Torna Indietro
-    </a>
-    <div class="container mt-5">
-        <h1>Prenotazioni disponibili per lo studente</h1>
-        {% if messaggi %}
+
+
+    <nav class="navbar navbar-dark bg-info">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Gestione universitaria > Profilo studente > Prenotazioni Appelli
+        </a>
+    </nav>
+
+    <div class="p-3 mb-2 m-5  containergrigio">
+    <div class="container p-3">
+
+    <h2>Prenotazioni disponibili per lo studente</h2>
+    <hr>
+       {% if messaggi %}
     <!-- Mostra un alert -->
     <script>
         alert("{{ messaggi[0] }}");
     </script>
         {% endif %}
         <table class="table">
-            <thead>
+            <thead class="thead bg-info">
                 <tr>
                     <th scope="col">Data</th>
                     <th scope="col">Luogo</th>
@@ -48,7 +73,7 @@
                                     </a>
                                 {% else %}
                                     <a href="{{ url_for('student.prenotaAppello', codAppello=appello.codAppello) }}">
-                                        <button type="submit" class="btn btn-primary">Prenota</button>
+                                        <button type="submit" class="btn btn-danger">Prenota</button>
                                     </a>
                                 {% endif %}
                         </td>
@@ -56,6 +81,10 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+        <a href="{{ url_for('student.studentPage') }}" class="btn btn-info">
+        <i class="fas fa-arrow-left"></i> Torna Indietro
+    </a>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

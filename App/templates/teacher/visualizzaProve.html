@@ -7,14 +7,56 @@
     <title>Prove</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        thead {
+            color: #ffffff;
+        }
+        .btnteall {
+            background-color: teal;
+            color: white;
+        }
+        .btngreen {
+            background-color: mediumseagreen;
+            color: white;
+        }
+        .btngreen:hover {
+            background-color: seagreen;
+            color: white;
+        }
+        .btnteall:hover {
+            background-color: #00796B;
+            color: white;
+        }
+        .containergrigio {
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+   </style>
 </head>
 <body>
 
-<div class="container mt-5">
-    <h1>Prove</h1>
+    <nav class="navbar navbar-dark bg-info">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Gestione universitaria > Profilo Insegnante > Gestione prove
+        </a>
+    </nav>
 
-    <table class="table">
-        <thead>
+    <div class="p-3 mb-2 m-5 containergrigio">
+    <div class="container p-3">
+
+    <h2>Prove</h2>
+    <hr>
+
+    <table class="table table-striped">
+        <thead class="bg-info">
             <tr>
                 <th>Codice Prova</th>
                 <th>Richiede</th>
@@ -34,19 +76,19 @@
                     <td>
                         {% if prova in lista_prove_abilitate %}
                             <a href="{{ url_for('teacher.definisciAppello', codProva=prova.cod, codEsame= codEsame) }}">
-                                <button type="button" class="btn btn-primary">Crea Appello</button>
+                                <button type="button" class="btn btnteall btn-sm">Crea Appello</button>
                             </a>
                         {% else %}
-                            <button type="button" class="btn btn-secondary" disabled>Crea Appello</button>
+                            <button type="button" class="btn btnteall btn-sm" disabled>Crea Appello</button>
                         {% endif %}
                     </td>
                     <td>
                         {% if prova in lista_prove_abilitate and not nessun_appello_relativo_all_esame %}
                         <a href="{{ url_for('teacher.eliminaProva', codProva=prova.cod, codEsame= codEsame) }}">
-                            <button type="button" class="btn btn-danger">Elimina Prova</button>
-                        {% else %}
+                            <button type="button" class="btn btn-danger btn-sm">Elimina Prova</button>
                         </a>
-                            <button type="button" class="btn btn-danger" disabled>Elimina Prova</button>
+                        {% else %}
+                            <button type="button" class="btn btn-danger btn-sm" disabled>Elimina Prova</button>
                         {% endif %}
                     </td>
                 </tr>
@@ -69,9 +111,9 @@
         <button type="button" class="btn btn-success mt-3" disabled>Definisci Nuova Prova</button>
     </a>
     {% endif %}
-    <!-- Altre informazioni dell'utente, se necessario -->
-    <p class="mt-3">Benvenuto, {{ user.name }}!</p>
-</div>
+    <!-- Altre informazioni dell'utente, se necessario <p class="mt-3">Benvenuto, {{ user.name }}!</p>-->
+    </div>
+    </div>
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

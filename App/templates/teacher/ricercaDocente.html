@@ -9,37 +9,64 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- CSS aggiuntivo per personalizzazioni -->
     <style>
-        /* Aggiungi eventuali stili personalizzati qui */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .form-group {
+        padding: 0.5rem; /* o qualsiasi valore di padding desiderato */
+        }
+
+        .containergrigio {
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+            /*width: 75%;*/
+        }
     </style>
 </head>
 <body>
 
-<div class="container mt-5">
-    <h1 class="mb-4">Ricerca Docenti</h1>
+    <nav class="navbar navbar-dark bg-info">
+        <a class="navbar-brand" href="#">
+            <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Gestione universitaria > Profilo Insegnante > Ricerca docenti
+        </a>
+    </nav>
+
+    <div class="p-3 mb-2 m-5  containergrigio  d-flex justify-content-center align-items-center">
+    <div class="container p-3" style="width: 75%;">
+
+        <h2>Ricerca Docenti</h2>
+        <hr>
 
     <!-- Barra di ricerca -->
-    <div class="input-group mb-3">
-        <input type="text" class="form-control" id="searchInput" placeholder="Cerca un docente...">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" onclick="searchDocente()">Cerca</button>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" id="searchInput" placeholder="Cerca un docente...">
+            <div class="input-group-append">
+                <button class="btn btn-outline-danger" type="button" onclick="searchDocente()">Cerca</button>
+            </div>
+        </div>
+
+<!-- Non mi piace questa lista di elementi, ma ho paura di spaccare qualcosa, da rivedere -->
+        <!-- Risultati della ricerca -->
+        <ul id="searchResults" class="list-group">
+            {% for docente in docenti %}
+                <li class="list-group-item">
+                    <a href="#">{{ docente.name ~ ' ' ~  docente.surname }}</a>
+                    <a href="{{ url_for('teacher.aggiungiDocente', codEsame=codEsame, codDocente=docente.cod) }}" class="btn btn-sm btn-danger">Aggiungi</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <div class="mt-4">
+            <!-- Pulsante per tornare alla Pagina Principale -->
+            <a href="{{ url_for('teacher.teacherPage') }}" class="btn btn-outline-secondary">Torna alla Pagina Principale</a>
         </div>
     </div>
-
-    <!-- Risultati della ricerca -->
-    <ul id="searchResults" class="list-group">
-        {% for docente in docenti %}
-            <li class="list-group-item">
-                <a href="#">{{ docente.name ~ ' ' ~  docente.surname }}</a>
-                <a href="{{ url_for('teacher.aggiungiDocente', codEsame=codEsame, codDocente=docente.cod) }}" class="btn btn-sm btn-success">Aggiungi</a>
-            </li>
-        {% endfor %}
-    </ul>
-
-    <div class="mt-4">
-        <!-- Pulsante per tornare alla Pagina Principale -->
-        <a href="{{ url_for('teacher.teacherPage') }}" class="btn btn-secondary">Torna alla Pagina Principale</a>
     </div>
-</div>
 
 <!-- Bootstrap JS e le sue dipendenze -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
