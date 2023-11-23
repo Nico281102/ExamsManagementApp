@@ -25,6 +25,7 @@
 </head>
 <body>
 
+
     <nav class="navbar navbar-dark bg-info">
         <a class="navbar-brand" href="#">
             <img src="../../static/graduation-cap-png.png" width="30" height="30" class="d-inline-block align-top" alt="">
@@ -37,6 +38,12 @@
 
     <h2>Prenotazioni disponibili per lo studente</h2>
     <hr>
+       {% if messaggi %}
+    <!-- Mostra un alert -->
+    <script>
+        alert("{{ messaggi[0] }}");
+    </script>
+        {% endif %}
         <table class="table">
             <thead class="thead bg-info">
                 <tr>

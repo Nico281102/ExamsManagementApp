@@ -44,6 +44,7 @@
             <tr>
                 <th scope="col">Esame</th>
                 <th scope="col">Voto</th>
+                <th scope="col">Lode</th>
                 <th scope="col">Formalizza</th>
                 <th scope="col">Rifiuta</th>
             </tr>
@@ -52,12 +53,21 @@
             {% for esame in esami %}
                 <tr>
                     <td>{{ esame.name }}</td>
-                    <td>{{ student.getVotoEsame(esame.cod) }}</td>
+                    <td>
+                            {% if esame.getVoto(student.matricola) > 30 %}
+                                    30
+                            {% else %}
+                                {{ esame.getVoto(student.matricola) }}
+                            {% endif %}
+                    </td>
+                    <td>
+                            {{ esame.getLode(student.matricola) }}
+                    </td>
                     <td>
                             <a href="{{url_for('student.formalizza', codEsame = esame.cod)}}">
                                 <button type="submit" class="btn btn-danger">Formalizza</button>
                             </a>
-                        </td>
+                    </td>
                     <td>
                         <a href="{{url_for('student.rifiuta', codEsame = esame.cod)}}">
                             <button type="submit" class="btn btn-danger">Rifiuta</button>
