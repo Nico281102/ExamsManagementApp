@@ -36,8 +36,11 @@
     <nav class="navbar navbar-dark bg-info">
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
-            Gestione universitaria > Profilo Insegnante > Studenti iscritti
-        </a>
+            Gestione universitaria > </a>
+        <a href="/home" class="navbar-brand">Profilo Insegnante ></a>
+        <a href="/visualizzaAppelli" class="navbar-brand">Gestione appelli ></a>
+        <a href="#" class="navbar-brand">Studenti iscritti</a>
+        <a class="navbar-brand ml-auto"> </a>
     </nav>
 
     <div class="p-3 mb-2 m-5 containergrigio">
@@ -45,7 +48,7 @@
     <h2>Elenco Studenti Iscritti all'Appello relativo alla prova : </h2>
     <hr>
 
-    <table class="table mt-4 table-striped">
+    <table class="table mt-4">
         <thead class="bg-info">
             <tr>
                 <th>Nome Studente</th>

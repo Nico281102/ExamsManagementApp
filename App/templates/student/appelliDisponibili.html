@@ -29,8 +29,10 @@
     <nav class="navbar navbar-dark bg-info">
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
-            Gestione universitaria > Profilo studente > Prenotazioni Appelli
-        </a>
+            Gestione universitaria > </a>
+        <a href="/home" class="navbar-brand">Profilo studente ></a>
+        <a href="#" class="navbar-brand">Prenotazioni Appelli</a>
+        <a class="navbar-brand ml-auto"> </a>
     </nav>
 
     <div class="p-3 mb-2 m-5  containergrigio">
@@ -69,7 +71,7 @@
                                          ' e anche gli eventuali appelli relativi a prove che richiedevano il superamento di una prova' +
                                           ' relativa all appelllo selezionato.' +
                                            ' Sei sicuro di voler effettuare la prenotazione?');">
-                                        <button type="submit" class="btn btn-warning">Prenota</button>
+                                        <button type="submit" class="btn btn-outline-info">Prenota</button>
                                     </a>
                                 {% else %}
                                     <a href="{{ url_for('student.prenotaAppello', codAppello=appello.codAppello) }}">
@@ -82,9 +84,9 @@
             </tbody>
         </table>
     </div>
-        <a href="{{ url_for('student.studentPage') }}" class="btn btn-info">
+        <!--<a href="{{ url_for('student.studentPage') }}" class="btn btn-info">
         <i class="fas fa-arrow-left"></i> Torna Indietro
-    </a>
+        </a>-->
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

@@ -45,7 +45,11 @@
     <nav class="navbar navbar-dark bg-info">
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
-            Gestione universitaria > Profilo Insegnante > Gestione prove
+            Gestione universitaria > </a>
+        <a href="/home" class="navbar-brand">Profilo Insegnante ></a>
+        <a href="/corsi" class="navbar-brand">Corsi tenuti ></a>
+        <a class="navbar-brand">Gestione prove</a>
+        <a class="navbar-brand ml-auto"> </a>
         </a>
     </nav>
 
@@ -55,7 +59,7 @@
     <h2>Prove</h2>
     <hr>
 
-    <table class="table table-striped">
+    <table class="table">
         <thead class="bg-info">
             <tr>
                 <th>Codice Prova</th>

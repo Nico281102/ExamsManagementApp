@@ -31,8 +31,10 @@
     <nav class="navbar navbar-dark bg-info">
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
-            Gestione universitaria > Profilo studente > Storico prenotazioni
-        </a>
+            Gestione universitaria > </a>
+        <a href="/home" class="navbar-brand">Profilo studente ></a>
+        <a href="#" class="navbar-brand">Storico prenotazioni</a>
+        <a class="navbar-brand ml-auto"> </a>
     </nav>
 
     <div class="p-3 my-2 m-5  containergrigio">
@@ -41,9 +43,9 @@
     <h2>Prenotazioni effettuate dallo studente</h2>
     <hr>
 
-    <a href="{{ url_for('student.studentPage') }}" class="btn btn-info">
+    <!--<a href="{{ url_for('student.studentPage') }}" class="btn btn-info">
         <i class="fas fa-arrow-left"></i> Torna Indietro
-    </a>
+    </a>-->
     <br>
         <table class="table">
             <thead class="bg-info">
