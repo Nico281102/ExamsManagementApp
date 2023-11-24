@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Esiti</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <style>
         body {
@@ -41,7 +41,7 @@
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
             Gestione universitaria > </a>
-        <a href="/home" class="navbar-brand">Profilo studente ></a>
+        <a href="{{ url_for('student.studentPage') }}" class="navbar-brand">Profilo studente ></a>
         <a href="#" class="navbar-brand">Bacheca esiti</a>
         <a class="navbar-brand ml-auto"> </a>
 
