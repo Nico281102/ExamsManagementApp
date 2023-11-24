@@ -15,7 +15,14 @@
         thead {
             color: #ffffff;
         }
-
+        .btnteall {
+            background-color: teal;
+            color: white;
+        }
+        .btnteall:hover {
+            background-color: #00796B;
+            color: white;
+        }
         .containergrigio {
             background-color: #ffffff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -96,7 +103,7 @@
                             </td>
                             <td>
                                 <a href="{{ url_for('teacher.visualizzaStudentiInGradoDiFormalizzare', codEsame=esame.cod) }}">
-                                    <button type="button" class="btn btn-success">Visualizza Studenti</button>
+                                    <button type="button" class="btn btnteall">Visualizza Studenti</button>
                                 </a>
                             </td>
                         </tr>
