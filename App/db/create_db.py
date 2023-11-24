@@ -13,6 +13,7 @@ def add(obj):
     db.session.commit()
 
 
+
 def create_trigger():
     # Comando SQL per creare il trigger PostgreSQL
     create_trigger_sql = """
@@ -463,13 +464,11 @@ def create_formalizzato():
     pass
 
 
-
-
 def init_db():
+    print("Creating DB")
     db.create_all()
 
     print("DB created")
-
 
     create_trigger()
     print("Trigger creati")
@@ -495,13 +494,91 @@ def init_db():
     db.session.commit()
 
 def delete_db():
-    db.drop_all()
-    db.session.commit()
+    with app.app_context():
+        # Elimina tutti i dati dal database
+        db.drop_all()
+
+        # Elimina i ruoli
+        sql_statements = [
+            "DROP ROLE IF EXISTS Utente;",
+            "DROP ROLE IF EXISTS Studente;",
+            "DROP ROLE IF EXISTS Docente;",
+        ]
+
+        try:
+            with db.engine.begin() as conn:
+                for statement in sql_statements:
+                    conn.execute(text(statement))
+            print("Ruoli eliminati con successo.")
+        except Exception as e:
+            print(f"Errore nell'eliminazione dei ruoli: {e}")
+
+        # Conferma le modifiche al database
+        db.session.commit()
 
     print("DB deleted")
+
+# Esegui la funzione delete_db()
+delete_db()
+
+
 
 with app.app_context():
     delete_db()
     init_db()
     print("DB created")
+
+
+    def create_roles():
+        sql_statements = [
+            """
+            CREATE ROLE Utente NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION LOGIN PASSWORD '0';
+            """,
+            """
+            CREATE ROLE Studente NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION LOGIN PASSWORD '1';
+
+            """,
+            """
+            CREATE ROLE Docente NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION LOGIN PASSWORD '2';
+            """
+        ]
+        sql_statements_grant = [""" GRANT SELECT ON TABLE "public".docenti TO utente;
+            GRANT SELECT ON TABLE "public".studenti TO utente;
+        """,
+                                """
+                                  GRANT SELECT ON TABLE "public".esami TO studente;
+                                     GRANT SELECT ON TABLE "public".prove TO studente;
+                                     GRANT SELECT ON TABLE "public".appelli TO studente;
+                                     GRANT SELECT ON TABLE "public".studenti TO studente;
+                                     GRANT SELECT ON TABLE "public".docenti TO studente;
+                                     GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "public".iscrizioni TO studente;
+                                     GRANT SELECT, UPDATE ON TABLE public."formalizzazioneEsami" TO studente;
+                                     GRANT SELECT ON TABLE "public".superamenti TO studente;
+                                 """,
+                                """ 
+                                 GRANT SELECT ON TABLE "public".esami TO docente;
+                                     GRANT SELECT, INSERT, DELETE ON TABLE "public".prove TO docente;
+                                     GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE "public".appelli TO docente;
+                                     GRANT SELECT ON TABLE "public".studenti TO docente;
+                                     GRANT SELECT ON TABLE "public".docenti TO docente;
+                                     GRANT SELECT ON TABLE "public".iscrizioni TO docente;
+                                     GRANT SELECT, UPDATE ON TABLE public."formalizzazioneEsami" TO docente;
+                                     GRANT SELECT, INSERT, DELETE ON TABLE "public".superamenti TO docente;
+                                 """]
+
+        try:
+            with app.app_context():
+                with db.engine.begin() as conn:
+                    for statement in sql_statements:
+                        conn.execute(text(statement))
+                    for statement in sql_statements_grant:
+                        conn.execute(text(statement))
+                print("Roles created successfully.")
+        except Exception as e:
+            print(f"Error creating roles: {e}")
+
+
+    # Chiamare la funzione per creare i ruoli
+    create_roles()
+
 
