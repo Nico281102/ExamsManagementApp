@@ -22,16 +22,19 @@
             border-radius: 10px;
             padding: 20px;
             margin-top: 50px;
+
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-dark bg-info">
+    <nav class="navbar navbar-dark bg-info d-flex">
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
-            Gestione universitaria > Profilo Insegnante > Corsi tenuti
-        </a>
+            Gestione universitaria > </a>
+        <a href="/home" class="navbar-brand">Profilo Insegnante ></a>
+        <a href="#" class="navbar-brand">Corsi tenuti</a>
+        <a class="navbar-brand ml-auto"> </a>
     </nav>
 
     <div class="p-3 mb-2 m-5  containergrigio">
@@ -79,10 +82,9 @@
                 </tbody>
             </table>
 
-            <!-- Altre informazioni dell'utente, se necessario -->
-            <p class="mt-3">Benvenuto, {{ user.name }}!</p>
+            <!-- Altre informazioni dell'utente, se necessario  <p class="mt-3">Benvenuto, {{ user.name }}!</p>-->
         </div>
-    </div>
+        </div>
 
     <!-- Bootstrap JS e le sue dipendenze -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

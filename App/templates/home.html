@@ -17,14 +17,21 @@
 </head>
 <body>
 
+    <nav class="navbar navbar-dark bg-info">
+        <a class="navbar-brand" href="#">
+        <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
+        Gestione università
+        </a>
+    </nav>
+
     <div class="container">
         <div class="jumbotron text-center">
             <h1 class="display-4">Benvenuto alla Home</h1>
-            <p class="lead">Porta pazienza, l'applicazione è ancora in fase di sviluppo.</p>
+            <p class="lead">Clicca il bottone qui sotto per accedere alla pagina di login.</p>
             <hr class="my-4">
-            <p>Clicca il bottone qui sotto per accedere alla pagina di login.</p>
+            <p>Se hai gia effettuato il login verrai reindirizzato alla tua area personale</p>
             <!-- Bottone per la pagina di login -->
-            <a class="btn btn-primary btn-lg" href="/login" role="button">Login</a>
+            <a class="btn btn-danger btn" href="/login" role="button">Login</a>
         </div>
     </div>
 
