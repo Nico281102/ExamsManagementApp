@@ -3,6 +3,7 @@ from datetime import timedelta, datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from sqlalchemy import Sequence, CheckConstraint, text
+from sqlalchemy.orm import join
 from sqlalchemy.types import TIMESTAMP
 from sqlalchemy.sql import func
 from sqlalchemy import select, and_
@@ -343,6 +344,12 @@ class Studenti(db.Model, UserMixin):
         else:
             return []
 
+    def getProveEsame(self, codEsame):
+        #Query to get the prove of the esame
+        #Invarianti:
+        #   - Le prove sono quelle associate all'esame
+        esame = Esami.query.get(codEsame)
+        return esame.prove
 
 
     def __repr__(self):
@@ -470,6 +477,17 @@ class Esami(db.Model):
         else:
             return "NO"
 
+    def getStudentiInGradoDiFormalizzare(self):
+        #Query to get the studenti in grado di formalizzare
+        #Invarianti:
+        #   - Gli studenti in grado di formalizzare sono quelli che hanno superato tutte le prove
+        studenti = Studenti.query.all()
+        studenti_in_grado_di_formalizzare = []
+        for studente in studenti:
+            if self in studente.getEsamiNonFormalizzatiandPassati():
+                studenti_in_grado_di_formalizzare.append(studente)
+        return studenti_in_grado_di_formalizzare
+
 
 
 class Prove(db.Model):
@@ -521,6 +539,42 @@ class Prove(db.Model):
         query = db.session.query(Superamenti.provaPrimaria).filter(Superamenti.provaSuccessiva == codProva)
         results = query.all()
         return results
+
+    def getVotoStudente(self, studente, codProva):
+        # Recupera la prova
+        prova = Prove.query.get(codProva)
+
+        Appelli.query
+
+        if prova:
+            # Recupera gli appelli validi per la prova
+            select_query = (
+                select(Appelli.codAppello)
+                .select_from(
+                    join(iscrizioni, Appelli, iscrizioni.c.appello == Appelli.codAppello)
+                )
+                .where(
+                    and_(
+                        iscrizioni.c.isValid == True,
+                        Appelli.prova == codProva
+                    )
+                )
+            )
+
+            with db.engine.connect() as connection:
+                result = connection.execute(select_query)
+
+            res = result.fetchone()
+
+            if res:
+                codAppello = res[0]
+                # Recupera il voto dello studente per l'appello
+                voto = studente.getVotoProva(codAppello)
+                return voto
+
+        return None
+
+
 
 
 class Superamenti(db.Model):

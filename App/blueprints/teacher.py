@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from sqlalchemy import func
 
 from App.checkFunctions import checkDocente
-from App.db.models.database import Esami, Prove, db, Appelli, Docenti, iscrizioni, Superamenti
+from App.db.models.database import Esami, Prove, db, Appelli, Docenti, iscrizioni, Superamenti, Studenti
 
 teacher = Blueprint('teacher', __name__, url_prefix='/teacher', template_folder='templates')
 
@@ -26,6 +26,29 @@ def visualizzaCorsi():
     print("sono in visualizzaEsami")
     print(current_user.esami)
     return render_template('teacher/corsi.html', user=current_user, esami=current_user.esami)
+
+@teacher.route('/visualizzaCorsi/visualizzaStudentiInGradoDiFormalizzare/<codEsame>', methods=['GET'])
+@login_required
+@checkDocente
+def visualizzaStudentiInGradoDiFormalizzare(codEsame):
+    #visualizza gli studenti che hanno superato tutte le prove di un corso, ma non hanno ancora formalizzato il voto
+    print("sono in visualizzaStudentiInGradoDiFormalizzare")
+    esame = Esami.query.get(codEsame)
+    studenti = esame.getStudentiInGradoDiFormalizzare()
+    return render_template('teacher/visualizzaStudentiInGradoDiFormalizzare.html', studenti=studenti, codEsame=codEsame)
+
+@teacher.route('/visualizzaCorsi/visualizzaStudentiInGradoDiFormalizzare/<codEsame>/VisualizzaProve/<matricola>', methods=['GET'])
+@login_required
+@checkDocente
+def visualizzaProveStudente(codEsame, matricola):
+    # Ottenere lo studente e le prove relative all'esame
+    studente = Studenti.query.filter_by(matricola=matricola).first()
+    esame = Esami.query.get(codEsame)
+    prove_studente = studente.getProveEsame(codEsame)
+
+    return render_template('teacher/visualizzaProveStudente.html', studente=studente, esame=esame,
+                           prove_studente=prove_studente)
+
 
 
 @teacher.route('/visualizzaCorsi/visualizzaDocenti/<codEsame>', methods=['GET'])
