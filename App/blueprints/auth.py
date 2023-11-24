@@ -1,7 +1,9 @@
-from flask import Blueprint, redirect, url_for, session, request, render_template
+import os
+
+from flask import Blueprint, redirect, url_for, session, request, render_template, current_app
 from flask_login import login_required, current_user, login_user, logout_user
 
-from App.db.models.database import Docenti, Studenti
+from App.db.models.database import Docenti, Studenti, db
 from App.utils.utilies import check_credentials
 
 auth = Blueprint('auth', __name__)
@@ -21,6 +23,9 @@ def login():
         elif session['user_type'] == Docenti.__name__:
             return redirect(url_for('teacher.teacherPage'))
 
+    db.session.close()
+    current_app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL_LOCALE_UTENTE')
+    print(current_app.config['SQLALCHEMY_DATABASE_URI'])
     if request.method == 'POST':
         print("request.form['user']:", request.form['user'])
         pair = check_credentials(request.form['user'], request.form['password'])
@@ -28,9 +33,12 @@ def login():
         if pair[0]:
             print('login success')
             login_user(pair[1])
+            db.session.close()
             if session['user_type'] == Studenti.__name__:
+                current_app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL_LOCALE_STUDENTE')
                 return redirect(url_for('student.studentPage'))
             else:
+                current_app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL_LOCALE_DOCENTE')
                 return redirect(url_for('teacher.teacherPage'))
 
     print('login failed')

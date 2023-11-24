@@ -9,8 +9,7 @@ from App.db.models.database import db
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-    URI = os.getenv('DATABASE_URL_LOCALE')
-    app.config['SQLALCHEMY_DATABASE_URI'] = URI
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL_LOCALE')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
