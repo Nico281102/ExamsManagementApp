@@ -40,9 +40,10 @@
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
             Gestione universitaria > </a>
-        <a href="{{url_for('student.studentPage')}}" class="navbar-brand">Profilo studente ></a>
+        <a href="{{ url_for('student.studentPage') }}" class="navbar-brand">Profilo studente ></a>
         <a href="#" class="navbar-brand">Piano di studio</a>
         <a class="navbar-brand ml-auto"> </a>
+
         <div id="mySidebar" class="sidebar">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <a href="{{ url_for('student.appelliDisponibili') }}">Prenota Appello</a>
