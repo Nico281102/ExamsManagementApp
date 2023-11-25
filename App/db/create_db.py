@@ -207,30 +207,6 @@ def creates_students():
     return domenico_sosta, luca_bianchi, mario_rossi, giusy_verdi
 
 
-def create_teacher():
-    pietro_ferrara = Docenti(name='Pietro', surname='Ferrara', password='1')
-    alvis_spano = Docenti(name='Alvise', surname='Spano', password='1')
-    stefano_calzavara = Docenti(name='Stefano', surname='Calzavara', password='1')
-    alessandra_raffaeta = Docenti(name='Alessandra', surname='Raffaeta', password='1')
-    claudio_lucchese = Docenti(name='Claudio', surname='Lucchese', password='1')
-    andrea_marin = Docenti(name='Andrea', surname='Marin', password='1')
-    riccardo_focardi = Docenti(name='Riccardo', surname='Focardi', password='1')
-    simonetta_balsamo = Docenti(name='Simonetta', surname='Balsamo', password='1')
-    marcello_pelillo = Docenti(name='Marcello', surname='Pelillo', password='1')
-
-    add(pietro_ferrara)
-    add(alvis_spano)
-    add(stefano_calzavara)
-    add(alessandra_raffaeta)
-    add(claudio_lucchese)
-    add(andrea_marin)
-    add(riccardo_focardi)
-    add(simonetta_balsamo)
-    add(marcello_pelillo)
-    obj = {}
-    for docente in Docenti.query.all():
-        obj[docente.email] = docente.cod
-    return obj
 
 def creat_exam_and_teacher():
     pietro_ferrara = Docenti(name='Pietro', surname='Ferrara', password='1')
@@ -308,6 +284,8 @@ def creat_exam_and_teacher():
     add(CLF)
     stefano_calzavara.esami.append(CLF)
     add(bergamasco_filippo)
+    alvise_spano.esami.append(IAP)
+    alessandra_raffaeta.esami.append(BD)
 
     obj = {}
     for docente in Docenti.query.all():
