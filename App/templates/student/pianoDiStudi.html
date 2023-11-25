@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
     <title>Esami dello studente</title>
     <style>
         body {
@@ -40,7 +40,7 @@
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
             Gestione universitaria > </a>
-        <a href="/home" class="navbar-brand">Profilo studente ></a>
+        <a href="{{url_for('student.studentPage')}}" class="navbar-brand">Profilo studente ></a>
         <a href="#" class="navbar-brand">Piano di studio</a>
         <a class="navbar-brand ml-auto"> </a>
         <div id="mySidebar" class="sidebar">
