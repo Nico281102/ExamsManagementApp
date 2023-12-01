@@ -12,6 +12,8 @@ auth = Blueprint('auth', __name__)
 @auth.route('/')
 def home():
     print("sono in home")
+    db.session.close()
+    current_app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL_LOCALE_UTENTE')
     return render_template('home.html')
 
 
