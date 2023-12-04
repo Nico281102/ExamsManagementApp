@@ -45,12 +45,12 @@
         </div>
         <div class="row p-2">
         <!-- Use Jinja to dynamically display student information -->
-            <div class="col-5"><strong>Name:</strong> {{ student.name }}</div>
+            <div class="col-5"><strong>Nome:</strong> {{ student.name }}</div>
             <div class="col-7">
                <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('student.appelliDisponibili') }}">Prenota Appello</a> </div>
         </div>
         <div class="row p-2">
-            <div class="col-5"><strong>Surname:</strong> {{ student.surname }}</div>
+            <div class="col-5"><strong>Cognome:</strong> {{ student.surname }}</div>
             <div class="col-7">
                  <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('student.prenotazioni') }}">Prenotazioni</a> </div>
         </div>

@@ -94,9 +94,9 @@
                         <td>{{ appello.prove }}</td>
                         <td>{{ appello.prove.esami }}</td>
                             {% if appello.data < datetime.utcnow() %}
-                                <td><button class="btn btn-success" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
+                                <td><button class="btn btn-block btn-success" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
                             {% else %}
-                                <td><button class="btn btn-danger" >Non Svolto</button></td>
+                                <td><button class="btn btn-block btn-danger" >Non Svolto</button></td>
                             {% endif %}
                         <td>{{ studente.getVotoProva(appello.codAppello) }}</td>
                         <td>
