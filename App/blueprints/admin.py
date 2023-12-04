@@ -60,7 +60,8 @@ def inserisciDocente():
 @login_required
 @checkAdmin
 def creaEsame():
-    return render_template('admin/creaEsame.html')
+    docenti = Docenti.query.all()
+    return render_template('admin/creaEsame.html', docenti=docenti)
 
 
 @admin.route('/creaEsame/inserisciEsame', methods=['POST'])
