@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crea Studente</title>
+    <title>Visualizza Docenti</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
-    <link rel="stylesheet" href="../../static/mystyle.css">
     <script>
         function openNav() {
           document.getElementById("mySidebar").style.width = "250px";
@@ -50,13 +49,12 @@
     <h2>Elenco Docenti</h2>
     <hr>
 
-    <table border="1">
-        <thead>
+    <table class="table">
+        <thead class="bg-info">
             <tr>
-                <th>ID</th>
+                <th>Codice</th>
                 <th>Nome</th>
                 <th>Cognome</th>
-                <!-- Aggiungere altri campi se necessario -->
             </tr>
         </thead>
         <tbody>
@@ -65,7 +63,6 @@
                     <td>{{ docente.cod }}</td>
                     <td>{{ docente.name }}</td>
                     <td>{{ docente.surname }}</td>
-                    <!-- Aggiungere altri campi se necessario -->
                 </tr>
             {% endfor %}
         </tbody>

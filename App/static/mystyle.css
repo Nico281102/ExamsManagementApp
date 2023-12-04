@@ -39,9 +39,9 @@ body {
     background-color: seagreen;
     color: white;
 }
+thead {
+    color: #ffffff;
+}
 .half-width-btn {
     width: 50%;
-}
-.quart-width-btn{
-    width: 25%;
 }

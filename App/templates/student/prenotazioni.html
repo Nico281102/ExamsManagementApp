@@ -3,29 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
     <title>Prenotazioni effettuate dallo studente</title>
-        <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .btnteall {
-            background-color: teal;
-            color: white;
-        }
 
-        thead {
-            color: #ffffff;
-        }
-        .containergrigio {
-            background-color: #ffffff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 50px;
-        }
-    </style>
     <script>
         function openNav() {
           document.getElementById("mySidebar").style.width = "250px";
@@ -94,7 +76,7 @@
                         <td>{{ appello.prove }}</td>
                         <td>{{ appello.prove.esami }}</td>
                             {% if appello.data < datetime.utcnow() %}
-                                <td><button class="btn btn-block btn-success" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
+                                <td><button class="btn btn-block btnteall" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
                             {% else %}
                                 <td><button class="btn btn-block btn-danger" >Non Svolto</button></td>
                             {% endif %}
@@ -119,7 +101,7 @@
                             <td>{{ appello.prove }}</td>
                             <td>{{ appello.prove.esami }}</td>
                             {% if appello.data < datetime.utcnow() %}
-                                <td><button class="btn btn-success" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
+                                <td><button class="btn btnteall" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
                             {% else %}
                                 <td><button class="btn btn-danger" >Non Svolto</button></td>
                             {% endif %}

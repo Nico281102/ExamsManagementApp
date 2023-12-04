@@ -7,22 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
     <title>Prenotazioni disponibili per lo studente</title>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        thead {
-            color: #ffffff;
-        }
-        .containergrigio {
-            background-color: #ffffff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 50px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
     <script>
         function openNav() {
           document.getElementById("mySidebar").style.width = "250px";
@@ -95,11 +80,11 @@
                                          ' e anche gli eventuali appelli relativi a prove che richiedevano il superamento di una prova' +
                                           ' relativa all appelllo selezionato.' +
                                            ' Sei sicuro di voler effettuare la prenotazione?');">
-                                        <button type="submit" class="btn btn-outline-info">Prenota</button>
+                                        <button type="submit" class="btn btn-danger">Prenota</button>
                                     </a>
                                 {% else %}
                                     <a href="{{ url_for('student.prenotaAppello', codAppello=appello.codAppello) }}">
-                                        <button type="submit" class="btn btn-danger">Prenota</button>
+                                        <button type="submit" class="btn btnteall">Prenota</button>
                                     </a>
                                 {% endif %}
                         </td>

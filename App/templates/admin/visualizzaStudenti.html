@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crea Studente</title>
+    <title>Visualizza Studenti</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
-    <link rel="stylesheet" href="../../static/mystyle.css">
     <script>
         function openNav() {
           document.getElementById("mySidebar").style.width = "250px";
@@ -50,8 +49,8 @@
     <h2>Elenco Studenti</h2>
     <hr>
 
-    <table border="1">
-        <thead>
+    <table class="table">
+        <thead class="bg-info">
             <tr>
                 <th>Matricola</th>
                 <th>Nome</th>

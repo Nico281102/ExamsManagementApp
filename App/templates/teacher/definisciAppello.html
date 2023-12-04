@@ -5,26 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crea Appello</title>
     <!-- Collegamento con Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+    <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
 
-        /*.navbar{background-color: #17a2b8;} usa solo con bootstrap 5!*/
-        .form-group {
-        padding: 0.5rem; /* o qualsiasi valore di padding desiderato */
-        }
-        .containergrigio {
-            background-color: #ffffff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 50px;
-            /*width: 75%;*/
-        }
-    </style>
     <script>
         function openNav() {
           document.getElementById("mySidebar").style.width = "250px";
