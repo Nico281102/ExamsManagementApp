@@ -56,9 +56,6 @@ class Admin(db.Model, UserMixin):
     password = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
 
-    studenti = db.relationship('Studenti', backref='admin', lazy=True)
-    docenti = db.relationship('Docenti', backref='admin', lazy=True)
-    esami = db.relationship('Esami', backref='admin', lazy=True)
 
     def __init__(self, name, surname, password):
         self.name = name
@@ -82,14 +79,13 @@ class Studenti(db.Model, UserMixin):
     email = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     phone = db.Column(db.String(32), nullable=False)
-    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'))
+    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'), default=1)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     # 1:M
     appelli = db.relationship('Appelli', secondary=iscrizioni, back_populates='studenti', lazy=True)
     esami = db.relationship('Esami', secondary=formalizzazioneEsami, back_populates='studenti', lazy=True)
-    amministratore = db.relationship('Admin', backref='studenti', lazy=True)
 
     def __init__(self, name, surname, matricola, password, phone):
         self.name = name
@@ -390,13 +386,12 @@ class Docenti(db.Model, UserMixin):
     surname = db.Column(db.String(32), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
-    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'))
+    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'), default=1)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     prove = db.relationship('Prove', back_populates='docenti', lazy=True)
     esami = db.relationship('Esami', secondary=gestiscono, back_populates='docenti', lazy=True)
-    amministratore = db.relationship('Admin', backref='docenti', lazy=True)
 
     def __init__(self, name, surname, password):
         self.name = name
@@ -482,14 +477,13 @@ class Esami(db.Model):
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
     cfu = db.Column(db.Integer, nullable=False)
     anno = db.Column(db.Integer, nullable=False)
-    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'))
+    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'), default=1)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     studenti = db.relationship('Studenti', secondary=formalizzazioneEsami, back_populates='esami', lazy=True)
     docenti = db.relationship('Docenti', secondary=gestiscono, back_populates='esami', lazy=True)
     prove = db.relationship('Prove', back_populates='esami', lazy=True)
-    amministratore = db.relationship('Admin', backref='esami', lazy=True)
 
     def __repr__(self):
         return '[Esame: %r]' % self.name
