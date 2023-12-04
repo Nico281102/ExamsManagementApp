@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizza Docenti</title>
+</head>
+<body>
+
+    <h1>Elenco Docenti</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <!-- Aggiungere altri campi se necessario -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for docente in docenti %}
+                <tr>
+                    <td>{{ docente.cod }}</td>
+                    <td>{{ docente.name }}</td>
+                    <td>{{ docente.surname }}</td>
+                    <!-- Aggiungere altri campi se necessario -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

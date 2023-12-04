@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizza Esami</title>
+</head>
+<body>
+
+    <h1>Elenco Esami</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome Esame</th>
+                <th>Voto</th>
+                <!-- Aggiungere altri campi se necessario -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for esame in esami %}
+                <tr>
+                    <td>{{ esame.id }}</td>
+                    <td>{{ esame.nome_esame }}</td>
+                    <td>{{ esame.voto }}</td>
+                    <!-- Aggiungere altri campi se necessario -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
