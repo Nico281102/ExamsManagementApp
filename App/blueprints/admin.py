@@ -99,3 +99,12 @@ def visualizzaStudenti():
 def visualizzaDocenti():
     docenti = Docenti.query.all()
     return render_template('admin/visualizzaDocenti.html', docenti=docenti)
+
+
+@admin.route('/visualizzaEsami')
+@login_required
+@checkAdmin
+def visualizzaEsami():
+    esami = Esami.query.all()
+    return render_template('admin/visualizzaEsami.html', esami=esami)
+
