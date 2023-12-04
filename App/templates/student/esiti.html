@@ -80,11 +80,13 @@
                 <tr>
                     <td>{{ esame.name }}</td>
                     <td>
-                            {% if esame.getVoto(student.matricola) > 30 %}
-                                    30
-                            {% else %}
-                                {{ esame.getVoto(student.matricola) }}
-                            {% endif %}
+                    {% if esame.getVoto(student.matricola) < 18 %}
+                        IDONEO
+                    {% elif esame.getVoto(student.matricola) > 30 %}
+                        30
+                    {% else %}
+                        {{ esame.getVoto(student.matricola) }}
+                    {% endif %}
                     </td>
                     <td>
                             {{ esame.getLode(student.matricola) }}

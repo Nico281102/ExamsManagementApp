@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 
 from App.checkFunctions import checkAdmin
-from App.db.models.database import db, Studenti, Docenti
+from App.db.models.database import db, Studenti, Docenti, Esami
 
 admin = Blueprint('admin', __name__, url_prefix='/admin', template_folder='templates')
 
@@ -61,3 +61,24 @@ def inserisciDocente():
 @checkAdmin
 def creaEsame():
     return render_template('admin/creaEsame.html')
+
+
+@admin.route('/creaEsame/inserisciEsame', methods=['POST'])
+@login_required
+@checkAdmin
+def inserisciEsame():
+    nome = request.form['name']
+    codice = request.form['codice']
+    cfu = request.form['cfu']
+    anno = request.form['anno']
+    docente_cod = request.form['docente']
+
+    db.session.add(Esami(name=nome, codice=codice, cfu=cfu, anno=anno))
+    db.session.commit()
+
+    #docente_Cod è listea?
+    docente = Docenti.query.get(docente_cod)
+    docente.esami.append(Esami.query.get(codice))
+    db.session.commit()
+
+    return redirect(url_for('admin.adminPage'))
