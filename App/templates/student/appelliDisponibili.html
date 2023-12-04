@@ -22,6 +22,22 @@
             padding: 20px;
             margin-top: 50px;
         }
+        .btnteall {
+            background-color: teal;
+            color: white;
+        }
+        .btngreen {
+            background-color: mediumseagreen;
+            color: white;
+        }
+        .btngreen:hover {
+            background-color: seagreen;
+            color: white;
+        }
+        .btnteall:hover {
+            background-color: #00796B;
+            color: white;
+        }
     </style>
     <script>
         function openNav() {
@@ -95,11 +111,11 @@
                                          ' e anche gli eventuali appelli relativi a prove che richiedevano il superamento di una prova' +
                                           ' relativa all appelllo selezionato.' +
                                            ' Sei sicuro di voler effettuare la prenotazione?');">
-                                        <button type="submit" class="btn btn-outline-info">Prenota</button>
+                                        <button type="submit" class="btn btn-danger">Prenota</button>
                                     </a>
                                 {% else %}
                                     <a href="{{ url_for('student.prenotaAppello', codAppello=appello.codAppello) }}">
-                                        <button type="submit" class="btn btn-danger">Prenota</button>
+                                        <button type="submit" class="btn btnteall">Prenota</button>
                                     </a>
                                 {% endif %}
                         </td>

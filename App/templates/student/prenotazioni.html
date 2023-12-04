@@ -25,6 +25,22 @@
             padding: 20px;
             margin-top: 50px;
         }
+        .btnteall {
+            background-color: teal;
+            color: white;
+        }
+        .btngreen {
+            background-color: mediumseagreen;
+            color: white;
+        }
+        .btngreen:hover {
+            background-color: seagreen;
+            color: white;
+        }
+        .btnteall:hover {
+            background-color: #00796B;
+            color: white;
+        }
     </style>
     <script>
         function openNav() {
@@ -94,7 +110,7 @@
                         <td>{{ appello.prove }}</td>
                         <td>{{ appello.prove.esami }}</td>
                             {% if appello.data < datetime.utcnow() %}
-                                <td><button class="btn btn-success" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
+                                <td><button class="btn btnteall" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
                             {% else %}
                                 <td><button class="btn btn-danger" >Non Svolto</button></td>
                             {% endif %}
@@ -119,7 +135,7 @@
                             <td>{{ appello.prove }}</td>
                             <td>{{ appello.prove.esami }}</td>
                             {% if appello.data < datetime.utcnow() %}
-                                <td><button class="btn btn-success" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
+                                <td><button class="btn btnteall" onclick="mostraData('{{ appello.data }}')">Svolto</button></td>
                             {% else %}
                                 <td><button class="btn btn-danger" >Non Svolto</button></td>
                             {% endif %}
