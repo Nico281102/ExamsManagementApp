@@ -4,7 +4,7 @@ from sqlalchemy import text
 from App.utils.utilies import set_voto
 from main import app
 from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamenti, \
-    formalizzazioneEsami
+    formalizzazioneEsami, Admin
 
 query = Session(db)
 
@@ -13,7 +13,9 @@ def add(obj):
     db.session.commit()
 
 
-
+def create_admin():
+    admin = Admin(name='main', surname='admin', password='1')
+    add(admin)
 def create_trigger():
     # Comando SQL per creare il trigger PostgreSQL
     create_trigger_sql = """
@@ -448,6 +450,9 @@ def init_db():
 
     print("DB created")
 
+    create_admin()
+    print("Admin creato")
+
     create_trigger()
     print("Trigger creati")
 
@@ -505,7 +510,6 @@ with app.app_context():
     delete_db()
     init_db()
     print("DB created")
-
 
     def create_roles():
         sql_statements = [
