@@ -3,51 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crea Esame</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+    <title>Crea Studente</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
+    <link rel="stylesheet" href="../../static/mystyle.css">
+    <script>
+        function openNav() {
+          document.getElementById("mySidebar").style.width = "250px";
+          document.getElementById("main").style.marginLeft = "250px";
         }
-        form {
-            max-width: 400px;
-            margin: auto;
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+            document.getElementById("main").style.marginLeft = "0";
         }
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 12px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
+    </script>
 </head>
 <body>
-    <h1>Crea Esame</h1>
-    <form method="POST" action="{{ url_for('admin.inserisciDocente') }}">
+    <nav class="navbar navbar-dark px-3">
+        <a class="navbar-brand" href="#">
+            <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
+        Gestione universitaria > </a>
+        <a href="{{ url_for('admin.home') }}" class="navbar-brand">Profilo Admin MODIFICARE ></a>
+        <a href="#" class="navbar-brand">Creazione Esami</a>
+        <a class="navbar-brand ml-auto"> </a>
+
+        <div id="mySidebar" class="sidebar">
+          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <a href="{{ url_for('admin.creaStudente') }}"> Crea Studenti</a>
+          <a href="{{ url_for('admin.creaDocente') }}">Crea Docenti</a>
+          <a href="{{ url_for('admin.creaEsame') }}">Crea Esami</a>
+          <a href="{{ url_for('auth.logout') }}">Logout</a>
+        </div>
+
+        <div id="main" style="padding: 0px;">
+          <button class="btn btnmenu" onclick="openNav()">&#9776; Menu</button>
+        </div>
+    </nav>
+
+    <div class="p-3 mb-2 m-5  containergrigio  d-flex justify-content-center align-items-center">
+        <div class="container p-3">
+
+    <h2>Crea Docente</h2>
+    <hr>
+
+    <form method="POST" action="{{ url_for('admin.inserisciEsame') }}">
         <label for="name">Nome:</label>
-        <input type="text" id="name" name="name" required>
+        <input type="text" id="name" name="name" class="form-control" required>
 
         <label for="cod">cod:</label>
-        <input type="text" id="cod" name="cod" required>
+        <input type="text" id="cod" name="cod" class="form-control" required>
 
         <label for="cfu">cfu:</label>
-        <input type="text" id="cfu" name="cfu" required>
+        <input type="text" id="cfu" name="cfu" class="form-control" required>
 
         <label for="anno">anno:</label>
-        <input type="text" id="anno" name="anno" required>
+        <input type="text" id="anno" name="anno" class="form-control" required>
 
-        <button type="submit">Crea </button>
+        <div class="form-group">
+                <label for="docente">Docenti:</label>
+                <select class="form-control" id="docente" name="docente" required>
+                    {% for docente in docenti %}
+                        <option value="{{ docente.name ~ ' ' ~  docente.surname }}">{{ docente.name ~ ' ' ~  docente.surname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        <br>
+        <button type="submit" class="btn btn-danger">Inserisci</button>
     </form>
+
+    </div>
+    </div>
 </body>
 </html>
