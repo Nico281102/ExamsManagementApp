@@ -48,6 +48,28 @@ gestiscono = db.Table(
 )
 
 # Ora `iscrizioni` può essere utilizzata per interagire direttamente con la tabella nel database.
+class Admin(db.Model, UserMixin):
+    __tablename__ = 'admin'
+    codAdmin = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(32), nullable=False)
+    surname = db.Column(db.String(32), nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+    email = db.Column(db.String(128), nullable=False, unique=True)
+
+
+    def __init__(self, name, surname, password):
+        self.name = name
+        self.surname = surname
+        self.password = password
+        self.email = self.generate_email()
+
+    def get_id(self): # necessario per il login
+        return self.codAdmin
+
+    def generate_email(self):
+        return f"{self.name.lower()}.{self.surname.lower()}@unive.it"
+
+
 
 class Studenti(db.Model, UserMixin):
     __tablename__ = 'studenti'
@@ -57,6 +79,7 @@ class Studenti(db.Model, UserMixin):
     email = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     phone = db.Column(db.String(32), nullable=False)
+    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'), default=1)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
@@ -363,6 +386,7 @@ class Docenti(db.Model, UserMixin):
     surname = db.Column(db.String(32), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
+    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'), default=1)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
@@ -453,6 +477,7 @@ class Esami(db.Model):
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
     cfu = db.Column(db.Integer, nullable=False)
     anno = db.Column(db.Integer, nullable=False)
+    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'), default=1)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 

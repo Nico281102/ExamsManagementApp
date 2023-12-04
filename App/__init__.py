@@ -9,7 +9,7 @@ from App.db.models.database import db
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL_LOCALE')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL_LOCALE_ADMIN')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
@@ -29,7 +29,10 @@ def create_app():
     from App.blueprints.teacher import teacher  # importo il blueprints views
     app.register_blueprint(teacher, url_prefix='/teacher')  # registro il blueprints views
 
-    from App.db.models.database import Studenti, Docenti  # importo le classi Student e Docenti
+    from App.blueprints.admin import admin  # importo il blueprints views
+    app.register_blueprint(admin, url_prefix='/admin')  # registro il blueprints views
+
+    from App.db.models.database import Studenti, Docenti, Admin  # importo le classi Student e Docenti
 
     @login_manager.user_loader  # definisco la funzione che carica l'utente, essenziale per il login_user(..
     def load_user(id):
@@ -37,6 +40,9 @@ def create_app():
         if session['user_type'] == Docenti.__name__:  # Discrimino in base all'insegnante
            # conn.execute("SET ROLE docente") #da testare
             return Docenti.query.get(int(id))
+        if session['user_type'] == Admin.__name__:  # Discrimino in base all'admin
+              # conn.execute("SET ROLE admin") #da testare
+                return Admin.query.get(int(id))
         elif session['user_type'] == Studenti.__name__:  # Discrimino in base allo studente
           #  conn.execute("SET ROLE studente") #da testare
             return Studenti.query.get(int(id))

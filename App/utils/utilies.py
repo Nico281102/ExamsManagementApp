@@ -7,10 +7,15 @@ from App.db.models.database import *
 def check_credentials(email, password):
     student = Studenti.query.filter_by(email=email).first()
     teacher = Docenti.query.filter_by(email=email).first()
+    admin = Admin.query.filter_by(email=email).first()
     if student:
         if student.password == password:
             session['user_type'] = type(student).__name__
             return True, student
+    if admin:
+        if admin.password == password:
+            session['user_type'] = type(admin).__name__
+            return True, admin
     elif teacher:
         if teacher.password == password:
             session['user_type'] = type(teacher).__name__
