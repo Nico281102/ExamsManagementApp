@@ -83,3 +83,19 @@ def inserisciEsame():
     db.session.commit()
 
     return redirect(url_for('admin.adminPage'))
+
+
+@admin.route('/visualizzaStudenti')
+@login_required
+@checkAdmin
+def visualizzaStudenti():
+    studenti = Studenti.query.all()
+    return render_template('admin/visualizzaStudenti.html', studenti=studenti)
+
+
+@admin.route('/visualizzaDocenti')
+@login_required
+@checkAdmin
+def visualizzaDocenti():
+    docenti = Docenti.query.all()
+    return render_template('admin/visualizzaDocenti.html', docenti=docenti)

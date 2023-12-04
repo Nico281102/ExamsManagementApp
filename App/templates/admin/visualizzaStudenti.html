@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizza Studenti</title>
+</head>
+<body>
+
+    <h1>Elenco Studenti</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Matricola</th>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <!-- Aggiungere altri campi se necessario -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for studente in studenti %}
+                <tr>
+                    <td>{{ studente.matricola }}</td>
+                    <td>{{ studente.nome }}</td>
+                    <td>{{ studente.cognome }}</td>
+                    <!-- Aggiungere altri campi se necessario -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
