@@ -124,7 +124,7 @@ BEGIN
             FROM Appelli 
             JOIN Prove ON prova = prove."cod"
             WHERE appelli."codAppello" = new.appello
-        )) =
+        ) AND (prove.idoneità = TRUE OR prove.peso != 0) ) =
         (SELECT COUNT(prove."cod") 
         FROM Appelli 
         JOIN Iscrizioni ON appelli."codAppello" = appello 
@@ -137,13 +137,14 @@ BEGIN
                 FROM Appelli 
                 JOIN Prove ON prova = prove."cod" 
                 WHERE appelli."codAppello" = new.appello
-            )
+            ) AND (prove.idoneità = TRUE OR prove.peso != 0)
         )
     )
      THEN
         UPDATE "formalizzazioneEsami"
         SET "voto" = (
-            SELECT SUM(voto * peso + prove."Bonus") 
+            SELECT SUM(( CASE WHEN voto = NULL THEN 0 ELSE voto END ) *
+                    peso + ( CASE WHEN prove."Bonus" = NULL THEN 0 ELSE prove."Bonus" END )) 
             FROM (Iscrizioni 
             JOIN Appelli ON appello = appelli."codAppello" ) JOIN Prove ON prova = prove."cod"
             WHERE studente = NEW.studente 
@@ -307,6 +308,7 @@ def create_test(dict_docenti):
     pelillo_cod = dict_docenti['marcello.pelillo@unive.it']
     lucchese_cod = dict_docenti['claudio.lucchese@unive.it']
     isadora = Docenti.query.filter_by(email = 'isadora.antoniano@unive.it').first()
+    cristiana_pagliarusco = Docenti.query.filter_by(email = 'cristiana.pagliarusco@unive.it').first()
 
     add(Prove(esame='01QWERTY', docente=ferrara_cod, peso=0.5, cod='PO1',  Tipologia='Scritto'))
     add(Prove(esame='01QWERTY', docente=spano_cod, peso=0.5, cod='PO2',Tipologia='Scritto'))
@@ -330,6 +332,8 @@ def create_test(dict_docenti):
 
     add(Prove(esame='11QWERTY', docente=isadora.cod, peso=1.0, cod='PES', Tipologia='Scritto'))
     add(Prove(esame='11QWERTY', docente=isadora.cod, peso=0.0, Bonus=1, cod='Esercitazione-1', Tipologia='Scritto'))
+
+    add(Prove(esame='10QWERTY', docente=cristiana_pagliarusco.cod, peso=0.0, cod='ENG', Tipologia='Scritto'))
 
 def create_appelli():
 
@@ -377,6 +381,8 @@ def create_appelli():
     add(Appelli(data='2023-09-11', luogo='Aula1', prova='PES'))
     add(Appelli(data='2023-02-11', luogo='Aula1', prova='Esercitazione-1'))
 
+    add(Appelli(data='2023-09-11', luogo='Aula1', prova='ENG'))
+
 
 
 
@@ -401,10 +407,12 @@ def create_iscrizioni():
     appello26 = db.session.get(Appelli,'26') #appello di bdproject
     appello27 = db.session.get(Appelli,'27') #appello di pes
     appello28 = db.session.get(Appelli,'28') #appello di esercitazione-1 per pes
+    appello29 = db.session.get(Appelli,'29') #appello di eng
     for studente in studenti:
 
         studente.appelli.append(appello1)
         studente.appelli.append(appello23)
+        studente.appelli.append(appello29)
         db.session.commit()
         raffaeta.set_voto_prova(studente.matricola, 26, '23')
         studente.appelli.append(appello9)
