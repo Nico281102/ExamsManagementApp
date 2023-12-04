@@ -16,8 +16,8 @@
             margin-top: 50px;
         }
 
-        .half-width-btn {
-            width: 50%;
+        .width-btn {
+            width: 80%;
         }
     </style>
 </head>
@@ -37,39 +37,38 @@
         <hr>
 
         <div class="row p-2 mt-5">
-            <div class="col-6"><h5><strong>Funzionalità:</strong></h5></div>
-            <div class="col-6"><h5><strong>Visualizzazioni:</strong></h5></div>
-        </div>
-
-        <div class="row p-2">
-            <div class="col-6">
-               <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('admin.creaStudente') }}">Crea Studenti</a> </div>
-            <div class="col-6">
-                <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('admin.visualizzaStudenti') }}">Visualizza Studenti</a>
+            <div class="col-2"><h5><strong>Funzionalità:</strong></h5></div>
+            <div class="col-5">
+               <a class="btn btn-outline-danger width-btn" href="{{ url_for('admin.creaStudente') }}">Crea Studenti</a> </div>
+            <div class="col-5">
+                <a class="btn btn-outline-danger width-btn" href="{{ url_for('admin.visualizzaStudenti') }}">Visualizza Studenti</a>
             </div>
         </div>
 
         <div class="row p-2">
-                <div class="col-6">
-               <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('admin.creaDocente') }}">Crea Docenti</a> </div>
-            <div class="col-6">
-                <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('admin.visualizzaDocenti') }}">Visualizza Docenti</a>
+            <div class="col-2"></div>
+            <div class="col-5">
+               <a class="btn btn-outline-danger width-btn" href="{{ url_for('admin.creaDocente') }}">Crea Docenti</a> </div>
+            <div class="col-5">
+                <a class="btn btn-outline-danger width-btn" href="{{ url_for('admin.visualizzaDocenti') }}">Visualizza Docenti</a>
             </div>
         </div>
 
 
         <div class="row p-2">
-            <div class="col-6"> <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('admin.creaEsame') }}">Crea Esami</a>
+            <div class="col-2"></div>
+            <div class="col-5"> <a class="btn btn-outline-danger width-btn" href="{{ url_for('admin.creaEsame') }}">Crea Esami</a>
             </div>
-            <div class="col-6">
-                <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('admin.visualizzaEsami') }}">Visualizza Esami</a>
+            <div class="col-5">
+                <a class="btn btn-outline-danger width-btn" href="{{ url_for('admin.visualizzaEsami') }}">Visualizza Esami</a>
                 </div>
         </div>
 
         <div class="row p-2">
-            <div class="col-6">
-                <a class="btn btn-outline-danger half-width-btn" href="{{ url_for('auth.logout') }}">Logout</a> </div>
-            <div class="col-6"></div>
+            <div class="col-2"></div>
+            <div class="col-5">
+                <a class="btn btn-outline-danger width-btn" href="{{ url_for('auth.logout') }}">Logout</a> </div>
+            <div class="col-5"></div>
         </div>
 
 
