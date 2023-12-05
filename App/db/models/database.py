@@ -87,6 +87,10 @@ class Studenti(db.Model, UserMixin):
     appelli = db.relationship('Appelli', secondary=iscrizioni, back_populates='studenti', lazy=True)
     esami = db.relationship('Esami', secondary=formalizzazioneEsami, back_populates='studenti', lazy=True)
 
+    __table_args__ = (
+        CheckConstraint('LENGTH(password) >= 8', name='check_password_length'),
+    )
+
     def __init__(self, name, surname, matricola, password, phone, admin = 1):
         self.name = name
         self.surname = surname

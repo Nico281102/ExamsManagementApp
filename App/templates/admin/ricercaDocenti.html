@@ -67,7 +67,7 @@
             {% for docente in docenti %}
                 <li class="list-group-item">
                     <a href="#">{{ docente.name ~ ' ' ~  docente.surname }}</a>
-                    <a href="{{ url_for('admin.aggiungiDocente', codEsame=codEsame, codDocente=docente.cod) }}" class="btn btn-sm btn-danger">Aggiungi</a>
+                    <a href="{{ url_for('admin.aggiungiDocente', codEsame=esame.cod, codDocente=docente.cod) }}" class="btn btn-sm btn-danger">Aggiungi</a>
                 </li>
             {% endfor %}
         </ul>
