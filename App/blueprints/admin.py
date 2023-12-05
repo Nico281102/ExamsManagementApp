@@ -30,7 +30,7 @@ def inserisciStudente():
     password = request.form['password']
     phone = request.form['phone']
 
-    db.session.add(Studenti(matricola=matricola, name=nome, surname=cognome, password=password, phone=phone))
+    db.session.add(Studenti(matricola=matricola, name=nome, surname=cognome, password=password, phone=phone, admin= current_user.codAdmin))
     db.session.commit()
 
     return redirect(url_for('admin.adminPage'))
@@ -69,16 +69,15 @@ def creaEsame():
 @checkAdmin
 def inserisciEsame():
     nome = request.form['name']
-    codice = request.form['codice']
+    codice = request.form['cod']
     cfu = request.form['cfu']
     anno = request.form['anno']
-    docente_cod = request.form['docente']
+    docente = request.form['docente']
 
-    db.session.add(Esami(name=nome, codice=codice, cfu=cfu, anno=anno))
+    db.session.add(Esami(name=nome, cod=codice, cfu=cfu, anno=anno))
     db.session.commit()
 
     #docente_Cod è listea?
-    docente = Docenti.query.get(docente_cod)
     docente.esami.append(Esami.query.get(codice))
     db.session.commit()
 

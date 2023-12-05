@@ -21,9 +21,9 @@
         <tbody>
             {% for esame in esami %}
                 <tr>
-                    <td>{{ esame.id }}</td>
-                    <td>{{ esame.nome_esame }}</td>
-                    <td>{{ esame.voto }}</td>
+                    <td>{{ esame.cod }}</td>
+                    <td>{{ esame.name }}</td>
+                    <td>{{ esame.docenti[0] }}</td>
                     <!-- Aggiungere altri campi se necessario -->
                 </tr>
             {% endfor %}

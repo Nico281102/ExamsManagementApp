@@ -63,7 +63,7 @@
                 <label for="docente">Docenti:</label>
                 <select class="form-control" id="docente" name="docente" required>
                     {% for docente in docenti %}
-                        <option value="{{ docente.name ~ ' ' ~  docente.surname }}">{{ docente.name ~ ' ' ~  docente.surname }}</option>
+                        <option value="{{ docente }}">{{ docente.name ~ ' ' ~  docente.surname }}</option>
                     {% endfor %}
                 </select>
             </div>

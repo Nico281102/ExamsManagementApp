@@ -87,13 +87,14 @@ class Studenti(db.Model, UserMixin):
     appelli = db.relationship('Appelli', secondary=iscrizioni, back_populates='studenti', lazy=True)
     esami = db.relationship('Esami', secondary=formalizzazioneEsami, back_populates='studenti', lazy=True)
 
-    def __init__(self, name, surname, matricola, password, phone):
+    def __init__(self, name, surname, matricola, password, phone, admin = 1):
         self.name = name
         self.surname = surname
         self.password = password
         self.matricola = matricola
         self.phone = phone
         self.email = self.generate_email()
+        self.admin = admin
 
     def get_id(self): # necessario per il login
         return self.matricola
@@ -393,11 +394,12 @@ class Docenti(db.Model, UserMixin):
     prove = db.relationship('Prove', back_populates='docenti', lazy=True)
     esami = db.relationship('Esami', secondary=gestiscono, back_populates='docenti', lazy=True)
 
-    def __init__(self, name, surname, password):
+    def __init__(self, name, surname, password, admin = 1):
         self.name = name
         self.surname = surname
         self.password = password
         self.email = self.generate_email()
+        self.admin = admin
 
     def get_id(self): # necessario per il login
         return self.cod
