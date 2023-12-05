@@ -8,22 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        thead {
-            color: #ffffff;
-        }
-        .containergrigio {
-            background-color: #ffffff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 50px;
-        }
-
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
     <script>
         function openNav() {
           document.getElementById("mySidebar").style.width = "250px";
@@ -43,7 +28,7 @@
             Gestione universitaria > </a>
         <a href="{{ url_for('teacher.teacherPage') }}" class="navbar-brand">Profilo Insegnante ></a>
         <a href="{{ url_for('teacher.visualizzaCorsi') }}" class="navbar-brand">Corsi tenuti ></a>
-        <a href="{{ url_for('teacher.visualizzaStudentiInGradoDiFormalizzare', codEsame=esame.cod) }}" class="navbar-brand">Stato formalizzazioni ></a>
+        <a href="{{ url_for('teacher.visualizzaStudentiInGradoDiFormalizzare', codEsame=esame.cod ) }}" class="navbar-brand">Stato formalizzazioni ></a>
         <a href="#" class="navbar-brand">Stato prove</a>
         <a class="navbar-brand ml-auto"> </a>
 
@@ -85,7 +70,7 @@
                 {% for prova in prove_studente %}
                     <tr>
                         <td>{{ prova.cod }}</td>
-                        <td>{{ prova.appelli[0].data.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ prova.appelli[0].data }}</td>
                         <td>{{ prova.getVotoStudente(studente, prova.cod)}}</td>
                         <!-- Aggiungi altre colonne necessarie -->
                     </tr>

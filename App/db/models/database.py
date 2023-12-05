@@ -48,6 +48,32 @@ gestiscono = db.Table(
 )
 
 # Ora `iscrizioni` può essere utilizzata per interagire direttamente con la tabella nel database.
+class Admin(db.Model, UserMixin):
+    __tablename__ = 'admin'
+    codAdmin = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(32), nullable=False)
+    surname = db.Column(db.String(32), nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+    email = db.Column(db.String(128), nullable=False, unique=True)
+
+    __table_args__ = (
+        CheckConstraint('LENGTH(password) >= 8', name='check_password_length'),
+    )
+
+
+    def __init__(self, name, surname, password):
+        self.name = name
+        self.surname = surname
+        self.password = password
+        self.email = self.generate_email()
+
+    def get_id(self): # necessario per il login
+        return self.codAdmin
+
+    def generate_email(self):
+        return f"{self.name.lower()}.{self.surname.lower()}@unive.it"
+
+
 
 class Studenti(db.Model, UserMixin):
     __tablename__ = 'studenti'
@@ -57,6 +83,7 @@ class Studenti(db.Model, UserMixin):
     email = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     phone = db.Column(db.String(32), nullable=False)
+    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'), default=1)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
@@ -64,13 +91,18 @@ class Studenti(db.Model, UserMixin):
     appelli = db.relationship('Appelli', secondary=iscrizioni, back_populates='studenti', lazy=True)
     esami = db.relationship('Esami', secondary=formalizzazioneEsami, back_populates='studenti', lazy=True)
 
-    def __init__(self, name, surname, matricola, password, phone):
+    __table_args__ = (
+        CheckConstraint('LENGTH(password) >= 8', name='check_password_length'),
+    )
+
+    def __init__(self, name, surname, matricola, password, phone, admin = 1):
         self.name = name
         self.surname = surname
         self.password = password
         self.matricola = matricola
         self.phone = phone
         self.email = self.generate_email()
+        self.admin = admin
 
     def get_id(self): # necessario per il login
         return self.matricola
@@ -265,7 +297,9 @@ class Studenti(db.Model, UserMixin):
             )
             .where((formalizzazioneEsami.c.studente == self.matricola) & (
                         formalizzazioneEsami.c.formalizzato == True) &
-                        (formalizzazioneEsami.c.voto != None))
+                        (formalizzazioneEsami.c.voto != None) &
+                        (formalizzazioneEsami.c.voto != 0)
+        )
         )
         with db.engine.connect() as connection:
             result = connection.execute(query)
@@ -292,6 +326,25 @@ class Studenti(db.Model, UserMixin):
             .where((formalizzazioneEsami.c.studente == self.matricola) &
                         (formalizzazioneEsami.c.voto != None) &
                         (formalizzazioneEsami.c.esame == codEsame))
+        )
+        with db.engine.connect() as connection:
+            result = connection.execute(query)
+        res = result.fetchall()
+        if res:
+            print(res[0][0])
+            return res[0][0]
+        else:
+            return None
+
+    def getVotoEsameFormalizzato(self, codEsame):
+        query = (
+            select(
+                formalizzazioneEsami.c.voto
+            )
+            .where((formalizzazioneEsami.c.studente == self.matricola) &
+                        (formalizzazioneEsami.c.voto != None) &
+                        (formalizzazioneEsami.c.esame == codEsame) &
+                        (formalizzazioneEsami.c.formalizzato == True))
         )
         with db.engine.connect() as connection:
             result = connection.execute(query)
@@ -363,17 +416,23 @@ class Docenti(db.Model, UserMixin):
     surname = db.Column(db.String(32), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
+    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'), default=1)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     prove = db.relationship('Prove', back_populates='docenti', lazy=True)
     esami = db.relationship('Esami', secondary=gestiscono, back_populates='docenti', lazy=True)
 
-    def __init__(self, name, surname, password):
+    __table_args__ = (
+        CheckConstraint('LENGTH(password) >= 8', name='check_password_length'),
+    )
+
+    def __init__(self, name, surname, password, admin = 1):
         self.name = name
         self.surname = surname
         self.password = password
         self.email = self.generate_email()
+        self.admin = admin
 
     def get_id(self): # necessario per il login
         return self.cod
@@ -444,7 +503,7 @@ class Docenti(db.Model, UserMixin):
             db.session.commit()
 
     def __repr__(self):
-        return '<Docente %r>' % self.name
+        return self.name + ' ' + self.surname
 
 
 class Esami(db.Model):
@@ -453,6 +512,7 @@ class Esami(db.Model):
     cod = db.Column(db.String(32), nullable=False, primary_key=True)
     cfu = db.Column(db.Integer, nullable=False)
     anno = db.Column(db.Integer, nullable=False)
+    admin = db.Column(db.Integer, db.ForeignKey('admin.codAdmin'), default=1)
     created_at = db.Column(TIMESTAMP, server_default=func.now())
     updated_at = db.Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
@@ -468,14 +528,19 @@ class Esami(db.Model):
         studente = Studenti.query.get(matricola)
         return studente.getVotoEsame(self.cod)
 
+    def getVotoFormalizzato(self, matricola):
+
+        studente = Studenti.query.get(matricola)
+        return studente.getVotoEsameFormalizzato(self.cod)
+
     def getLode(self, matricola):
         voto = self.getVoto(matricola)
         if voto == None:
-            return "Non Computata"
+            return "No"
         if voto > 30:
-            return "SI"
+            return "Si"
         else:
-            return "NO"
+            return "No"
 
     def getStudentiInGradoDiFormalizzare(self):
         #Query to get the studenti in grado di formalizzare

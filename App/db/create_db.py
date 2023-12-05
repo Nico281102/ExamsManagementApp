@@ -4,7 +4,7 @@ from sqlalchemy import text
 from App.utils.utilies import set_voto
 from main import app
 from App.db.models.database import Studenti, Docenti, Esami, db, Prove, Appelli, iscrizioni, Superamenti, \
-    formalizzazioneEsami
+    formalizzazioneEsami, Admin
 
 query = Session(db)
 
@@ -13,7 +13,9 @@ def add(obj):
     db.session.commit()
 
 
-
+def create_admin():
+    admin = Admin(name='main', surname='admin', password='12345678')
+    add(admin)
 def create_trigger():
     # Comando SQL per creare il trigger PostgreSQL
     create_trigger_sql = """
@@ -122,7 +124,7 @@ BEGIN
             FROM Appelli 
             JOIN Prove ON prova = prove."cod"
             WHERE appelli."codAppello" = new.appello
-        )) =
+        ) AND (prove.idoneità = TRUE OR prove.peso != 0) ) =
         (SELECT COUNT(prove."cod") 
         FROM Appelli 
         JOIN Iscrizioni ON appelli."codAppello" = appello 
@@ -135,13 +137,14 @@ BEGIN
                 FROM Appelli 
                 JOIN Prove ON prova = prove."cod" 
                 WHERE appelli."codAppello" = new.appello
-            )
+            ) AND (prove.idoneità = TRUE OR prove.peso != 0)
         )
     )
      THEN
         UPDATE "formalizzazioneEsami"
         SET "voto" = (
-            SELECT SUM(voto * peso + prove."Bonus") 
+            SELECT SUM(( CASE WHEN voto = NULL THEN 0 ELSE voto END ) *
+                    peso + ( CASE WHEN prove."Bonus" = NULL THEN 0 ELSE prove."Bonus" END )) 
             FROM (Iscrizioni 
             JOIN Appelli ON appello = appelli."codAppello" ) JOIN Prove ON prova = prove."cod"
             WHERE studente = NEW.studente 
@@ -195,13 +198,13 @@ $$ LANGUAGE plpgsql;                  """
 
 
 def creates_students():
-    domenico_sosta = Studenti(name='Domenico', surname='Sosta', matricola=892075, password='1', phone='3479145154')
+    domenico_sosta = Studenti(name='Domenico', surname='Sosta', matricola=892075, password='12345678', phone='3479145154')
     add(domenico_sosta)
-    luca_bianchi = Studenti(name='Luca', surname='Bianchi', matricola=892076, password='1', phone='3479145152')
+    luca_bianchi = Studenti(name='Luca', surname='Bianchi', matricola=892076, password='12345678', phone='3479145152')
     add(luca_bianchi)
-    mario_rossi = Studenti(name='Mario', surname='Rossi', matricola=892077, password='1', phone='3479145153')
+    mario_rossi = Studenti(name='Mario', surname='Rossi', matricola=892077, password='12345678', phone='3479145153')
     add(mario_rossi)
-    giusy_verdi = Studenti(name='Giusy', surname='Verdi', matricola=892078, password='1', phone='3479145155')
+    giusy_verdi = Studenti(name='Giusy', surname='Verdi', matricola=892078, password='12345678', phone='3479145155')
     add(giusy_verdi)
 
     return domenico_sosta, luca_bianchi, mario_rossi, giusy_verdi
@@ -209,20 +212,20 @@ def creates_students():
 
 
 def creat_exam_and_teacher():
-    pietro_ferrara = Docenti(name='Pietro', surname='Ferrara', password='1')
-    alvise_spano = Docenti(name='Alvise', surname='Spano', password='1')
-    stefano_calzavara = Docenti(name='Stefano', surname='Calzavara', password='1')
-    alessandra_raffaeta = Docenti(name='Alessandra', surname='Raffaeta', password='1')
-    claudio_lucchese = Docenti(name='Claudio', surname='Lucchese', password='1')
-    andrea_marin = Docenti(name='Andrea', surname='Marin', password='1')
-    riccardo_focardi = Docenti(name='Riccardo', surname='Focardi', password='1')
-    simonetta_balsamo = Docenti(name='Simonetta', surname='Balsamo', password='1')
-    marcello_pelillo = Docenti(name='Marcello', surname='Pelillo', password='1')
-    simeoni_marta = Docenti(name='Marta', surname='Simeoni', password='1')
-    bergamasco_filippo = Docenti(name='Filippo', surname='Bergamasco', password='1')
-    cristiana_pagliarusco = Docenti(name='Cristiana', surname='Pagliarusco', password='1')
-    isadora_antoniano = Docenti(name='Isadora', surname='Antoniano', password='1')
-    damiano_pasetto = Docenti(name='Damiano', surname='Pasetto', password='1')
+    pietro_ferrara = Docenti(name='Pietro', surname='Ferrara', password='12345678')
+    alvise_spano = Docenti(name='Alvise', surname='Spano', password='12345678')
+    stefano_calzavara = Docenti(name='Stefano', surname='Calzavara', password='12345678')
+    alessandra_raffaeta = Docenti(name='Alessandra', surname='Raffaeta', password='12345678')
+    claudio_lucchese = Docenti(name='Claudio', surname='Lucchese', password='12345678')
+    andrea_marin = Docenti(name='Andrea', surname='Marin', password='12345678')
+    riccardo_focardi = Docenti(name='Riccardo', surname='Focardi', password='12345678')
+    simonetta_balsamo = Docenti(name='Simonetta', surname='Balsamo', password='12345678')
+    marcello_pelillo = Docenti(name='Marcello', surname='Pelillo', password='12345678')
+    simeoni_marta = Docenti(name='Marta', surname='Simeoni', password='12345678')
+    bergamasco_filippo = Docenti(name='Filippo', surname='Bergamasco', password='12345678')
+    cristiana_pagliarusco = Docenti(name='Cristiana', surname='Pagliarusco', password='12345678')
+    isadora_antoniano = Docenti(name='Isadora', surname='Antoniano', password='12345678')
+    damiano_pasetto = Docenti(name='Damiano', surname='Pasetto', password='12345678')
 
     PO = Esami(name='Programmazione ad Oggetti', cod='01QWERTY', cfu=12, anno=2)
     add(PO)
@@ -305,6 +308,7 @@ def create_test(dict_docenti):
     pelillo_cod = dict_docenti['marcello.pelillo@unive.it']
     lucchese_cod = dict_docenti['claudio.lucchese@unive.it']
     isadora = Docenti.query.filter_by(email = 'isadora.antoniano@unive.it').first()
+    cristiana_pagliarusco = Docenti.query.filter_by(email = 'cristiana.pagliarusco@unive.it').first()
 
     add(Prove(esame='01QWERTY', docente=ferrara_cod, peso=0.5, cod='PO1',  Tipologia='Scritto'))
     add(Prove(esame='01QWERTY', docente=spano_cod, peso=0.5, cod='PO2',Tipologia='Scritto'))
@@ -328,6 +332,8 @@ def create_test(dict_docenti):
 
     add(Prove(esame='11QWERTY', docente=isadora.cod, peso=1.0, cod='PES', Tipologia='Scritto'))
     add(Prove(esame='11QWERTY', docente=isadora.cod, peso=0.0, Bonus=1, cod='Esercitazione-1', Tipologia='Scritto'))
+
+    add(Prove(esame='10QWERTY', docente=cristiana_pagliarusco.cod, peso=0.0, cod='ENG', Tipologia='Scritto'))
 
 def create_appelli():
 
@@ -375,6 +381,8 @@ def create_appelli():
     add(Appelli(data='2023-09-11', luogo='Aula1', prova='PES'))
     add(Appelli(data='2023-02-11', luogo='Aula1', prova='Esercitazione-1'))
 
+    add(Appelli(data='2023-09-11', luogo='Aula1', prova='ENG'))
+
 
 
 
@@ -390,8 +398,10 @@ def create_superamento():
 def create_iscrizioni():
     raffaeta = Docenti.query.filter_by(email = 'alessandra.raffaeta@unive.it').first()
     calza = Docenti.query.filter_by(email = 'stefano.calzavara@unive.it').first()
+    ferrara = Docenti.query.filter_by(email = 'pietro.ferrara@unive.it').first()
     studenti = db.session.query(Studenti).filter().all()
-    appello1 = db.session.get(Appelli, '1')
+    appello1 = db.session.get(Appelli, '1') #appello di po1
+    appello2 = db.session.get(Appelli,'2') #appello di po2
     appello23 = db.session.get(Appelli,'23')#appeello di bd1
     appello9 = db.session.get(Appelli,'9') #appello di asd1
     appello24 = db.session.get(Appelli,'24') #appello di bd2
@@ -399,14 +409,18 @@ def create_iscrizioni():
     appello26 = db.session.get(Appelli,'26') #appello di bdproject
     appello27 = db.session.get(Appelli,'27') #appello di pes
     appello28 = db.session.get(Appelli,'28') #appello di esercitazione-1 per pes
+    appello29 = db.session.get(Appelli,'29') #appello di eng
     for studente in studenti:
 
         studente.appelli.append(appello1)
         studente.appelli.append(appello23)
+        studente.appelli.append(appello29)
         db.session.commit()
         raffaeta.set_voto_prova(studente.matricola, 26, '23')
+        ferrara.set_voto_prova(studente.matricola, 26, '1')
         studente.appelli.append(appello9)
         studente.appelli.append(appello24)
+        studente.appelli.append(appello2)
         db.session.commit()
         calza.set_voto_prova(studente.matricola, 24, '24')
         studente.appelli.append(appello25)
@@ -447,6 +461,9 @@ def init_db():
     db.create_all()
 
     print("DB created")
+
+    create_admin()
+    print("Admin creato")
 
     create_trigger()
     print("Trigger creati")
@@ -505,7 +522,6 @@ with app.app_context():
     delete_db()
     init_db()
     print("DB created")
-
 
     def create_roles():
         sql_statements = [
