@@ -65,7 +65,9 @@
                 <tr>
                     <td>{{ esame.name }}</td>
                     <td>
-                    {% if esame.getVoto(student.matricola) < 18 %}
+                    {% if esame.getVoto(student.matricola) == None %}
+                        Non Presente
+                    {% elif esame.getVoto(student.matricola) < 18 %}
                         IDONEO
                     {% elif esame.getVoto(student.matricola) > 30 %}
                         30

@@ -63,12 +63,14 @@
                     <tr>
                         <td>{{ esame.name }}</td>
                         <td>
-                            {% if esame.getVoto(studente.matricola) == None %}
+                            {% if esame.getVotoFormalizzato(studente.matricola) == None %}
                             Non ancora sostenuto
-                            {% elif esame.getVoto(studente.matricola) > 30 %}
+                            {% elif esame.getVotoFormalizzato(studente.matricola) == 0 %}
+                            IDONEO
+                            {% elif esame.getVotoFormalizzato(studente.matricola) > 30 %}
                                     30
                             {% else %}
-                                {{ esame.getVoto(studente.matricola) }}
+                                {{ esame.getVotoFormalizzato(studente.matricola) }}
                             {% endif %}
                         </td>
                         <td> {{esame.getLode(studente.matricola) }}</td>

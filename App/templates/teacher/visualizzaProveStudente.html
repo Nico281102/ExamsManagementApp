@@ -28,7 +28,7 @@
             Gestione universitaria > </a>
         <a href="{{ url_for('teacher.teacherPage') }}" class="navbar-brand">Profilo Insegnante ></a>
         <a href="{{ url_for('teacher.visualizzaCorsi') }}" class="navbar-brand">Corsi tenuti ></a>
-        <a href="{{ url_for('teacher.visualizzaStudentiInGradoDiFormalizzare') }}" class="navbar-brand">Stato formalizzazioni ></a>
+        <a href="{{ url_for('teacher.visualizzaStudentiInGradoDiFormalizzare', codEsame=esame.cod ) }}" class="navbar-brand">Stato formalizzazioni ></a>
         <a href="#" class="navbar-brand">Stato prove</a>
         <a class="navbar-brand ml-auto"> </a>
 
