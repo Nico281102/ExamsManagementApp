@@ -72,12 +72,13 @@ def inserisciEsame():
     codice = request.form['cod']
     cfu = request.form['cfu']
     anno = request.form['anno']
-    docente = request.form['docente']
+    docente_cod = request.form['docente_cod']
 
     db.session.add(Esami(name=nome, cod=codice, cfu=cfu, anno=anno))
     db.session.commit()
 
     #docente_Cod è listea?
+    docente = Docenti.query.get(docente_cod)
     docente.esami.append(Esami.query.get(codice))
     db.session.commit()
 

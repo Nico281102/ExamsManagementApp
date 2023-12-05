@@ -60,10 +60,10 @@
         <input type="text" id="anno" name="anno" class="form-control" required>
 
         <div class="form-group">
-                <label for="docente">Docenti:</label>
-                <select class="form-control" id="docente" name="docente" required>
+                <label for="docente_cod">Docenti:</label>
+                <select class="form-control" id="docente_cod" name="docente_cod" required>
                     {% for docente in docenti %}
-                        <option value="{{ docente }}">{{ docente.name ~ ' ' ~  docente.surname }}</option>
+                        <option value="{{ docente.cod }}">{{ docente.name ~ ' ' ~  docente.surname }}</option>
                     {% endfor %}
                 </select>
             </div>
