@@ -470,7 +470,7 @@ class Docenti(db.Model, UserMixin):
             db.session.commit()
 
     def __repr__(self):
-        return '<Docente %r>' % self.name
+        return self.name + ' ' + self.surname
 
 
 class Esami(db.Model):

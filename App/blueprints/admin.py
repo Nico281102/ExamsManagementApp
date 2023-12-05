@@ -33,6 +33,14 @@ def inserisciStudente():
     db.session.add(Studenti(matricola=matricola, name=nome, surname=cognome, password=password, phone=phone, admin= current_user.codAdmin))
     db.session.commit()
 
+    studente = Studenti.query.filter_by(matricola=matricola).first()
+
+    #piano di studi
+    esami = Esami.query.all()
+    for esame in esami:
+        studente.esami.append(esame)
+    db.session.commit()
+
     return redirect(url_for('admin.adminPage'))
 
 @admin.route('/creaDocente')
@@ -107,4 +115,26 @@ def visualizzaDocenti():
 def visualizzaEsami():
     esami = Esami.query.all()
     return render_template('admin/visualizzaEsami.html', esami=esami)
+
+
+@admin.route('/visualizzaEsami/ricercaDocente/<codEsame>', methods=['GET', 'POST'])
+@login_required
+@checkAdmin
+def ricercaDocente(codEsame):
+    esame = Esami.query.get(codEsame)
+    docenti = Docenti.query.all()
+    docenti_esame = esame.docenti
+    docenti_da_aggiungere = set(docenti )- set(docenti_esame)
+    return render_template('admin/ricercaDocenti.html', esame=esame, docenti = docenti_da_aggiungere)
+
+
+@admin.route('/visualizzaEsami/ricercaDocente/<codEsame>/aggiungiDocente/<codDocente>', methods=['GET', 'POST'])
+@login_required
+@checkAdmin
+def aggiungiDocente(codEsame, codDocente):
+    esame = Esami.query.get(codEsame)
+    docente = Docenti.query.get(codDocente)
+    esame.docenti.append(docente)
+    db.session.commit()
+    return redirect(url_for('admin.visualizzaEsami'))
 

@@ -45,3 +45,7 @@ thead {
 .half-width-btn {
     width: 50%;
 }
+.my-border {
+    border: 1px solid #000 !important;
+    color: black;
+}

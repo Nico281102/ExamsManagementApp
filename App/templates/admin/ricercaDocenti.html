@@ -22,21 +22,23 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-dark bg-info">
+    <nav class="navbar navbar-dark px-3">
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
-        Gestione universitaria > </a>
-        <a href="{{ url_for('teacher.teacherPage') }}" class="navbar-brand">Profilo Insegnante ></a>
-        <a href="{{ url_for('teacher.visualizzaCorsi') }}" class="navbar-brand">Corsi tenuti ></a>
-        <a href="{{ url_for('teacher.visualizzaDocenti', codEsame = codEsame) }}" class="navbar-brand">Elenco docenti ></a>
-        <a href="#" class="navbar-brand">Ricerca docenti</a>
+        Gestione universitaria ></a>
+        <a href="{{ url_for('admin.adminPage') }}" class="navbar-brand">Profilo Admin ></a>
+        <a href="{{ url_for('admin.visualizzaEsami') }}" class="navbar-brand">Elenco Esami ></a>
+        <a href="#" class="navbar-brand">Visualizza Docenti</a>
         <a class="navbar-brand ml-auto"> </a>
 
         <div id="mySidebar" class="sidebar">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-          <a href="{{ url_for('teacher.visualizzaCorsi') }}">Visualizza Corsi</a>
-          <a href="{{ url_for('teacher.visualizzaAppelli') }}">Visualizza Appelli</a>
-          <a href="{{ url_for('teacher.visualizzaProveGestite') }}">Visualizza Prove Gestite</a>
+          <a href="{{ url_for('admin.creaStudente') }}"> Crea Studenti</a>
+          <a href="{{ url_for('admin.creaDocente') }}">Crea Docenti</a>
+          <a href="{{ url_for('admin.creaEsame') }}">Crea Esami</a>
+          <a href="{{ url_for('admin.visualizzaStudenti') }}">Visualizza Studenti</a>
+          <a href="{{ url_for('admin.visualizzaDocenti') }}">Visualizza Docenti</a>
+          <a href="{{ url_for('admin.visualizzaEsami') }}">Visualizza Esami</a>
           <a href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
 
@@ -65,7 +67,7 @@
             {% for docente in docenti %}
                 <li class="list-group-item">
                     <a href="#">{{ docente.name ~ ' ' ~  docente.surname }}</a>
-                    <a href="{{ url_for('teacher.aggiungiDocente', codEsame=codEsame, codDocente=docente.cod) }}" class="btn btn-sm btn-danger">Aggiungi</a>
+                    <a href="{{ url_for('admin.aggiungiDocente', codEsame=codEsame, codDocente=docente.cod) }}" class="btn btn-sm btn-danger">Aggiungi</a>
                 </li>
             {% endfor %}
         </ul>

@@ -32,9 +32,9 @@
           <a href="{{ url_for('admin.creaStudente') }}"> Crea Studenti</a>
           <a href="{{ url_for('admin.creaDocente') }}">Crea Docenti</a>
           <a href="{{ url_for('admin.creaEsame') }}">Crea Esami</a>
-          <a href="{{ url_for('auth.visualizzaStudenti') }}">Visualizza Studenti</a>
-          <a href="{{ url_for('auth.visualizzaDocenti') }}">Visualizza Docenti</a>
-          <a href="{{ url_for('auth.visualizzaEsami') }}">Visualizza Esami</a>
+          <a href="{{ url_for('admin.visualizzaStudenti') }}">Visualizza Studenti</a>
+          <a href="{{ url_for('admin.visualizzaDocenti') }}">Visualizza Docenti</a>
+          <a href="{{ url_for('admin.visualizzaEsami') }}">Visualizza Esami</a>
           <a href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
 
@@ -62,13 +62,13 @@
         <input type="number" id="anno" name="anno" class="form-control" min="2000" max="2100" required>
 
         <div class="form-group">
-                <label for="docente_cod">Docenti:</label>
-                <select class="form-control" id="docente_cod" name="docente_cod" required>
+                <label for="docente">Docenti:</label>
+                <select class="form-control" id="docente" name="docente" required>
                     {% for docente in docenti %}
-                        <option value="{{ docente.cod }}">{{ docente.name ~ ' ' ~  docente.surname }}</option>
+                        <option value="{{ docente.name ~ ' ' ~  docente.surname }}">{{ docente.name ~ ' ' ~  docente.surname }}</option>
                     {% endfor %}
                 </select>
-            </div>
+        </div>
 
         <br>
         <button type="submit" class="btn btn-danger">Crea</button>
