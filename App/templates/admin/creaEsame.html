@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crea Studente</title>
+    <title>Crea Esame</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
-    <link rel="stylesheet" href="../../static/mystyle.css">
     <script>
         function openNav() {
           document.getElementById("mySidebar").style.width = "250px";
@@ -33,6 +32,9 @@
           <a href="{{ url_for('admin.creaStudente') }}"> Crea Studenti</a>
           <a href="{{ url_for('admin.creaDocente') }}">Crea Docenti</a>
           <a href="{{ url_for('admin.creaEsame') }}">Crea Esami</a>
+          <a href="{{ url_for('auth.visualizzaStudenti') }}">Visualizza Studenti</a>
+          <a href="{{ url_for('auth.visualizzaDocenti') }}">Visualizza Docenti</a>
+          <a href="{{ url_for('auth.visualizzaEsami') }}">Visualizza Esami</a>
           <a href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
 
@@ -50,14 +52,14 @@
         <label for="name">Nome:</label>
         <input type="text" id="name" name="name" class="form-control" required>
 
-        <label for="cod">cod:</label>
+        <label for="cod">Codice:</label>
         <input type="text" id="cod" name="cod" class="form-control" required>
 
-        <label for="cfu">cfu:</label>
-        <input type="text" id="cfu" name="cfu" class="form-control" required>
+        <label for="cfu">CFU:</label>
+        <input type="number" id="cfu" name="cfu" class="form-control" required max="60">
 
-        <label for="anno">anno:</label>
-        <input type="text" id="anno" name="anno" class="form-control" required>
+        <label for="anno">Anno:</label>
+        <input type="number" id="anno" name="anno" class="form-control" min="2000" max="2100" required>
 
         <div class="form-group">
                 <label for="docente_cod">Docenti:</label>
@@ -69,7 +71,7 @@
             </div>
 
         <br>
-        <button type="submit" class="btn btn-danger">Inserisci</button>
+        <button type="submit" class="btn btn-danger">Crea</button>
     </form>
 
     </div>

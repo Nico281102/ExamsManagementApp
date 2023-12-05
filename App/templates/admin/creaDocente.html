@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crea Studente</title>
+    <title>Crea Docente</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
-    <link rel="stylesheet" href="../../static/mystyle.css">
     <script>
         function openNav() {
           document.getElementById("mySidebar").style.width = "250px";
@@ -23,7 +22,7 @@
     <nav class="navbar navbar-dark px-3">
         <a class="navbar-brand" href="#">
             <img src="{{ url_for('static', filename='graduation-cap-png.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
-        Gestione universitaria > </a>
+        Gestione universitaria ></a>
         <a href="{{ url_for('admin.adminPage') }}" class="navbar-brand">Profilo Admin ></a>
         <a href="#" class="navbar-brand">Creazione Docenti</a>
         <a class="navbar-brand ml-auto"> </a>
@@ -33,6 +32,9 @@
           <a href="{{ url_for('admin.creaStudente') }}"> Crea Studenti</a>
           <a href="{{ url_for('admin.creaDocente') }}">Crea Docenti</a>
           <a href="{{ url_for('admin.creaEsame') }}">Crea Esami</a>
+          <a href="{{ url_for('auth.visualizzaStudenti') }}">Visualizza Studenti</a>
+          <a href="{{ url_for('auth.visualizzaDocenti') }}">Visualizza Docenti</a>
+          <a href="{{ url_for('auth.visualizzaEsami') }}">Visualizza Esami</a>
           <a href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
 
@@ -55,7 +57,7 @@
         <input type="text" id="surname" name="surname" class="form-control" required>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" class="form-control" required>
+        <input type="password" id="password" name="password" class="form-control" minlength="8" required>
 
         <br>
         <button type="submit" class="btn btn-danger">Crea</button>
